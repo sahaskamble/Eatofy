@@ -53,28 +53,39 @@ const Widget: React.FC = () => {
           setIsLogged(false);
         }, timeout);
 
-        switch (role) {
-          case 'owner':
-            route.push('/hotels/dashboard');
-            break;
+        const user = data.output[0].result[0].Role;
 
-          case 'backoffice':
-            route.push('/hotels/backoffice');
-            break;
+        if ( user === role ) {
+          switch (role) {
+            case 'owner':
+              route.push('/hotels/dashboard');
+              break;
 
-          case 'waiter':
-            sessionStorage.setItem('waiter_id',data.output[0].result[0].id);
-            route.push('/hotels/home');
-            break;
+            case 'backoffice':
+              route.push('/hotels/backoffice');
+              break;
 
-          default:
-            setIsLogged(true);
-            setMessage('Please select the role');
-            setTimeout(() => {
-              setIsLogged(false);
-            }, timeout);
-            break;
+            case 'waiter':
+              sessionStorage.setItem('waiter_id',data.output[0].result[0].id);
+              route.push('/hotels/home');
+              break;
+
+            default:
+              setIsLogged(true);
+              setMessage('Please select the role');
+              setTimeout(() => {
+                setIsLogged(false);
+              }, timeout);
+              break;
+          }
+        }else{
+          setIsLogged(true);
+          setMessage("Account role and selected role dosen't matched !");
+          setTimeout(() => {
+            setIsLogged(false);
+          }, 2500);
         }
+
       } else {
         console.error('Login failed:', response.statusText);
         setMessage(data.message);
