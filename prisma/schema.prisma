@@ -7,37 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(uuid())
+  Username  String   @unique
+  Email     String   @unique
+  Password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Hotels {
-  id                  String                @id @unique @default(uuid())
-  HotelName           String                @unique
-  Email               String                @unique
-  HashedPassword      String
-  SaltPassword        String
-  Address             String
-  Speciality          String[]
-  HotelLogo           Bytes?
-  Contacts            String[]
-  Website             String?
-  FSSAICode           String
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  AvailableStock      AvailableStock[]
-  Bills               Bills[]
-  ComplianceChecklist ComplianceChecklist[]
-  Customers           Customers[]
-  Dishes              Dishes[]
-  Expenses            Expenses[]
-  Subscription        Hotel_Subscription[]
-  ItemCategory        ItemCategories[]
-  Items               Items[]
-  MenuCategory        MenuCategory[]
-  Order               Orders[]
-  Invoice             PurchasedInvoice[]
-  Sections            Sections[]
-  Staff               Staffs[]
-  Supplier            Suppliers[]
-  Reservations        TableReservation[]
-  Tables              Tables[]
+  id                   String                 @id @unique @default(uuid())
+  HotelName            String                 @unique
+  Email                String                 @unique
+  HashedPassword       String
+  SaltPassword         String
+  Address              String
+  Speciality           String[]
+  HotelLogo            Bytes?
+  Contacts             String[]
+  Website              String?
+  FSSAICode            String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  AvailableStock       AvailableStock[]
+  Bills                Bills[]
+  ComplianceChecklist  ComplianceChecklist[]
+  Customers            Customers[]
+  Dishes               Dishes[]
+  Expenses             Expenses[]
+  Subscription         Hotel_Subscription[]
+  ItemCategory         ItemCategories[]
+  Items                Items[]
+  MenuCategory         MenuCategory[]
+  Order                Orders[]
+  Invoice              PurchasedInvoice[]
+  Sections             Sections[]
+  Staff                Staffs[]
+  Supplier             Suppliers[]
+  Reservations         TableReservation[]
+  Tables               Tables[]
+  AvailableStockReport AvailableStockReport[]
 }
 
 model Subscriptions {
@@ -92,15 +102,16 @@ model Tables {
 }
 
 model TableReservation {
-  id         String    @id @unique @default(uuid())
-  Date       String
-  Time       String
-  Status     String    @default("Active")
-  Note       String?
-  CustomerId String
-  HotelId    String
-  Customer   Customers @relation(fields: [CustomerId], references: [id])
-  Hotel      Hotels    @relation(fields: [HotelId], references: [id])
+  id          String    @id @unique @default(uuid())
+  Date        String
+  Time        String
+  Status      String    @default("Active")
+  Note        String?
+  NoOfPersons String?
+  CustomerId  String
+  HotelId     String
+  Customer    Customers @relation(fields: [CustomerId], references: [id])
+  Hotel       Hotels    @relation(fields: [HotelId], references: [id])
 }
 
 model MenuCategory {
@@ -136,7 +147,6 @@ model Menus {
   id        String   @id @unique @default(uuid())
   SectionId String
   DishId    String
-  Code      String?
   Price     Float
   Status    String   @default("Active")
   createdAt DateTime @default(now())
@@ -149,16 +159,17 @@ model Menus {
 model Suppliers {
   id           String             @id @unique @default(uuid())
   SupplierName String
+  SupplierType String
   Contact      String
   Email        String
   GSTIN        String
-  Address      String?
+  Address      String
   Status       String             @default("Active")
   HotelId      String
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   StockInvoice PurchasedInvoice[]
-  Hotel        Hotels             @relation(fields: [HotelId], references: [id])
+  Hotel        Hotels?            @relation(fields: [HotelId], references: [id])
 }
 
 model ItemCategories {
@@ -174,19 +185,20 @@ model ItemCategories {
 }
 
 model Items {
-  id             String           @id @unique @default(uuid())
-  ItemName       String
-  Description    String?
-  HotelId        String
-  CategoryId     String
-  Status         String           @default("Active")
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  AvailableStock AvailableStock[]
-  DailyStock     DailyStock[]
-  Category       ItemCategories   @relation(fields: [CategoryId], references: [id])
-  Hotel          Hotels           @relation(fields: [HotelId], references: [id])
-  PurchasedStock PurchasedStock[]
+  id                   String                 @id @unique @default(uuid())
+  ItemName             String
+  Description          String?
+  HotelId              String
+  CategoryId           String
+  Status               String                 @default("Active")
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  AvailableStock       AvailableStock[]
+  DailyStock           DailyStock[]
+  Category             ItemCategories         @relation(fields: [CategoryId], references: [id])
+  Hotel                Hotels                 @relation(fields: [HotelId], references: [id])
+  PurchasedStock       PurchasedStock[]
+  AvailableStockReport AvailableStockReport[]
 }
 
 model PurchasedInvoice {
@@ -214,6 +226,8 @@ model PurchasedStock {
   Status    String           @default("Active")
   Quantity  String
   Unit      String
+  PerPrice  String
+  Price     String
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   Invoice   PurchasedInvoice @relation(fields: [InvoiceId], references: [id])
@@ -227,6 +241,20 @@ model AvailableStock {
   Quantity  String
   Unit      String
   Status    String   @default("Available")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Hotel     Hotels   @relation(fields: [HotelId], references: [id])
+  Items     Items    @relation(fields: [ItemId], references: [id])
+}
+
+model AvailableStockReport {
+  id        String   @id @unique @default(uuid())
+  HotelId   String
+  ItemId    String
+  Quantity  String
+  Unit      String
+  Status    String   @default("Available")
+  Date      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Hotel     Hotels   @relation(fields: [HotelId], references: [id])
@@ -248,7 +276,7 @@ model Staffs {
   LastName       String
   Address        String
   Contact        String
-  Email          String
+  Email          String            @unique
   HashedPassword String
   SaltPassword   String
   DepartmentName String
@@ -300,45 +328,60 @@ model CustomerOccassion {
 }
 
 model Orders {
-  id          String   @id @unique @default(uuid())
-  Quantity    String
-  Note        String?
-  TotalAmount Float
-  MenuId      String
-  Menu        Menus    @relation(fields: [MenuId], references: [id])
-  BillId      String
-  Bill        Bills    @relation(fields: [BillId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  hotelsId    String
-  Hotels      Hotels   @relation(fields: [hotelsId], references: [id])
+  id              String            @id @unique @default(uuid())
+  Quantity        String
+  Note            String?
+  TotalAmount     Float
+  MenuId          String
+  Menu            Menus             @relation(fields: [MenuId], references: [id])
+  BillId          String
+  Bill            Bills             @relation(fields: [BillId], references: [id])
+  Status          String            @default("Active")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  hotelsId        String
+  Hotels          Hotels            @relation(fields: [hotelsId], references: [id])
+  CancelledOrders CancelledOrders[]
 }
 
 model Bills {
-  id            String     @id @unique @default(uuid())
-  Type          String
-  TableId       String?
-  Table         Tables?    @relation(fields: [TableId], references: [id])
-  WaiterId      String
-  Waiter        Staffs     @relation(fields: [WaiterId], references: [id])
-  HotelId       String
-  Hotels        Hotels?    @relation(fields: [HotelId], references: [id])
-  CustomerId    String?
-  Customer      Customers? @relation(fields: [CustomerId], references: [id])
-  TotalAmount   Float      @default(0.0)
-  CGSTRate      String     @default("2.5 %")
-  SGSTRate      String     @default("2.5 %")
-  SGSTAmount    Float      @default(0.0)
-  CGSTAmount    Float      @default(0.0)
-  MenuTotal     Float      @default(0.0)
-  BalanceAmount Float      @default(0.0)
-  DiscountRate  String?
-  DiscountPrice Float?
-  PaymentMode   String     @default("None")
-  Status        String     @default("Active")
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  Orders        Orders[]
+  id                    String     @id @unique @default(uuid())
+  Type                  String
+  TableId               String?
+  Table                 Tables?    @relation(fields: [TableId], references: [id])
+  WaiterId              String
+  Waiter                Staffs     @relation(fields: [WaiterId], references: [id])
+  HotelId               String
+  Hotels                Hotels?    @relation(fields: [HotelId], references: [id])
+  CustomerId            String?
+  Customer              Customers? @relation(fields: [CustomerId], references: [id])
+  VatRate               String?
+  VatAmount             Float?
+  TotalAmount           Float      @default(0.0)
+  CGSTRate              String     @default("2.5 %")
+  SGSTRate              String     @default("2.5 %")
+  SGSTAmount            Float      @default(0.0)
+  CGSTAmount            Float      @default(0.0)
+  MenuTotal             Float      @default(0.0)
+  BalanceAmount         Float      @default(0.0)
+  DeliveryChargesRate   String?
+  DeliveryChargesAmount Float?
+  DiscountRate          String?
+  DiscountPrice         Float?
+  PaymentMode           String     @default("None")
+  Status                String     @default("Active")
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  Orders                Orders[]
+}
+
+model CancelledOrders {
+  id        String   @id @unique @default(uuid())
+  Reason    String
+  OrderId   String
+  Order     Orders   @relation(fields: [OrderId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Expenses {
@@ -352,6 +395,7 @@ model Expenses {
   HotelId       String
   Hotel         Hotels   @relation(fields: [HotelId], references: [id])
   Status        String   @default("Active")
+  PaymentMode   String   @default("Cash")
   PaymentStatus String   @default("Unpaid")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
