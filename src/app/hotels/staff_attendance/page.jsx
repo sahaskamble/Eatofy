@@ -1,7 +1,9 @@
 "use client";
 import HotelSideNav from "@/components/SideNavHotel";
 import { ApiHost } from "@/constants/url_consts";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { IoIosArrowBack } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 
 const StaffTable = () => {
@@ -18,6 +20,7 @@ const StaffTable = () => {
   const [isFailed, setisFailed] = useState(false);
   const today = new Date();
   const [dateFilter, setDateFilter] = useState(today.toISOString().split('T')[0]);
+  const router = useRouter();
 
   const fetch_attendance = async () => {
     try {
@@ -101,7 +104,7 @@ const StaffTable = () => {
   }
 
   useEffect(() => {
-    sethotel_id(sessionStorage.getItem('hotel_id'));
+    sethotel_id(localStorage.getItem('hotel_id'));
   }, []);
 
   useEffect(() => {
@@ -115,7 +118,12 @@ const StaffTable = () => {
     <>
       <HotelSideNav />
       <div className={`ml-[70px] flex-1 h-screen p-4 bg-white`}>
-        <h2 className="bg-gradient-to-r from-red-600 via-orange-500 to-red-400 inline-block text-transparent bg-clip-text text-2xl uppercase font-bold pb-6">Staff Attendance</h2>
+        <div className="flex justify-start items-center gap-4 mb-4">
+          <IoIosArrowBack size={50} color="red" className="cursor-pointer" onClick={() => {
+            router.back()
+          }} />
+          <h2 className="bg-gradient-to-r from-red-600 via-orange-500 to-red-400 inline-block text-transparent bg-clip-text text-3xl uppercase font-bold">Staff Attendance</h2>
+        </div>
 
         {
           isAttended ? (
@@ -165,8 +173,8 @@ const StaffTable = () => {
                         {
                           Staff.filter((staff) => staff?.Role?.toLowerCase() !== "owner")
                             .map((member, index) => (
-                            <option key={index} value={member.id} onClick={() => { sessionStorage.setItem('staff_id', member.id); }}>{member.FirstName}</option>
-                          ))
+                              <option key={index} value={member.id} onClick={() => { sessionStorage.setItem('staff_id', member.id); }}>{member.FirstName}</option>
+                            ))
                         }
                       </select>
                     </div>
@@ -257,28 +265,28 @@ const StaffTable = () => {
                 {attendances
                   .filter((attendance) => attendance?.Staff?.Role?.toLowerCase() != "owner")
                   .map((attendance, index) => (
-                  <tr className="bg-zinc-100 border-black" key={attendance.id}>
-                    <td className="border px-4 py-2">{index + 1}</td>
-                    <td className="border px-4 py-2">{attendance.Date}</td>
-                    <td className="border px-4 py-2">{attendance.Staff.FirstName} {attendance.Staff.LastName}</td>
-                    <td className="border px-4 py-2">{attendance.Staff.Address}</td>
-                    <td className="border px-4 py-2">{attendance.Staff.DepartmentName}</td>
-                    <td className="border px-4 py-2">{attendance.Staff.Designation}</td>
-                    <td className={`border px-4 py-2 `}>
-                      <label
-                        htmlFor=""
-                        className={`text-center px-2 py-1 rounded-lg font-semibold
+                    <tr className="bg-zinc-100 border-black" key={attendance.id}>
+                      <td className="border px-4 py-2">{index + 1}</td>
+                      <td className="border px-4 py-2">{attendance.Date}</td>
+                      <td className="border px-4 py-2">{attendance.Staff.FirstName} {attendance.Staff.LastName}</td>
+                      <td className="border px-4 py-2">{attendance.Staff.Address}</td>
+                      <td className="border px-4 py-2">{attendance.Staff.DepartmentName}</td>
+                      <td className="border px-4 py-2">{attendance.Staff.Designation}</td>
+                      <td className={`border px-4 py-2 `}>
+                        <label
+                          htmlFor=""
+                          className={`text-center px-2 py-1 rounded-lg font-semibold
                             ${(attendance.Type.toLowerCase() === "present") ? 'bg-green-200 text-green-500' :
-                            (attendance.Type.toLowerCase() === "absent") ? 'bg-red-200 text-red-500' :
-                              (attendance.Type.toLowerCase() === "Half-Day") ? 'bg-yellow-200 text-yellow-500' :
-                                'text-gray-500 bg-gray-200'
-                          }`}
-                      >
-                        {attendance.Type}
-                      </label>
-                    </td>
-                  </tr>
-                ))}
+                              (attendance.Type.toLowerCase() === "absent") ? 'bg-red-200 text-red-500' :
+                                (attendance.Type.toLowerCase() === "Half-Day") ? 'bg-yellow-200 text-yellow-500' :
+                                  'text-gray-500 bg-gray-200'
+                            }`}
+                        >
+                          {attendance.Type}
+                        </label>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

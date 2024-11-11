@@ -6,6 +6,8 @@ export async function create_menu_of_order({
 	total_amount,
 	menu_id,
 	bill_id,
+	status,
+	reason,
 	hotel_id
 }) {
 	try {
@@ -19,6 +21,8 @@ export async function create_menu_of_order({
 				TotalAmount: total_amount,
 				MenuId: menu_id,
 				BillId: bill_id,
+				Status: status,
+				Reason: reason,
 				hotelsId: hotel_id
 			}
 		});

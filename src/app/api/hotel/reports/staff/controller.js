@@ -29,8 +29,12 @@ export async function fetch_staff_reports(data) {
 				output: []
 			}
 		}
-		const from_date = new Date(from);
-		const to_date = new Date(to);
+
+		const from_date_datetime = new Date(from);
+		const to_date_datetime = new Date(to);
+
+		const from_date = new Date(from_date_datetime.setUTCHours(0, 0, 0, 0));
+		const to_date = new Date(to_date_datetime.setUTCHours(23, 59, 59, 999));
 
 		// Fetch 
 		const data_fetcher = await Performance_Calculator(staff_id, from_date, to_date);
@@ -38,7 +42,7 @@ export async function fetch_staff_reports(data) {
 		return {
 			returncode: 200,
 			message: "Staff Report",
-			output: [ data_fetcher ]
+			output: [data_fetcher]
 		};
 
 	} catch (error) {
@@ -116,21 +120,21 @@ const Performance_Calculator = async (staff_id, from_date, to_date) => {
 	const order_weight = 0.5;
 
 	// Performance_Calculator
-	const performance = (((total_revenue / days_present) * order_weight ) + ( (total_orders / days_present) * attendance_weight)) || 0;
+	const performance = (((total_revenue / days_present) * order_weight) + ((total_orders / days_present) * attendance_weight)) || 0;
 	const total_performance = (((total_revenue / total_days) * order_weight) + ((total_orders / total_days) * attendance_weight)) || 0;
 
-	const performance_percent = (( performance / total_performance ) * 100) || 0;
+	const performance_percent = ((performance / total_performance) * 100) || 0;
 	let performance_grade;
 	if (performance_percent > 90) {
 		performance_grade = "Excellent Performance";
 	}
-	else if ( performance_percent > 75 && performance_percent < 90 ) {
+	else if (performance_percent > 75 && performance_percent < 90) {
 		performance_grade = "Good Performance";
 	}
-	else if ( performance_percent > 50 && performance_percent < 75 ){
+	else if (performance_percent > 50 && performance_percent < 75) {
 		performance_grade = "Needs Improvement";
 	}
-	else if ( performance_grade < 50 ){
+	else if (performance_grade < 50) {
 		performance_grade = "Poor Performance";
 	}
 	else {

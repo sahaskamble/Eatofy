@@ -9,23 +9,27 @@ export async function fetch_purchases_reports(data) {
 		const to = data['to'];
 
 		// Default Invalid Checker
-		if ( hotel_id == null || hotel_id == undefined || hotel_id == "" ||
+		if (hotel_id == null || hotel_id == undefined || hotel_id == "" ||
 			from == null || from == undefined || from == "" ||
-			to == null || to == undefined || to == "" ) {
+			to == null || to == undefined || to == "") {
 			return {
 				returncode: 400,
 				message: 'Invalid Input',
 				output: []
 			}
 		}
-		const from_date = new Date(from);
-		const to_date = new Date(to);
+
+		const from_date_datetime = new Date(from);
+		const to_date_datetime = new Date(to);
+
+		const from_date = new Date(from_date_datetime.setUTCHours(0, 0, 0, 0));
+		const to_date = new Date(to_date_datetime.setUTCHours(23, 59, 59, 999));
 
 		// Getting the Invoices
 		const invoices_result = await read_invoices_asc({
 			hotel_id
 		});
-		
+
 		// Chart
 		const purchase_res = invoices_result.output;
 		let purchases = purchase_res.filter((purchase) => {

@@ -1,4 +1,6 @@
 import { read_menu_for_order } from "@/db/crud/menus/management/read";
+import { update_table_status } from "@/db/crud/tables/management/update";
+import { read_bill_info } from "@/db/crud/bills/management/read";
 import { create_menu_of_order } from "@/db/crud/orders/management/create";
 import { order_check } from "@/db/crud/orders/management/read";
 import { update_order_menus } from "@/db/crud/orders/management/update";
@@ -11,6 +13,8 @@ export async function add_menu_order(data) {
 		const menu_id = data['menu_id'] || null;
 		const bill_id = data['bill_id'] || null;
 		const hotel_id = data['hotel_id'] || null;
+		const status = data['status'] || "Ordered";
+		const reason = data['reason'] || null;
 
 
 		// Default Invalid Checker
@@ -29,6 +33,8 @@ export async function add_menu_order(data) {
 			bill_id
 		});
 
+		const bill_info = await read_bill_info({ bill_id });
+		const table_id = bill_info.output[0].TableId;
 
 		// Getting the Menu Price 
 		const existingMenu = await read_menu_for_order({
@@ -39,7 +45,7 @@ export async function add_menu_order(data) {
 		const total_amount = menu_quantity * amount;
 
 		if (checkExistingOrder.output.length != 0) {
-		
+
 			// Update Existing Order
 			const order_quantity = checkExistingOrder.output[0].Quantity;
 			const order_amount = checkExistingOrder.output[0].TotalAmount;
@@ -50,8 +56,16 @@ export async function add_menu_order(data) {
 			const result = await update_order_menus({
 				order_id,
 				totalQty: `${totalQty}`,
-				totalAmt
+				totalAmt,
+				note,
+				status,
+				reason
 			});
+
+			await update_table_status({
+				table_id,
+				status: "Booked"
+			})
 
 			if (result.returncode != 200) {
 				return {
@@ -60,6 +74,8 @@ export async function add_menu_order(data) {
 					output: result.output
 				};
 			}
+
+
 			else {
 				return result;
 			}
@@ -70,12 +86,20 @@ export async function add_menu_order(data) {
 			// Inserting the Menu Order
 			const result = await create_menu_of_order({
 				quantity,
-				note,
 				total_amount,
 				menu_id,
 				bill_id,
-				hotel_id
+				hotel_id,
+				note,
+				status,
+				reason
+
 			});
+
+			await update_table_status({
+				table_id,
+				status: "Booked"
+			})
 
 			if (result.returncode != 200) {
 				return {

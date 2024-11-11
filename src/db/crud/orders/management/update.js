@@ -1,9 +1,12 @@
 import db from "@/db/connector";
 
-export async function update_order_menus ({
+export async function update_order_menus({
 	order_id,
 	totalAmt,
-	totalQty
+	totalQty,
+	status,
+	note,
+	reason
 }) {
 	try {
 
@@ -14,7 +17,10 @@ export async function update_order_menus ({
 			},
 			data: {
 				TotalAmount: totalAmt,
-				Quantity: totalQty
+				Quantity: totalQty,
+				Status: status,
+				Note: note,
+				Reason: reason
 			}
 		});
 
@@ -39,7 +45,7 @@ export async function update_order_menus ({
 }
 
 // Update Status
-export async function update_order_status ({
+export async function update_order_status({
 	order_id,
 	status
 }) {

@@ -1,14 +1,16 @@
 "use client"
 
 import { ApiHost } from '@/constants/url_consts';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const HotelAuth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [waiter, setwaiter] = useState('');
   const [role, setRole] = useState('');
   const [message, setMessage] = useState('');
   const [isLogged, setIsLogged] = useState(false);
@@ -41,13 +43,14 @@ const HotelAuth = () => {
 
         // Save token to sessionStorage
         sessionStorage.setItem('jwtToken', data.output[1].token);
-        sessionStorage.setItem('hotel_id', data.output[0].result[0].HotelId);
+        localStorage.setItem('hotel_id', data.output[0].result[0].HotelId);
         // Save user data to sessionStorage
         setMessage(data.message);
         setIsLogged(true);
         setFailed(false);
         const userData = data.output[0].result[0];
         const id = JSON.stringify(data.output[0].result[0].id);
+        setwaiter(id);
         sessionStorage.setItem('userData', JSON.stringify(userData));
         setTimeout(() => {
           setIsLogged(false);
@@ -78,7 +81,8 @@ const HotelAuth = () => {
               break;
           }
           sessionStorage.setItem('role', role);
-        }else{
+          localStorage.setItem('role', role);
+        } else {
           alert("The account you entered is not Authorized for the role you selected, \n Please select proper role for account");
         }
 
@@ -100,12 +104,32 @@ const HotelAuth = () => {
     setRole(e.target.value);
   }
 
+  // useEffect(() => {
+  //   if (localStorage.getItem('hotel_id') !== null) {
+  //     alert('Hotel Id exist Logging you in');
+  //     if (sessionStorage.getItem('waiter_id') === null) {
+  //       sessionStorage.setItem('waiter_id', waiter);
+  //     }
+  //     if (localStorage.getItem('role') !== null) {
+  //       const Role = localStorage.getItem('role');
+  //       sessionStorage.setItem('role', Role);
+  //     }
+  //     route.push('/hotels/dashboard')
+  //   }
+  // }, []);
+
   return (
     <>
       <div
-        style={{ backgroundImage: 'url(/bgimg.jpg)', backgroundSize: 'cover', backgroundOrigin: 'inherit' }}
-        className="h-dvh flex flex-col items-center justify-center gap-4"
+        className="w-full h-dvh flex flex-col items-center justify-center gap-4"
       >
+        <div
+          style={{ backgroundImage: 'url(/dish1.jpg)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundOrigin: 'inherit' }}
+          className="w-full h-full fixed top-0 left-0 z-[-50]"
+        ></div>
+        <div
+          className='w-full h-full bg-black bg-opacity-60 fixed top-0 left-0 z-[-20]'
+        ></div>
         {
           isLogged ? (
             <div className={`w-1/4 h-[90px] border-t-[8px] rounded-lg inline-flex justify-center items-center ${isfailed ? 'bg-red-200 text-red-500 border-red-500' : 'bg-green-200 text-green-500 border-green-500'}`}>
@@ -115,7 +139,7 @@ const HotelAuth = () => {
             :
             []
         }
-        <div className=" bg-black text-white p-8 rounded-lg shadow-lg lg:w-1/3 w-1/2">
+        <div className="bg-black text-white p-8 rounded-lg shadow-lg lg:w-1/3 w-full">
           <div className="flex justify-center mb-6">
             <img src="/logo1.png" width={200} alt="EATOFY Logo" />
           </div>

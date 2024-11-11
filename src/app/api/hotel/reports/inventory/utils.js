@@ -41,7 +41,7 @@ export function stock_values_mapper(data) {
 		'Available': 0,
 		'Unavailable': 0,
 		'Total': 0,
-		'Low':0,
+		'Low': 0,
 	};
 
 	const today = new Date();

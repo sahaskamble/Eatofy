@@ -4,22 +4,25 @@ import { values_mapper } from "./utils";
 export async function fetch_expenses_reports(data) {
 	try {
 
-		const hotel_id = data['hotel_id'];
-		const from = data['from'];
-		const to = data['to'];
+		const hotel_id = data['hotel_id'] || null;
+		const from = data['from'] || null;
+		const to = data['to'] || null;
 
 		// Default Invalid Checker
-		if ( hotel_id == null || hotel_id == undefined || hotel_id == "" ||
-			from == null || from == undefined || from == "" ||
-			to == null || to == undefined || to == "" ) {
+		if (hotel_id == null || from == null || to == null) {
 			return {
 				returncode: 400,
 				message: 'Invalid Input',
 				output: []
 			}
 		}
-		const from_date = new Date(from);
-		const to_date = new Date(to);
+		const from_date_datetime = new Date(from);
+		const to_date_datetime = new Date(to);
+
+		const from_date = new Date(from_date_datetime.setUTCHours(0, 0, 0, 0));
+		const to_date = new Date(to_date_datetime.setUTCHours(23, 59, 59, 999));
+		const start = new Date(from_date.toISOString());
+		const end = new Date(to_date.toISOString());
 
 		// Expenses
 		const response = await read_expenses_asc({
@@ -29,7 +32,7 @@ export async function fetch_expenses_reports(data) {
 		const expense_res = response.output;
 		let expenses = expense_res.filter((expense) => {
 			expense.Datetime = new Date(expense.Date);
-			return from_date <= expense.Datetime && expense.Datetime <= to_date;
+			return start <= expense.Datetime && expense.Datetime <= end;
 		});
 
 		const expense_wise = values_mapper(expenses, "ExpenseName");

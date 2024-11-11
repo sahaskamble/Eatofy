@@ -13,7 +13,7 @@ export async function order_check({
 				MenuId: menu_id,
 				BillId: bill_id,
 				NOT: {
-					Status: "Inactive"
+					Status: "Cancelled"
 				}
 			},
 			include: {

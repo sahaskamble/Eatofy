@@ -6,7 +6,8 @@ import HotelSideNav from "@/components/SideNavHotel";
 import { ApiHost } from "@/constants/url_consts";
 import { MdOutlineEdit } from 'react-icons/md';
 import Link from 'next/link';
-import { IoIosAddCircleOutline } from 'react-icons/io';
+import { IoIosAddCircleOutline, IoIosArrowBack } from 'react-icons/io';
+import { useRouter } from 'next/navigation';
 
 export default function Purchase_management() {
 
@@ -32,6 +33,7 @@ export default function Purchase_management() {
   const [newStockItem, setNewStockItem] = useState({ item_id: '', quantity: '0', unit: '', per_price: '0', total_price: '0' });
   const [invoice, setInvoice] = useState({});
   const [Stock, setStock] = useState([]);
+  const router = useRouter();
 
   // Array of Stocks
   const addStockDetail = () => {
@@ -242,7 +244,7 @@ export default function Purchase_management() {
   }
 
   useEffect(() => {
-    sethotel_id(sessionStorage.getItem('hotel_id'));
+    sethotel_id(localStorage.getItem('hotel_id'));
     if (hotel_id) {
       fetchData();
     }
@@ -253,8 +255,11 @@ export default function Purchase_management() {
       <HotelSideNav />
       {
         <div className="ml-[70px]">
-          <h2 className="w-full text-center pt-4 bg-gradient-to-r from-red-600 via-orange-500 to-red-400 inline-block text-transparent bg-clip-text text-3xl uppercase font-bold mb-4">Purchase Management</h2>
-          <div className="text-right">
+          <div className="flex justify-between items-center">
+            <IoIosArrowBack size={50} color="red" className="cursor-pointer" onClick={() => {
+              router.back()
+            }} />
+            <h2 className="p-4 bg-gradient-to-r from-red-600 via-orange-500 to-red-400 inline-block text-transparent bg-clip-text text-3xl uppercase font-bold mb-4">Purchase Management</h2>
             <button onClick={() => { setShowTableForm(!showtableform) }} className="text-xl bg-red-500 text-white px-4 py-2 rounded-lg m-4 text-right">
               Add Purchase
             </button>
@@ -376,7 +381,7 @@ export default function Purchase_management() {
                         }
                       </select>
                       <Link href={`${ApiHost}/hotels/backoffice/supplier_management`}>
-                        <IoIosAddCircleOutline size={28}/>
+                        <IoIosAddCircleOutline size={28} />
                       </Link>
                     </div>
                     <div className='flex gap-4'>
@@ -508,12 +513,17 @@ export default function Purchase_management() {
                             <div>
 
                               <div className="mb-4">
-                                <label
-                                  className="block text-gray-700 text-sm font-bold mb-2"
-                                  htmlFor="Item"
-                                >
-                                  Item
-                                </label>
+                                <div className='flex items-center gap-4 mb-2'>
+                                  <label
+                                    className="block text-gray-700 text-sm font-bold"
+                                    htmlFor="Item"
+                                  >
+                                    Item
+                                  </label>
+                                  <Link href={`/hotels/item_management`}>
+                                    <IoIosAddCircleOutline size={23} />
+                                  </Link>
+                                </div>
                                 <select value={newStockItem.item_id} onChange={(e) => setNewStockItem({ ...newStockItem, item_id: e.target.value })} className="rounded-lg w-full">
                                   <option value="">--- Select Item ---</option>
                                   {fetcheditems.map((item) => (
@@ -681,7 +691,7 @@ export default function Purchase_management() {
                   <th className="p-4">Payment mode</th>
                   <th className="p-4">Payment</th>
                   <th className="p-4">Invoice Date</th>
-                  <th className="p-4"></th>
+                  <th className="p-4">Actions</th>
                   {/*<th>QTY</th>*/}
                 </tr>
               </thead>
@@ -698,7 +708,7 @@ export default function Purchase_management() {
                       </td>
                       <td className="p-3">{items.Date}</td>
                       <td className="p-3">
-                        <div className='flex gap-2 justify-center items-center '>
+                        <div className='flex gap-8 justify-start items-center '>
                           <button
                             onClick={() => { displayPurchasedStock(items) }}
                           >

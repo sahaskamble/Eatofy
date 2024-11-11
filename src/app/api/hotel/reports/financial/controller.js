@@ -30,8 +30,11 @@ export async function fetch_financial_reports(data) {
 				output: []
 			}
 		}
-		const from_date = new Date(from);
-		const to_date = new Date(to);
+		const from_date_datetime = new Date(from);
+		const to_date_datetime = new Date(to);
+
+		const from_date = new Date(from_date_datetime.setUTCHours(0, 0, 0, 0));
+		const to_date = new Date(to_date_datetime.setUTCHours(23, 59, 59, 999));
 
 		const sales_data = await Sales_Data(hotel_id, from_date, to_date);
 		const expenses_data = await Expenses_Data(hotel_id, from_date, to_date);

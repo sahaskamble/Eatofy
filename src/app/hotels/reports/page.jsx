@@ -9,6 +9,8 @@ import { MdOutlineInventory2, MdPeopleAlt } from 'react-icons/md';
 import { IoIosPeople } from 'react-icons/io';
 import { FaBoxOpen } from 'react-icons/fa6';
 import { RiMoneyRupeeCircleFill } from 'react-icons/ri';
+import { LiaCashRegisterSolid } from "react-icons/lia";
+import { PiBank } from 'react-icons/pi';
 
 const EatofyApp = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -53,12 +55,22 @@ const EatofyApp = () => {
       'name': 'Supplier Report',
       'href': '/hotels/reports/supplier',
       'img_tag': FaBoxOpen
-    }, 
+    },
     {
       'name': 'Inventory Report',
       'href': '/hotels/reports/inventory',
       'img_tag': MdOutlineInventory2
     },
+    {
+      'name': 'Galla Report',
+      'href': '/hotels/reports/galla',
+      'img_tag': LiaCashRegisterSolid
+    },
+    {
+      'name': 'Tally Report',
+      'href': '/hotels/reports/tally',
+      'img_tag': PiBank
+    }
   ]);
 
   return (

@@ -3,18 +3,19 @@
 import HotelSideNav from '@/components/SideNavHotel';
 import { ApiHost } from '@/constants/url_consts';
 import { Button } from '@react-email/components';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { FaTrashCan, FaXmark } from 'react-icons/fa6';
 import { FiEdit } from 'react-icons/fi';
-import { IoIosAddCircleOutline } from 'react-icons/io';
+import { IoIosArrowBack } from 'react-icons/io';
 import { MdOutlineModeEdit } from 'react-icons/md';
 
 const MenuManagement = () => {
 
   const [showaddmenu, setShowaddmenu] = useState(false);
   const [showeditmenu, setShoweditmenu] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(null);
   const [Search, setSearch] = useState("");
   const [hotelDishes, setHotelDishes] = useState([]);
   const [displayAllDishes, setdisplayAllDishes] = useState(true);
@@ -23,6 +24,7 @@ const MenuManagement = () => {
   const [SuccessMessage, setSuccessMessage] = useState('');
   const [ErrorMessage, setErrorMessage] = useState('');
   const searchBar = useRef();
+  const router = useRouter();
 
   // Search Dishes
   const handleSearch = (element) => {
@@ -69,7 +71,7 @@ const MenuManagement = () => {
   const fetchCategory = async () => {
     try {
 
-      const hotel_id = sessionStorage.getItem('hotel_id');
+      const hotel_id = localStorage.getItem('hotel_id');
       const response = await fetch(`${ApiHost}/api/hotel/dish/category/fetch`, {
         method: 'POST',
         headers: {
@@ -102,7 +104,7 @@ const MenuManagement = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'hotel_id': sessionStorage.getItem('hotel_id')
+          'hotel_id': localStorage.getItem('hotel_id')
         }),
       });
 
@@ -144,7 +146,7 @@ const MenuManagement = () => {
           'dish_type': DishType,
           'price': Price,
           'category_name': CategoryName,
-          'hotel_id': sessionStorage.getItem('hotel_id')
+          'hotel_id': localStorage.getItem('hotel_id')
         }),
       });
 
@@ -547,9 +549,16 @@ const MenuManagement = () => {
       <div className="ml-[70px] flex-1 p-4">
         <div className='flex m-6 justify-center gap-2 flex-col'>
           <div className='flex justify-between'>
-            <h1 className="text-3xl  font-bold mb-4">
-              Menu <span className="text-red-500">Management</span>
-            </h1>
+            <div className="flex justify-start items-center gap-4 mb-2">
+              <h2 className="bg-gradient-to-r from-red-600 via-orange-500 to-red-400 text-transparent bg-clip-text text-3xl uppercase font-bold flex items-center gap-4">
+                <IoIosArrowBack size={50} color="red" className="cursor-pointer" onClick={() => {
+                  router.back()
+                }} />
+                <label>
+                  Menu Management
+                </label>
+              </h2>
+            </div>
             <div>
               <input
                 ref={searchBar}
@@ -584,12 +593,12 @@ const MenuManagement = () => {
                   setdisplayAllDishes(true);
                 }
               }
-              className="inline-flex justify-center items-center gap-4 font-semibold p-2 rounded-lg"
+              className={`inline-flex justify-center items-center gap-4 font-semibold p-2 rounded-lg px-3 py-1 ${activeIndex === null ? "bg-red-500 text-white" : "border border-black"}`}
             >
               <span>All Dishes</span>
             </div>
             {
-              sections.map((section) => (
+              sections.map((section, index) => (
                 <div
                   key={section.id}
                   onClick={
@@ -599,7 +608,7 @@ const MenuManagement = () => {
                       setdisplayAllDishes(false);
                     }
                   }
-                  className="inline-flex justify-center items-center gap-4 font-semibold p-2 rounded-lg"
+                  className={`inline-flex justify-center items-center gap-4 font-semibold p-2 rounded-lg px-3 py-1 ${activeIndex === index ? "bg-red-500 text-white" : "border border-black"}`}
                 >
                   <span>{section.SectionName}</span>
                 </div>
@@ -608,7 +617,7 @@ const MenuManagement = () => {
           </div>
         </div>
         <hr className="w-[99%] mx-auto border-[1.5px] border-red-500" />
-        <div className="flex flex-wrap gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
           {
             displayAllDishes
               ?

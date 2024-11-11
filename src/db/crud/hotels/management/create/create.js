@@ -11,7 +11,7 @@ export async function create_hotel_with_logo({
 	contacts,
 	website,
 	fssai_code
-}){
+}) {
 	try {
 		// Inserting the Hotel
 		const result = await db.hotels.create({
@@ -87,7 +87,7 @@ export async function create_hotel_without_logo({
 		};
 
 	} catch (error) {
-		
+
 		// Error thrown
 		return {
 			returncode: 500,

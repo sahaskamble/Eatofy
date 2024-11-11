@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FaArrowLeft, FaBriefcase, FaDashcube, FaHome, FaList, FaWarehouse } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { IoLogOutOutline } from "react-icons/io5";
-import { FaBookBookmark, FaChartPie, FaGear, FaTable } from "react-icons/fa6";
+import { FaBookBookmark, FaCashRegister, FaChartPie, FaGear, FaTable } from "react-icons/fa6";
 // import { MdOutline1K, MdOutlineSubscriptions } from "react-icons/md";
 import { MdOutlineMenuBook } from "react-icons/md";
 import "../styles/navbar.css";
@@ -30,11 +30,12 @@ export default function HotelSideNav() {
   const [isOpen9, setIsOpen9] = useState(false);
   const [isOpen10, setIsOpen10] = useState(false);
   const [isOpen11, setIsOpen11] = useState(false);
+  const [isOpen12, setIsOpen12] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isThere, setIsThere] = useState();
 
   useEffect(() => {
-    const role = window.sessionStorage.getItem('role');
+    const role = sessionStorage.getItem('role');
     if (role) {
       setIsThere(role);
       changeRole(role);
@@ -156,6 +157,13 @@ export default function HotelSideNav() {
         }
         break;
 
+      case 'day_closing':
+        if (isOpen12) {
+          setIsOpen12(true);
+        } else {
+          setIsOpen12(false);
+        }
+        break;
 
       case 'logout':
         if (isOpen5) {
@@ -177,7 +185,7 @@ export default function HotelSideNav() {
       <nav className={`navbar fixed z-10 top-0 left-0 bg-slate-950 ${isCollapsed ? 'expanded' : 'collapsed'} duration-700`}>
         <div className="flex flex-col h-full">
           <div className="inline-flex justify-start items-center gap-7 p-2 mt-2 relative">
-            <div className="w-[60px] h-[45px] inline-flex flex-col items-center justify-center gap-1 rounded-md p-0ml-1" onClick={toggleNavbar}>
+            <div className="w-[60px] h-[45px] inline-flex flex-col items-center justify-center gap-1 rounded-md p-0 ml-1" onClick={toggleNavbar}>
               <img src="/eatofyicon.svg" alt="Icon" className="w-[25px]" />
             </div>
             <h1 className={`lg:text-2xl text-xl text-red-500 font-bold text-center pt-[5px] ${isCollapsed ? 'block' : 'hidden'}`}>Eatofy</h1>
@@ -186,7 +194,7 @@ export default function HotelSideNav() {
               <FaArrowLeft size={22} className="text-red-500" />
             </div>
           </div>
-          <div className="w-full flex-1 flex flex-col justify-start items-center pt-4 px-2 gap-5 duration-300">
+          <div className="w-full flex-1 flex flex-col justify-start items-center pt-4 px-2 gap-1 duration-300">
             {
               Owner
                 ?
@@ -219,6 +227,19 @@ export default function HotelSideNav() {
                       <FaDashcube size={25} className="icon" color={isOpen6 ? '#fff' : ''} />
                       <span className={`icons_name text-white text-xl ${isCollapsed ? 'block' : 'hidden'}`}>Dashboard</span>
                     </Link>
+
+                    <Link
+                      href="/hotels/day_closing"
+                      className="icons hover:bg-[#cc6666] hover:bg-opacity-50 inline-flex justify-start items-center pl-[13px] p-2 py-3 gap-8 w-full"
+                      onMouseEnter={() => { changeColor('day_closing') }}
+                      onMouseLeave={() => { changeColor('day_closing') }}
+                    >
+                      <FaCashRegister size={25} className="icon" color={isOpen12 ? '#fff' : ''} />
+                      <span className={`icons_name text-white text-xl ${isCollapsed ? 'block' : 'hidden'}`}>
+                        Day Closing
+                      </span>
+                    </Link>
+
 
                     <Link
                       href="/hotels/menu_management"
@@ -370,7 +391,7 @@ export default function HotelSideNav() {
               className="icons hover:bg-[#cc6666] hover:bg-opacity-50 inline-flex justify-start items-center pl-[14px] p-2 gap-8 w-full mb-4"
               onMouseEnter={() => { changeColor('logout') }}
               onMouseLeave={() => { changeColor('logout') }}
-              onClick={() => { sessionStorage.clear() }}
+              onClick={() => { sessionStorage.clear(); localStorage.removeItem('hotel_id'); }}
             >
               <IoLogOutOutline size={25} className="icon" color={isOpen5 ? '#fff' : ''} />
               <span className={`icons_name text-white text-xl ${isCollapsed ? 'block' : 'hidden'}`}>Logout</span>

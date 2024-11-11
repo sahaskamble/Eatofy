@@ -5,12 +5,18 @@ import { create_customer_occassion } from "@/db/crud/customers/occasions/create"
 export async function add_customer(data) {
 	try {
 
-		const customer_name = data['customer_name'];
-		const contact = data['contact'];
-		const email = data['email'];
-		const hotel_id = data['hotel_id'];
-		const occassion = data['occassion'];
-		const date = data['date'];
+		const customer_name = data['customer_name'] || null;
+		const contact = data['contact'] || null;
+		const email = data['email'] || null;
+		const apartment = data['apartment'] || null;
+		const street_address = data['street_address'] || null;
+		const landmark = data['landmark'] || null;
+		const city = data['city'] || null;
+		const state = data['state'] || null;
+		const zip_code = data['zip_code'] || null;
+		const hotel_id = data['hotel_id'] || null;
+		const occassion = data['occassion'] || null;
+		const date = data['date'] || null;
 
 		// Default Invalid Checker
 		if (hotel_id == null || customer_name == null || contact == null) {
@@ -33,13 +39,19 @@ export async function add_customer(data) {
 			customer_name,
 			contact,
 			email,
-			hotel_id
+			hotel_id,
+			apartment,
+			street_address,
+			landmark,
+			city,
+			state,
+			zip_code
 		});
 
 		let error_flag = false;
 		// If occassion exists
 		if (occassion != null && date != null) {
-			const occassion_date =  await create_customer_occassion({
+			const occassion_date = await create_customer_occassion({
 				customer_id: result.output.id,
 				occassion,
 				date
@@ -59,7 +71,7 @@ export async function add_customer(data) {
 		else {
 			return {
 				returncode: 400,
-				message: "Customer was Added",
+				message: "Customer was not Added",
 				output: []
 			};
 		}

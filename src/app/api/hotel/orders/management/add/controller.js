@@ -54,7 +54,7 @@ export async function add__order(data) {
 					hotel_id
 				});
 
-				customer_id =  result.output;
+				customer_id = result.output.id;
 				// If occassion exists
 				if (occassion != null && date != null) {
 					await create_customer_occassion({
@@ -69,6 +69,7 @@ export async function add__order(data) {
 		} else {
 			customer_id = null;
 		}
+		console.log(customer_id);
 
 		// Inserting the Order
 		const result = await create_bill({
@@ -84,34 +85,36 @@ export async function add__order(data) {
 
 		// Update Bill Status
 		await bill_status_update({
-			bill_id:  result.output,
+			bill_id: result.output,
 			status: "Booked"
 		});
 
 		if (result.returncode == 200) {
 			for (const element of menu_data) {
-				let menu_id = element['menu_id']; 
-				let quantity = element['quantity'];
-				let note = element['note'];
-				let bill_id =  result.output.id;
+				let menu_id = element['menu_id'] || null;
+				let quantity = element['quantity'] || '1';
+				let note = element['note'] || null;
+				let status = element['status'] || "Ordered";
+				let reason = element['note'] || null;
+				let bill_id = result.output.id || null;
 
-				let menu_request;
-				if (note != null || note != undefined) {
-					menu_request = {
-						menu_id,
-						quantity,
-						note,
-						bill_id,
-						hotel_id
+				if (menu_id === null || bill_id === null) {
+
+					return {
+						returncode: 400,
+						message: 'Invalid Orders Input',
+						output: []
 					};
 				}
-				else {
-					menu_request = {
-						menu_id,
-						quantity,
-						bill_id,
-						hotel_id
-					}
+
+				const menu_request = {
+					menu_id,
+					quantity,
+					note,
+					bill_id,
+					hotel_id,
+					status,
+					reason
 				}
 
 				try {
@@ -120,7 +123,7 @@ export async function add__order(data) {
 						OrdersArray.push(out.output);
 					}
 					else {
-						isAllOrdersAdded = false; 
+						isAllOrdersAdded = false;
 					}
 				} catch (error) {
 					isAllOrdersAdded = false;
@@ -154,7 +157,7 @@ export async function add__order(data) {
 			}
 
 		}
-		 else {
+		else {
 			return result;
 		}
 	} catch (error) {

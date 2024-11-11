@@ -15,7 +15,7 @@ const Dashboard = () => {
   // For A Week before
   const today = new Date();
   const weekbefore = new Date(today);
-  weekbefore.setDate(today.getDate() - 7);
+  weekbefore.setDate(today.getDate());
   const from_default = weekbefore.toISOString().split('T')[0];
   const to_default = today.toISOString().split('T')[0];
   const [selectedRange, setselectedRange] = useState('Today');
@@ -23,7 +23,6 @@ const Dashboard = () => {
   //Request Params
   const [from, setFrom] = useState(from_default);
   const [to, setTo] = useState(to_default);
-  console.log(from);
 
   // Orders
   const [AllOrders, setAllOrders] = useState(0);
@@ -43,9 +42,6 @@ const Dashboard = () => {
   const [Amount, setAmount] = useState([]);
   const [EmployeeAmount, setEmployeeAmount] = useState([]);
 
-  // Table
-  const [Table, setTable] = useState([]);
-
   const fetchAllOrders = async () => {
     if (from == "" || to == "") {
       alert("Please Select Filter");
@@ -58,7 +54,7 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'hotel_id': sessionStorage.getItem('hotel_id'),
+          'hotel_id': localStorage.getItem('hotel_id'),
           'from': from,
           'to': to
         }),
@@ -85,7 +81,6 @@ const Dashboard = () => {
         setAmount(data.output.Chart.All_Order.Amount);
 
         // Employee
-        setTable(data.output.Table.All);
         setEmployee(data.output.Chart.Employee.Dates);
         setEmployeeAmount(data.output.Chart.Employee.Amount);
 
@@ -98,46 +93,51 @@ const Dashboard = () => {
     }
   }
 
-  const handleRangeChange = (event) => {
-    const selectedOption = event.target.value;
-    // console.log(selectedOption)
+  const handleRangeChange = (selectedOption) => {
     setselectedRange(selectedOption);
     const today = new Date();
-    let from, to;
+    let from_input, to_input
 
     switch (selectedOption) {
       case 'Today':
-        from = from_default // Get current date
-        to = to_default;
-        fetchAllOrders();
+        from_input = from_default; // Assuming this is the correct default for today
+        to_input = to_default;
+        setFrom(from_input);
+        setTo(to_input);
         break;
+
       case 'Week':
-        to = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
-        from = new Date().toISOString().split('T')[0];
-        console.log(from, " ", to);
-        fetchAllOrders();
+        from_input = new Date().toISOString().split('T')[0]; // Today's date
+        to_input = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0]; // 7 days ago
+        setFrom(to_input);
+        setTo(from_input);
         break;
+
       case 'Month':
-        from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        to = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-        console.log(from, " ", to);
-        fetchAllOrders();
+        from_input = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]; // First day of the current month
+        to_input = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0]; // Last day of the current month
+        setFrom(from_input);
+        setTo(to_input);
         break;
+
       case 'Year':
-        from = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
-        to = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0];
-        console.log(from, " ", to);
-        fetchAllOrders();
+        from_input = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0]; // January 1st of the current year
+        to_input = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0]; // December 31st of the current year
+        setFrom(from_input);
+        setTo(to_input);
         break;
+
       case 'custom':
-        setselectedRange('custom');
+        setselectedRange('custom'); // You will probably handle custom logic elsewhere
         break;
+
       default:
-        from = from_default;
-        to = to_default;
-        fetchAllOrders();
+        from_input = from_default;
+        to_input = to_default;
+        setFrom(from_input);
+        setTo(to_input);
+        break;
     }
-    // console.log("from", from, " ", "to", to)
   };
 
   useEffect(() => {
@@ -257,15 +257,15 @@ const Dashboard = () => {
             </h1>
             <div className="flex items-center space-x-4">
               <div className='flex flex-col justify-center text-sm font-semibold text-zinc-700 items-center'>
-                <select value={selectedRange} onChange={handleRangeChange} className='w-[200px] rounded-lg'>
+                <select value={selectedRange} onChange={(e) => { e.preventDefault(); handleRangeChange(e.target.value); }} className='w-[200px] rounded-lg'>
                   <option value='Today'>Today</option>
                   <option value='Week'>Week</option>
                   <option value='Month'>Month</option>
                   <option value='Year'>Year</option>
-                  <option value='custom'>--Custom--</option>
+                  <option value="custom">--Custom--</option>
                 </select>
               </div>
-              {/*<div className='flex items-end pr-4'>
+              <div className='flex items-end pr-4'>
                 <button
                   className='bg-red-500 text-white px-4 py-2 rounded-lg'
                   onClick={
@@ -276,13 +276,53 @@ const Dashboard = () => {
                 >
                   Filter
                 </button>
-              </div>*/}
+              </div>
             </div>
           </div>
           {
             selectedRange === 'custom' && (
               <div className='w-full h-dvh fixed top-0 left-0 bg-black bg-opacity-70 flex justify-center items-center'>
-                <button className='bg-red-500 text-white text-lg p-1 px-4 rounded-lg' onClick={() => { setselectedRange('Today') }}>filter</button>
+                <div className="flex items-center space-x-4">
+                  <div className='flex flex-col text-sm font-semibold text-zinc-700 items-center'>
+                    <label htmlFor="from" className='text-white'>
+                      From
+                    </label>
+                    <input
+                      type="date"
+                      id='from'
+                      value={from}
+                      onChange={(e) => {
+                        setFrom(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div className='flex flex-col text-sm font-semibold text-zinc-700 items-center'>
+                    <label htmlFor="to" className='text-white'>
+                      To
+                    </label>
+                    <input
+                      type="date"
+                      id='to'
+                      value={to}
+                      onChange={(e) => {
+                        setTo(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div className='flex items-end pr-4 pt-6'>
+                    <button
+                      className='bg-red-500 text-white px-4 py-2 rounded-lg'
+                      onClick={
+                        () => {
+                          setselectedRange('');
+                          fetchAllOrders();
+                        }
+                      }
+                    >
+                      Filter
+                    </button>
+                  </div>
+                </div>
               </div>
             )
           }

@@ -4,9 +4,16 @@ export async function create_customer({
 	customer_name,
 	contact,
 	email,
-	hotel_id
+	eatocoins,
+	hotel_id,
+	apartment,
+	street_address,
+	landmark,
+	city,
+	state,
+	zip_code
 }) {
-	
+
 	try {
 
 		// Inserting the record
@@ -15,7 +22,14 @@ export async function create_customer({
 				CustomerName: customer_name,
 				Contact: contact,
 				Email: email,
-				HotelId: hotel_id
+				EatocoinsWallet: eatocoins || 0,
+				HotelId: hotel_id,
+				StreetAddress: street_address,
+				Apartment: apartment,
+				Landmark: landmark,
+				City: city,
+				State: state,
+				ZipCode: zip_code
 			}
 		});
 
@@ -29,7 +43,7 @@ export async function create_customer({
 		};
 
 	} catch (error) {
-		
+
 		return {
 			returncode: 500,
 			message: error.message,
