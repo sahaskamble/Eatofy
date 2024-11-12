@@ -139,13 +139,19 @@ const Eatofy = () => {
               <Link
                 href="/hotels/zomato"
                 className="inline-flex flex-row-reverse gap-2 items-center bg-gradient-to-r from-red-400 to-red-800 text-white px-4 py-2 rounded-[30px]"
-                onClick={() => {
-                  sessionStorage.setItem('type', "Zomato");
-                  sessionStorage.setItem('section_id', sections[0].id);
+                onclick={() => {
+                  sessionstorage.setitem('type', "zomato");
+                  sessionstorage.setitem('section_id', sections[0].id);
                 }}
               >
-                <Image src={'/zomato.svg'} width={15} height={15} alt="Help" />
-                Zomato
+                <Image src={'/zomato.svg'} width={15} height={15} alt="help" />
+                zomato
+              </Link>
+              <Link
+                href="/hotels/qrOrders"
+                className="inline-flex flex-row-reverse gap-2 items-center bg-red-600 text-white px-4 py-2 rounded-[30px]"
+              >
+                Qr Orders
               </Link>
             </div>
             <div className='flex gap-2 justify-end items-center px-4'>

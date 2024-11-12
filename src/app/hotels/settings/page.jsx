@@ -19,11 +19,13 @@ const EatofyApp = () => {
   const [WaiterId, setWaiterId] = useState('');
   const [message, setmessage] = useState('');
   const search = useRef();
+  const [tables, settables] = useState(null);
   const darkMode = useRef();
   const [modalOpen, setmodalOpen] = useState(false);
   const [QrmodalOpen, setQrmodalOpen] = useState(false);
   const [parent, enableAnimations] = useAutoAnimate()
   const router = useRouter();
+  const [tableId, settableId] = useState('');
   //HotelINFO
   const [HotelName, setHotelName] = useState('');
   const [HotelContact, setHotelContact] = useState([]);
@@ -101,6 +103,20 @@ const EatofyApp = () => {
       if (sectionsResponse.ok) {
         const sectionid = await sectionsResponse.json();
         setSectionId(sectionid.output[0].id);
+      }
+
+      // Tables
+      const tablesResponse = await fetch(`${ApiHost}/api/hotel/tables/management/fetch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 'hotel_id': hotel_id }),
+      });
+
+      if (tablesResponse.ok) {
+        const tablesData = await tablesResponse.json();
+        settables(tablesData?.output);
+      } else {
+        alert("Failed to fetch tables");
       }
 
       // Vat
@@ -375,6 +391,8 @@ const EatofyApp = () => {
     }
   }, [hotel_id, search])
 
+
+  console.log(tables);
 
   return (
     <>
@@ -673,7 +691,23 @@ const EatofyApp = () => {
                 className='text-4xl print:text-4xl text-transparent print:text-transparent font-extrabold bg-clip-text print:bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 to-red-700'
               >{HotelName}</p>
 
-              <QRCode value={`http://192.168.122.170:3000/hotels/bookings?hotel=${hotel_id}&section=${SectionId}&waiter=${WaiterId}`} />
+              <QRCode value={`https://eatofy.in/hotels/bookings?hotel=${hotel_id}&section=${SectionId}&waiter=${WaiterId}&table=${tableId}`} />
+
+              <div className='w-full'>
+                <select
+                  onChange={(e) => {
+                    settableId(e.target.value);
+                  }}
+                  className='w-full rounded-lg'
+                >
+                  <option value={''}>--select a table--</option>
+                  {
+                    tables.map((table) => {
+                      return <option value={table.id}>{table.TableName}</option>
+                    })
+                  }
+                </select>
+              </div>
 
               <div className='w-full print:hidden flex justify-around items-center gap-6'>
                 <button
