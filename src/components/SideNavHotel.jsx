@@ -41,7 +41,7 @@ export default function HotelSideNav() {
       changeRole(role);
     }
     else {
-      console.error('sessionStorage is not available.');
+      console.error('Your Not Logged In Properly Please Login Again');
     }
   }, []);
 
