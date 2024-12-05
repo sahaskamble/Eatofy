@@ -1,133 +1,137 @@
-import { read_hotel_bills_asc } from "@/db/crud/bills/management/read";
-import { groupBy } from "@/utils/groupBy";
+import billsCrud from "@/app/lib/crud/Bills";
 
-function values_mapper(orders, key) {
-	const groupByOrders = groupBy(orders, key);
-	const totalAmt = [];
-	const counts = [];
-	const dates = [];
-
-	for (const [date, data] of Object.entries(groupByOrders)) {
-		totalAmt.push(data.TotalAmount);
-		counts.push(data.count);
-		dates.push(date);
-	}
-
-	return {
-		Amount: totalAmt,
-		Orders: counts,
-		Dates: dates
-	}
+function formatDate(date) {
+    return date.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
 }
 
-export async function hotel_dashboard(data) {
-	try {
+function processOrdersData(orders, filterFn = null) {
+    const dateMap = new Map();
+    let totalAmount = 0;
+    let totalCount = 0;
 
-		const hotel_id = data['hotel_id'];
-		const from = data['from'];
-		const to = data['to'];
+    // Filter orders if filter function is provided
+    const filteredOrders = filterFn ? orders.filter(filterFn) : orders;
 
-		// Default Invalid Checker
-		if (hotel_id == null || hotel_id == undefined || hotel_id == "" ||
-			from == null || from == undefined || from == "" ||
-			to == null || to == undefined || to == ""
-		) {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			}
-		}
+    // Group orders by date
+    filteredOrders.forEach(order => {
+        const date = formatDate(new Date(order.createdAt));
+        if (!dateMap.has(date)) {
+            dateMap.set(date, { count: 0, amount: 0 });
+        }
+        dateMap.get(date).count += 1;
+        dateMap.get(date).amount += order.TotalAmount || 0;
+        totalCount += 1;
+        totalAmount += order.TotalAmount || 0;
+    });
 
-		// Convert input dates to local time Date objects
-		const from_date = new Date(`${from}T00:00:00`);
-		const to_date = new Date(`${to}T23:59:59`);
+    // Convert map to sorted arrays
+    const sortedDates = Array.from(dateMap.keys()).sort((a, b) => new Date(a) - new Date(b));
+    const counts = sortedDates.map(date => dateMap.get(date).count);
+    const amounts = sortedDates.map(date => dateMap.get(date).amount);
 
-		// Hotel's Order Fetch
-		const orders_response = await read_hotel_bills_asc({ hotel_id });
-		const orders_res = orders_response.output;
+    return {
+        total: {
+            count: totalCount,
+            amount: totalAmount
+        },
+        chart: {
+            Date: sortedDates,
+            Count: counts,
+            Amount: amounts
+        },
+        orders: filteredOrders
+    };
+}
 
-		// Filter orders within the date range
-		let orders = orders_res.filter((order) => {
-			order.Date = order.createdAt.toISOString().split('T')[0];
-			return order.createdAt >= from_date && order.createdAt <= to_date;
-		});
+export async function hotel_dashboard(data, tokenData) {
+    try {
+        const { from, to } = data;
+        const hotel_id = tokenData.hotelId;
 
-		// Total Orders
-		const all_orders_data = values_mapper(orders, "Date");
-		let amount = 0, count = 0;
-		all_orders_data.Orders.map((order) => { count += order });
-		all_orders_data.Amount.map((order) => { amount += order });
-		const all_orders = count;
-		const orders_amount = amount;
+        if (!hotel_id || !from || !to) {
+            return {
+                returncode: 400,
+                message: 'Invalid Input: hotel_id, from, and to dates are required',
+                output: []
+            };
+        }
 
-		// Dine In Orders
-		const dine_in_orders = orders.filter(order => order.Type === 'Dine-In');
-		const dine_in_data = values_mapper(dine_in_orders, "Date");
-		amount = 0, count = 0;
-		dine_in_data.Orders.map((order) => { count += order });
-		dine_in_data.Amount.map((order) => { amount += order });
-		const dine_orders = count;
-		const dine_amount = amount;
+        // Convert input dates
+        const fromDate = new Date(`${from}T00:00:00`);
+        const toDate = new Date(`${to}T23:59:59`);
 
+        // Fetch all bills for the hotel
+        const response = await billsCrud.readBills(hotel_id);
+        if (response.returncode !== 200) {
+            return response;
+        }
 
-		// Takeaway Orders
-		const takeaway__orders = orders.filter(order => order.Type === 'Takeaway');
-		const takeaway_data = values_mapper(takeaway__orders, "Date");
-		amount = 0, count = 0;
-		takeaway_data.Orders.map((order) => { count += order });
-		takeaway_data.Amount.map((order) => { amount += order });
-		const takeaway_orders = count;
-		const takeaway_amount = amount;
+        // Filter orders by date range
+        const orders = response.output.filter(order => {
+            const orderDate = new Date(order.createdAt);
+            return orderDate >= fromDate && orderDate <= toDate;
+        });
 
-		// Delivery Orders
-		const delivery__orders = orders.filter(order => order.Type === 'Delivery');
-		const delivery_data = values_mapper(delivery__orders, "Date");
-		amount = 0, count = 0;
-		delivery_data.Orders.map((order) => { count += order });
-		delivery_data.Amount.map((order) => { amount += order });
-		const delivery_orders = count;
-		const delivery_amount = amount;
+        // Process different order categories
+        const allOrders = processOrdersData(orders);
+        const dineIn = processOrdersData(orders, order => order.Type === 'Dine-In');
+        const takeaway = processOrdersData(orders, order => order.Type === 'Takeaway');
+        const delivery = processOrdersData(orders, order => order.Type === 'Delivery');
+        const swiggy = processOrdersData(orders, order => order.Source === 'Swiggy');
+        const zomato = processOrdersData(orders, order => order.Source === 'Zomato');
+        const qrOrders = processOrdersData(orders, order => order.Source === 'QR-Orders');
 
-		// Employee 
-		const employee_data = values_mapper(orders, "Waiter.FirstName");
-		return {
-			returncode: 200,
-			message: "Dashboard Fetched",
-			output: {
-				Orders: {
-					All_Order: all_orders,
-					Dine_In: dine_orders,
-					Takeaway: takeaway_orders,
-					Delivery: delivery_orders
-				},
-				Chart: {
-					All_Order: all_orders_data,
-					Dine_In: dine_in_data,
-					Takeaway: takeaway_data,
-					Delivery: delivery_data,
-					Employee: employee_data
-				},
-				Amount: {
-					All_Order: orders_amount,
-					Dine_In: dine_amount,
-					Takeaway: takeaway_amount,
-					Delivery: delivery_amount
-				},
-				Table: {
-					All: orders,
-					Dine_In: dine_in_orders,
-					Takeaway: takeaway__orders,
-					Delivery: delivery__orders
-				}
-			}
-		};
-
-	} catch (error) {
-		return {
-			returncode: 500,
-			message: error.message,
-			output: []
-		};
-	}
+        return {
+            returncode: 200,
+            message: "Dashboard data fetched successfully",
+            output: {
+                Orders: {
+                    All_Order: allOrders.total.count,
+                    Dine_In: dineIn.total.count,
+                    Takeaway: takeaway.total.count,
+                    Delivery: delivery.total.count,
+                    Swiggy: swiggy.total.count,
+                    Zomato: zomato.total.count,
+                    QR: qrOrders.total.count
+                },
+                Amount: {
+                    All_Order: allOrders.total.amount,
+                    Dine_In: dineIn.total.amount,
+                    Takeaway: takeaway.total.amount,
+                    Delivery: delivery.total.amount,
+                    Swiggy: swiggy.total.amount,
+                    Zomato: zomato.total.amount,
+                    QR: qrOrders.total.amount
+                },
+                Chart: {
+                    All_Order: allOrders.chart,
+                    Dine_In: dineIn.chart,
+                    Takeaway: takeaway.chart,
+                    Delivery: delivery.chart,
+                    Swiggy: swiggy.chart,
+                    Zomato: zomato.chart,
+                    QR: qrOrders.chart
+                },
+                Table: {
+                    All: allOrders.orders,
+                    Dine_In: dineIn.orders,
+                    Takeaway: takeaway.orders,
+                    Delivery: delivery.orders,
+                    Swiggy: swiggy.orders,
+                    Zomato: zomato.orders,
+                    QR: qrOrders.orders
+                }
+            }
+        };
+    } catch (error) {
+        return {
+            returncode: 500,
+            message: error.message,
+            output: []
+        };
+    }
 }

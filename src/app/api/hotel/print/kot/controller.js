@@ -1,125 +1,117 @@
-import { read_kot_printer_settings } from "@/db/crud/settings/printer/kot/management/read";
-import escpos from 'escpos';
-escpos.Network = require('escpos-network');
+import kotSettingsCrud from "@/app/lib/crud/KotPrinterSettings";
+import { ThermalPrinter, PrinterTypes, CharacterSet } from "node-thermal-printer";
 
-export async function fetch_invoice_printer_settings(data) {
-	try {
+function formatDate(date) {
+    return new Date(date).toLocaleString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
 
-		const cart = data['cart'] || null;
-		const type = data['type'] || null;
-		const hotel_id = data['hotel_id'] || null;
-		const table_name = data['table_name'] || null;
+export async function print_kot(data) {
+    try {
+        const { hotel_id, type, table_name, cart, date } = data;
 
-		// Default Invalid Checker
-		if (cart === null || type === null || hotel_id === null) {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			}
+        if (!hotel_id || !type || !cart || !date) {
+            return {
+                returncode: 400,
+                message: "Missing required fields",
+                output: []
+            };
+        }
 
-		}
+        // Get printer settings
+        // const settingsResponse = await kotSettingsCrud.readSettings(hotel_id);
+        // if (settingsResponse.returncode !== 200 || !settingsResponse.output?.length) {
+        //     return {
+        //         returncode: 400,
+        //         message: "Printer settings not found",
+        //         output: []
+        //     };
+        // }
 
-		const printer_settings_data = await read_kot_printer_settings({ hotel_id });
-		const printer_settings = printer_settings_data.output[0];
+        // const settings = settingsResponse.output[0];
+        let printer;
 
+        try {
+            printer = new ThermalPrinter({
+                type: PrinterTypes.EPSON,
+                interface: '/dev/usb/lp0',
+                // settings.ConnectionType === 'USB' ? (settings.USBPath || '/dev/usb/lp0') : `tcp://${settings.NetworkIP}`,
+                options: {
+                    timeout: 3000,
+                },
+                width: 32, // 58mm printer
+                characterSet: CharacterSet.PC437_USA,
+            });
 
-		const device = new escpos.Network(printer_settings.NetworkIP);  // Printer's IP address
-		const options = { encoding: printer_settings.Encoding };
-		const printer = new escpos.Printer(device, options);
+            console.log(printer);
 
-		// Assuming 32 characters per line for this example
-		const lineLength = 32;
+            const isConnected = await printer.isPrinterConnected();
+            if (!isConnected) {
+                throw new Error('Printer not connected');
+            }
 
-		// Utility function to create 'justify-between' layout
-		function formatLine(leftText, rightText) {
-			const totalLength = leftText.length + rightText.length;
-			const spaces = lineLength - totalLength;
-			return leftText + ' '.repeat(spaces) + rightText;
-		}
+            // Print header
+            printer.alignCenter();
+            printer.bold(true);
+            printer.println("** KOT **");
+            printer.bold(false);
+            printer.println(`Type: ${type}`);
+            printer.println(`Date: ${formatDate(date)}`);
+            printer.drawLine();
 
-		if (type === "Dine-In") {
+            // Print table name
+            printer.bold(true);
+            printer.println(table_name);
+            printer.bold(false);
+            printer.drawLine();
 
-			device.open(function(error) {
-				if (error) {
-					return {
-						returncode: 500,
-						message: error.message,
-						output: []
-					};
-				}
+            // Print items header
+            printer.leftRight("Item", "Qty");
+            printer.drawLine();
 
-				// Print Header
-				printer
-					.align('ct')
-					.text(`** ${table_name} **`)
-					.text("")
-					.text("");
+            // Print items
+            cart.forEach(item => {
+                printer.leftRight(
+                    item.name.substring(0, 20), // Limit name length
+                    item.quantity.toString()
+                );
+                if (item.note) {
+                    printer.println(`Note: ${item.note}`);
+                }
+            });
 
-				printer
-					.text(formatLine("Items", "Qty"))
-					.text('------------------------');
+            printer.drawLine();
+            printer.cut();
+            
+            await printer.execute();
+            
+            return {
+                returncode: 200,
+                message: "KOT printed successfully",
+                output: []
+            };
 
-				// Print Items
-				cart.forEach(item => {
-					const itemText = formatLine(`${item.Dish.DishName}`, `${item.quantity}`);
-					printer.text(itemText);
-				});
+        } catch (error) {
+            console.error('Printer error:', error);
+            return {
+                returncode: 500,
+                message: `Printer error: ${error.message}`,
+                output: []
+            };
+        }
 
-				printer
-					.text('------------------------')
-					.cut()
-					.close();
-			});
-
-		}
-		else {
-			device.open(function(error) {
-				if (error) {
-					return {
-						returncode: 500,
-						message: error.message,
-						output: []
-					};
-				}
-
-				// Print Header
-				printer
-					.align('ct')
-					.text(`** ${type} **`)
-					.text("")
-					.text("");
-
-				printer
-					.text(formatLine("Items", "Qty"))
-					.text('------------------------');
-
-
-				// Print Items
-				cart.forEach(item => {
-					const itemText = formatLine(`${item.Dish.DishName}`, `${item.quantity}`);
-					printer.text(itemText);
-				});
-
-				printer
-					.text('------------------------')
-					.cut()
-					.close();
-			});
-
-		}
-
-		return {
-			returncode: 200,
-			message: "Kot Printed",
-			output: []
-		}
-
-	} catch (error) {
-		return {
-			returncode: 500,
-			message: error.message,
-			output: []
-		};
-	}
+    } catch (error) {
+        console.error('KOT printing error:', error);
+        return {
+            returncode: 500,
+            message: error.message || "Failed to print KOT",
+            output: []
+        };
+    }
 }

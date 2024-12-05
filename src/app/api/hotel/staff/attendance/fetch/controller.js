@@ -1,27 +1,22 @@
-import { read_hotel_staffs_attendance } from "@/db/crud/staff/attendance/read";
+import staffAttendanceCrud from "@/app/lib/crud/StaffAttendances";
 
-export async function fetch_hotel_staff_attendance(data) {
+export async function fetch_attendances(tokenData) {
 	try {
 
-		const hotel_id = data['hotel_id'] || null;
-		const date = data['date'] || null;
+		const hotel_id = await tokenData.hotelId;
+		const today = new Date();
+		const date = today.toISOString().split("T")[0];
+		const todays_attendance = await staffAttendanceCrud.readAttendance(hotel_id, date);
 
-		// Default Invalid Checker
-		if ( hotel_id == null || date == null ) {
+		if (todays_attendance.returncode === 200 && todays_attendance.output.length === 0) {
 			return {
-				returncode: 400,
-				message: 'Invalid Input',
+				returncode: 409,
+				message: "No Attendances found for the day.",
 				output: []
-			}
+			};
 		}
 
-		// Getting the Staff's Attendance Data
-		const result = await read_hotel_staffs_attendance({
-			hotel_id,
-			date
-		});
-
-		return result;
+		return todays_attendance;
 
 	} catch (error) {
 		return {

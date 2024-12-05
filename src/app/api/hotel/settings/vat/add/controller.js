@@ -1,49 +1,49 @@
-import { create_vat_settings } from "../../../../../../db/crud/settings/vat/management/create";
-import { read_vat_settings } from "../../../../../../db/crud/settings/vat/management/read";
-import { update_vat_settings } from "../../../../../../db/crud/settings/vat/management/update";
+import vatSettingsCrud from "@/app/lib/crud/VATSettings";
 
-export async function add_vat_settings(data) {
-	try {
+export async function add_settings(data, tokenData) {
+    try {
 
-		const hotel_id = data['hotel_id'] || null;
-		const visibility = data['visibility'] || false;
-		const vat_percent = data['vat_percent'] || null;
+        // Verify if user has permission to create hotels
+        if (!tokenData || !tokenData.hotelId || !tokenData.role || !['Backoffice', 'Owner'].includes(tokenData.role)) {
+            return {
+                returncode: 403,
+                message: "Insufficient permissions to create hotel",
+                output: []
+            };
+        }
 
+        // Extract data from FormData or direct JSON
+        const hotel_id = tokenData.hotelId || null;
+        const visibility = data['visibility'] || false;
+        const vat_percent = data['vat_percent'] || null;
 
-		// Default Invalid Checker
-		if (hotel_id == null || vat_percent == null) {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			}
+        if (hotel_id == null || vat_percent == null) {
+            return {
+                returncode: 400,
+                message: "Missing required parameters",
+                output: []
+            };
+        }
 
-		}
+        const existing_settings = await vatSettingsCrud.readSettings(hotel_id);
+        if (existing_settings.returncode === 200 || existing_settings.output.length > 0) {
+            const result = await vatSettingsCrud.updateSettings({
+                hotel_id, visibility, vat_percent
+            });
+            return result;
+        }
 
-		// Existing Section Name
-		const existingSettings = await read_vat_settings({ hotel_id });
-		if (existingSettings.returncode === 200 && existingSettings.output.length != 0) {
-			const setting_id = existingSettings?.output[0]?.id;
-			const result = await update_vat_settings({
-				setting_id, visibility, vat_percent
-			});
-			return result;
-		}
+        // Create VAT Settings
+        const result = await vatSettingsCrud.addSettings({
+            hotel_id, visibility, vat_percent
+        });
+        return result;
 
-		// Inserting the Section
-		const result = await create_vat_settings({
-			hotel_id,
-			visibility,
-			vat_percent
-		});
-
-		return result;
-
-	} catch (error) {
-		return {
-			returncode: 500,
-			message: error.message,
-			output: []
-		};
-	}
+    } catch (error) {
+        return {
+            returncode: 500,
+            message: error.message || "Internal server error",
+            output: []
+        };
+    }
 }

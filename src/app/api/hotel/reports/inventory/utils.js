@@ -1,64 +1,63 @@
-import { datetime_formatter } from './controller'
-function groupBy(arr, key) {
-	return arr.reduce((acc, obj) => {
-		const groupKey = key.split('.').reduce((o, k) => (o || {})[k], obj);
-		if (!acc[groupKey]) {
-			acc[groupKey] = {
-				items: [],
-				Quantity: 0,
-				count: 0
-			};
-		}
-		acc[groupKey].items.push(obj);
-		acc[groupKey].Quantity += parseFloat(obj.Quantity) || 0;
-		acc[groupKey].count += 1;
-		return acc;
-	}, {});
-}
-
-export function values_mapper(orders, key) {
-	const groupByOrders = groupBy(orders, key);
-	const totalAmt = [];
-	const counts = [];
-	const category = [];
-
-	for (const [date, data] of Object.entries(groupByOrders)) {
-		totalAmt.push(data.Quantity);
-		counts.push(data.count);
-		category.push(date);
-	}
-
-	return {
-		Quantity: totalAmt,
-		Count: counts,
-		Category: category
-	}
-}
-
 export function stock_values_mapper(data) {
-	const summary = {
-		'Low Stock': 0,
-		'Available': 0,
-		'Unavailable': 0,
-		'Total': 0,
-		'Low': 0,
-	};
+    const result = {
+        TotalStock: 0,
+        TotalItems: 0,
+        ItemsCount: {},
+        StockValue: 0
+    };
 
-	const today = new Date();
-	const today_date = datetime_formatter(today);
+    data.forEach(record => {
+        const quantity = record.Quantity || 0;
+        const price = record.Price || 0;
+        const itemName = record.ItemName || 'Unknown';
 
-	// Iterate through each entry in the attendance data
-	data.forEach(entry => {
-		const type = entry.Status;
+        result.TotalStock += quantity;
+        result.StockValue += (quantity * price);
+        
+        if (!result.ItemsCount[itemName]) {
+            result.ItemsCount[itemName] = 0;
+            result.TotalItems++;
+        }
+        result.ItemsCount[itemName] += quantity;
+    });
 
-		// Check if the type is valid and increment the corresponding count
-		if (summary.hasOwnProperty(type) && entry.Date === today_date) {
-			summary[type]++;
-		}
-	});
+    return result;
+}
 
-	summary['Total'] = summary['Available'] + summary['Low Stock'] + summary['Unavailable'];
-	summary['Low'] = summary['Low Stock'];
+export function values_mapper(data, key) {
+    const result = {
+        Labels: [],
+        Values: [],
+        Dates: []
+    };
 
-	return summary;
+    // First collect all unique dates and items
+    data.forEach(record => {
+        if (!result.Dates.includes(record.Date)) {
+            result.Dates.push(record.Date);
+        }
+        
+        const itemName = record[key];
+        if (!result.Labels.includes(itemName)) {
+            result.Labels.push(itemName);
+        }
+    });
+
+    // Initialize the values array with zeros
+    result.Values = result.Labels.map(() => 
+        new Array(result.Dates.length).fill(0)
+    );
+
+    // Fill in the values
+    data.forEach(record => {
+        const itemName = record[key];
+        const dateIndex = result.Dates.indexOf(record.Date);
+        const itemIndex = result.Labels.indexOf(itemName);
+        
+        if (itemIndex !== -1 && dateIndex !== -1) {
+            result.Values[itemIndex][dateIndex] += record.Quantity || 0;
+        }
+    });
+
+    return result;
 }

@@ -1,88 +1,84 @@
-import db from "@/db/connector";
-import { read_day_drawer_info } from "@/db/crud/cash_drawer/management/read";
-import { sum_of_sales_and_expenses } from "../../cash_drawer/closing_balance/utils"
+import billsCrud from "@/app/lib/crud/Bills";
+import expensesCrud from "@/app/lib/crud/Expenses";
+import cashDrawerCrud from "@/app/lib/crud/CashDrawer";
 
-export async function fetch_galla_reports(data) {
-	try {
+export async function fetch_galla_reports(data, tokenData) {
+    try {
+        const hotel_id = tokenData.hotelId || null;
+        const date = data['date'] || null;
 
-		const hotel_id = data['hotel_id'] || null;
-		const date = data['date'] || null;
+        // Default Invalid Checker
+        if (hotel_id === null || date === null) {
+            return {
+                returncode: 400,
+                message: 'Invalid Input',
+                output: []
+            }
+        }
 
-		// Default Invalid Checker
-		if (hotel_id === null || date === null) {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			}
-		}
+        // Daily Galla Info
+        const drawer_info = await cashDrawerCrud.readDrawer(hotel_id, date);
+        const drawer_id = drawer_info.output._id;
+        await cashDrawerCrud.sumSalesAndExpenses(hotel_id, drawer_id);
 
-		// Daily Galla Info
-		const drawer_info = await read_day_drawer_info({
-			hotel_id, date
-		});
+        // Logic for getting Sales and Expenses data for that day 
+        const [day, month, year] = date.split(" ");
 
-		const drawer_id = drawer_info.output[0].id;
-		await sum_of_sales_and_expenses(hotel_id, drawer_id);
+        // Convert the month name to a zero-based month index
+        const monthIndex = new Date(`${month} 1, 2024`).getMonth();
 
+        // Create a UTC date
+        const request_date = new Date(Date.UTC(year, monthIndex, day));
 
-		// Logic for getting Sales and Expenses data for that day 
-		const [day, month, year] = date.split(" ");
+        // Start and end of the day in UTC
+        const start = new Date(Date.UTC(request_date.getUTCFullYear(), request_date.getUTCMonth(), request_date.getUTCDate()));
+        const end = new Date(Date.UTC(request_date.getUTCFullYear(), request_date.getUTCMonth(), request_date.getUTCDate(), 23, 59, 59, 999));
 
-		// Convert the month name to a zero-based month index
-		const monthIndex = new Date(`${month} 1, 2024`).getMonth();
+        const startOfDay = new Date(start.toISOString());
+        const endOfDay = new Date(end.toISOString());
 
-		// Create a UTC date
-		const request_date = new Date(Date.UTC(year, monthIndex, day));
+        // Get sales data
+        const sales_response = await billsCrud.readMany({
+            HotelId: hotel_id,
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            },
+        });
 
-		// Start and end of the day in UTC
-		const start = new Date(Date.UTC(request_date.getUTCFullYear(), request_date.getUTCMonth(), request_date.getUTCDate()));
-		const end = new Date(Date.UTC(request_date.getUTCFullYear(), request_date.getUTCMonth(), request_date.getUTCDate(), 23, 59, 59, 999));
+        // Get expenses data
+        const expenses_response = await expensesCrud.readMany({
+            HotelId: hotel_id,
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            },
+        });
 
-		const startOfDay = new Date(start.toISOString());
-		const endOfDay = new Date(end.toISOString());
+        if (sales_response.returncode !== 200 || expenses_response.returncode !== 200) {
+            return {
+                returncode: 500,
+                message: "Error fetching sales or expenses data",
+                output: []
+            };
+        }
 
-		// Aggregate the total amount for bills created on this day
-		const sales_result = await db.bills.findMany({
-			where: {
-				HotelId: hotel_id,
-				createdAt: {
-					gte: startOfDay,
-					lte: endOfDay,
-				},
-			},
-			include: {
-				Waiter: true,
-				Customer: true
-			}
-		});
+        return {
+            returncode: 200,
+            message: "Galla Reports",
+            output: {
+                DrawerData: drawer_info.output,
+                ExpensesData: expenses_response.output,
+                SalesData: sales_response.output
+            }
+        };
 
-		// Aggregate the total amount for expenses created on this day
-		const expenses_result = await db.expenses.findMany({
-			where: {
-				HotelId: hotel_id,
-				createdAt: {
-					gte: startOfDay,
-					lte: endOfDay,
-				},
-			},
-		});
-
-		return {
-			returncode: 200,
-			message: "Galla Reports",
-			output: {
-				DrawerData: drawer_info.output[0],
-				ExpensesData: expenses_result,
-				SalesData: sales_result
-			}
-		};
-
-	} catch (error) {
-		return {
-			returncode: 500,
-			message: error.message,
-			output: []
-		};
-	}
+    } catch (error) {
+        console.error('Galla reports error:', error);
+        return {
+            returncode: 500,
+            message: error.message,
+            output: []
+        };
+    }
 }

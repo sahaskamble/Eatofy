@@ -1,51 +1,28 @@
-import { read_hotel_menus } from "@/db/crud/menus/management/read";
-import { read_sections } from "@/db/crud/sections/management/read";
+import menusCrud from "@/app/lib/crud/Menus";
+import sectionsCrud from "@/app/lib/crud/Sections";
 
-export async function fetch_hotel_menus(data) {
+export async function fetch_whole_menus(tokenData) {
 	try {
 
-		const hotel_id = data['hotel_id'];
+		const hotel_id = await tokenData.hotelId;
+		const existing_menus = await menusCrud.readMenus(hotel_id);
+		const existing_sections = await sectionsCrud.readAllSections(hotel_id)
 
-		// Default Invalid Checker
-		if (hotel_id == null || hotel_id == undefined || hotel_id == "") {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			}
-
-		}
-
-		// Getting the Menus
-		const menu_result = await read_hotel_menus({
-			hotel_id
-		});
-
-		//Getting the Sections
-		const section_result = await read_sections({
-			hotel_id
-		})
-
-		if ( menu_result.returncode == 200 && section_result.returncode == 200 ) {
+		if (existing_menus.returncode === 200 && existing_menus.output.length > 0 || existing_sections.returncode === 200 && existing_sections.output.length > 0) {
 			return {
 				returncode: 200,
-				message: "Hotel's Menus Fetched",
-				output: [
-					{
-						Menus: menu_result.output,
-						Sections: section_result.output
-					}
-				]
+				message: "Menus Data Fetched.",
+				output: [{
+					Menus: existing_menus.output,
+					Sections: existing_sections.output
+				}]
 			};
 		}
-		else {
-			return {
-				returncode: 503,
-				message: "Error Fetching Results",
-				output: []
-			};
-		}
-
+		return {
+			returncode: 409,
+			message: "No Menus & Sections to be displayed",
+			output: []
+		};
 
 	} catch (error) {
 		return {

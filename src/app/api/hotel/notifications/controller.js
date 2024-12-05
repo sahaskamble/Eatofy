@@ -1,20 +1,19 @@
-import { read_notifications } from "../../../../db/crud/notifications/management/read";
-import { inventory_notifications, reservations_notifications, subscriptions_notifications } from './supporting';
+import { inventory_notifications, reservations_notifications, subscriptions_notifications } from "./supporting";
+import notificationCrud from "@/app/lib/crud/Notifications";
 
-export async function notifications(data) {
+export async function notification(tokenData) {
 	try {
 
-		const hotel_id = data['hotel_id'] || null;
+		const hotel_id = await tokenData.hotelId;
 
-		// Default Invalid Checker
 		if (hotel_id === null) {
 			return {
 				returncode: 400,
-				message: 'Invalid Input',
+				message: "Required Parameters not found.",
 				output: []
 			}
-
 		}
+
 
 		// Add Notifications
 		await inventory_notifications(hotel_id);
@@ -22,13 +21,8 @@ export async function notifications(data) {
 		await subscriptions_notifications(hotel_id);
 
 		// Read Notifications
-		const end_result = await read_notifications({ hotel_id });
-
-		return {
-			returncode: 200,
-			message: "Notifications Fetched",
-			output: end_result.output
-		};
+		const end_result = await notificationCrud.readNotifications(hotel_id);
+		return end_result;
 
 	} catch (error) {
 		return {

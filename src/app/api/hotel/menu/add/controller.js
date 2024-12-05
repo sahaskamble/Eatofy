@@ -1,95 +1,129 @@
-import { read_sections } from "@/db/crud/sections/management/read";
-import { add_menu_category } from "../../dish/category/add/controller";
-import { add_dish } from "../../dish/management/add/controller";
-import { add_menu } from "../management/add/controller";
+import menusCrud from "@/app/lib/crud/Menus";
+import dishesCrud from "@/app/lib/crud/Dishes";
+import menuCategoriesCrud from "@/app/lib/crud/MenuCategory";
+import sectionsCrud from "@/app/lib/crud/Sections";
 
-export async function add_menu_dish(data) {
+export async function add_whole_menu(data, tokenData) {
+    try {
 
-	try {
+        // Verify if user has permission to create hotels
+        if (!tokenData || !tokenData.hotelId || !tokenData.role || !tokenData.hotelId || !['Backoffice', 'Owner'].includes(tokenData.role)) {
+            return {
+                returncode: 403,
+                message: "Insufficient permissions to create hotel",
+                output: []
+            };
+        }
 
-		// Dish Category
-		const hotel_id = data['hotel_id'];
-		const category_name = data['category_name'];
+        // Extract data from FormData or direct JSON
+        const hotel_id = tokenData.hotelId || null;
 
-		// Dish
-		const dish_name = data['dish_name'];
-		const dish_code = data['dish_code'];
-		const dish_type = data['dish_type'];
+        // Category Params
+        const category_name = data['category_name'] || null;
 
-		// Menu
-		const price = data['price'];
+        // Dish Params
+        const dish_name = data['dish_name'] || null;
+        const code = data['code'] || null;
+        const type = data['type'] || null;
+        const description = data['description'] || null;
 
-		// Default Invalid Checker
-		if (price === undefined || price === null || price === "" ||
-			hotel_id === undefined || hotel_id === null || hotel_id === "" ||
-			category_name === undefined || category_name === null || category_name === "" ||
-			dish_name === undefined || dish_name === null || dish_name === "" ||
-			dish_code === undefined || dish_code === null || dish_code === "" ||
-			dish_type === undefined || dish_type === null || dish_type === "") {
-			return {
-				returncode: 400,
-				message: 'Invalid Input',
-				output: []
-			};
-		}
+        // Menu Params
+        const price = data['price'] || null;
 
-		// Fetch all sections
-		const sections_result = await read_sections({ hotel_id });
-		if (sections_result.returncode !== 200 || sections_result.output.length === 0) {
-			return {
-				returncode: 500,
-				message: "Add Sections First",
-				output: []
-			};
-		}
+        // Default Invalid Checker
+        if (hotel_id === null || dish_name === null || code === null || type === null || category_name === null || price === null) {
+            return {
+                returncode: 400,
+                message: "Missing required parameters",
+                output: []
+            };
+        }
 
-		const sections = sections_result.output;
+        // If the category exists taking its id else Creating new one
+        let category_id = "";
+        const category_exists = await menuCategoriesCrud.doesMenuCategoryExists(hotel_id, category_name);
+        if (category_exists.returncode !== 200 || (category_exists.output.length === 0 || category_exists.output === null)) {
+            const categoryData = {
+                category_name,
+                hotel_id
+            };
+            const category_result = await menuCategoriesCrud.createMenuCategory(categoryData);
+            category_id = category_result.output._id;
+        }
+        else {
+            category_id = category_exists.output[0]._id;
+        }
 
-		// Inserting the Dish Category
-		const category_result = await add_menu_category(data = { hotel_id, category_name });
-		if (category_result.returncode !== 200 && category_result.output.length === 0) {
-			return category_result;
-		}
+        // If the dish exists taking its id else Creating new one
+        let dish_id;
+        const dish_exists = await dishesCrud.doesDishExists(hotel_id, dish_name, code);
+        if (dish_exists.returncode !== 200 || (dish_exists.output.length === 0 || dish_exists.output === null)) {
+            const dishData = {
+                hotel_id,
+                dish_name,
+                code,
+                type,
+                description,
+                category_id
+            };
 
-		let category_id;
-		try {			
-			category_id = category_result.output[0].id;
-		} catch (error) {
-			category_id = category_result.output.id;
-		}
+            const dish_result = await dishesCrud.createDish(dishData);
+            dish_id = dish_result.output._id;
+        }
+        else {
+            dish_id = dish_exists.output[0]._id;
+        }
 
-		// Inserting the Dish
-		const dish_result = await add_dish( data = { hotel_id, dish_name, dish_code, dish_type, category_id } );
-		if (dish_result.returncode !== 200 && dish_result.output.length === 0) {
-			return dish_result;
-		}
+        // Finally Adding Menu
+        const existing_sections = await sectionsCrud.readAllSections(hotel_id);
+        if (existing_sections.returncode === 200 && existing_sections.output.length > 0) {
 
-		let dish_id;
-		try {			
-			dish_id = dish_result.output[0].id;
-		} catch (error) {
-			dish_id = dish_result.output.id;
-		}
+            let error_flag = false;
+            existing_sections.output.forEach(async (section) => {
+                const section_id = section._id;
+                const menu_exists = await menusCrud.doesMenuExists(section_id, dish_id);
+                if (menu_exists.returncode !== 200 || menu_exists.output.length === 0 || menu_exists.output === null) {
+                    const menuData = {
+                        dish_id,
+                        section_id,
+                        price,
+                        hotel_id
+                    };
+                    const menu_result = await menusCrud.createMenu(menuData);
+                    console.log(menu_result);
+                    if (menu_result.returncode !== 200 || menu_result.output.length === 0) {
+                        error_flag = true;
+                    }
+                }
+            });
 
-		// Inserting the Menu for each section
-		for (const section of sections) {
-			const menu_result = await add_menu(data = { dish_id, section_id: section.id, price });
-			if (menu_result.returncode !== 200 && menu_result.output.length == 0) {
-				return menu_result;
-			}
-		}
+            if (!error_flag) {
+                return {
+                    returncode: 200,
+                    message: "Menu Added in all sections",
+                    output: [{ success: true }]
+                }
+            } else {
+                return {
+                    returncode: 500,
+                    message: "Error adding Menus in some sections",
+                    output: []
+                }
+            }
+        }
+        else {
+            return {
+                returncode: 400,
+                message: "Add Sections before adding menu.",
+                output: []
+            }
+        }
 
-		return {
-			returncode: 200,
-			message: "Menu Added",
-			output: [{ success: true }]
-		};
-
-	} catch (error) {
-		return {
-			returncode: 500,
-			message: error.message,
-			output: []
-		};
-	}
+    } catch (error) {
+        return {
+            returncode: 500,
+            message: error.message || "Internal server error",
+            output: []
+        };
+    }
 }

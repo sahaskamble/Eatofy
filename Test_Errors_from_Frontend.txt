@@ -1,0 +1,9 @@
+// Error from Frontend Subscriptions page while adding new subscription
+
+{
+    "returncode": 500,
+    "message": "E11000 duplicate key error collection: admin.subscriptions index: SubscriptionName_1 dup key: { SubscriptionName: \"Basic\" }",
+    "output": []
+}
+
+//

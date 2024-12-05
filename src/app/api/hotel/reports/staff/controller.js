@@ -1,6 +1,6 @@
 import { sales_values_mapper, attendance_values_mapper } from "./utils";
-import { read_bill_info_by_staff } from '../../../../../db/crud/bills/management/read'
-import { read_staff_attendance } from "../../../../../db/crud/staff/attendance/read";
+import billsCrud from "@/app/lib/crud/Bills";
+import staffAttendanceCrud from "@/app/lib/crud/StaffAttendances";
 
 const datetime_formatter = (date) => {
 	// Get the day, month, and year
@@ -57,7 +57,7 @@ export async function fetch_staff_reports(data) {
 
 const Sales_Data = async (staff_id, from_date, to_date) => {
 
-	const data = await read_bill_info_by_staff({ staff_id });
+	const data = await billsCrud.readBillByStaffId(staff_id);
 	const sales_data = data.output.filter((staff) => {
 		staff.Datetime = new Date(staff.createdAt);
 		staff.Date = datetime_formatter(staff.Datetime);
@@ -78,7 +78,7 @@ const Sales_Data = async (staff_id, from_date, to_date) => {
 }
 
 const Attendance_Data = async (staff_id, from_date, to_date) => {
-	const data = await read_staff_attendance({ staff_id });
+	const data = await staffAttendanceCrud.readAttendanceOfStaff(staff_id);
 	const attendance_data = data.output.filter((staff) => {
 		staff.Datetime = new Date(staff.createdAt);
 		return from_date <= staff.Datetime && to_date >= staff.Datetime;

@@ -1,13 +1,8 @@
-import db from "@/db/connector";
-
-
 import { differenceInDays, isValid, parseISO } from 'date-fns';
-import { update_hotel_subscription_status } from "../../../../db/crud/hotel_subscription/management/update";
-// import { read_reservations_desc } from "@/db/crud/reservations/read";
-import { read_reservations } from "@/db/crud/reservations/read";
-import { read_notifications } from "../../../../db/crud/notifications/management/read";
-import { read_available_stock } from "../../../../db/crud/inventory/available_stock/read";
-import { create_notification } from "../../../../db/crud/notifications/management/create";
+import hotelSubscriptionCrud from '@/app/lib/crud/HotelSubscription';
+import notificationCrud from '@/app/lib/crud/Notifications';
+import inventoryStockCrud from '@/app/lib/crud/InventoryStock';
+import reservationsCrud from '@/app/lib/crud/Reservation';
 
 // Already added notifications
 let available_notifications;
@@ -20,17 +15,31 @@ export const getTodaysDate = () => {
 	return `${year}-${month}-${day}`;
 };
 
+function changeTimeFormat(time) {
+	// Split the input time into hours and minutes
+	//
+	const [hoursStr, minutesStr] = time.split(':');
+	let hours = parseInt(hoursStr, 10);
+	let minutes = parseInt(minutesStr, 10);
+
+	// Determine AM or PM
+	let newformat = hours >= 12 ? 'PM' : 'AM';
+
+	// Convert hours to 12-hour format
+	hours = hours % 12;
+	hours = hours ? hours : 12; // Handle midnight as 12
+
+	// Ensure minutes are displayed with two digits
+	minutes = minutes < 10 ? '0' + minutes : minutes;
+
+	// Format the time in hh:mm AM/PM
+	const result = `${hours}:${minutes} ${newformat}`;
+	return result;
+}
+
 export const get_hotel = async (hotel_id) => {
 
-	const result = await db.hotel_Subscription.findMany({
-		where: {
-			HotelId: hotel_id,
-			isValid: true,
-			Status: "Active"
-		}
-	});
-
-
+	const result = await hotelSubscriptionCrud.readSubscription(hotel_id);
 	return result;
 }
 
@@ -39,10 +48,9 @@ export const inventory_notifications = async (hotel_id) => {
 
 	// Initialise
 	let notifications = [];
-	available_notifications = await read_notifications({ hotel_id });
+	available_notifications = await notificationCrud.readNotifications(hotel_id);
 
-
-	const inventory_data = await read_available_stock({ hotel_id });
+	const inventory_data = await inventoryStockCrud.readStock(hotel_id);
 	if (inventory_data.returncode === 200) {
 
 		const available_stock = inventory_data.output;
@@ -70,9 +78,8 @@ export const inventory_notifications = async (hotel_id) => {
 
 	// Notification Added
 	if (notifications.length > 0) {
-
 		notifications.forEach(async (notification) => {
-			await create_notification(notification);
+			await notificationCrud.createNotification(notification);
 		});
 	}
 }
@@ -82,8 +89,7 @@ export const reservations_notifications = async (hotel_id) => {
 
 	let notifications = [];
 
-	// const reservations_data = await read_reservations_desc({ hotel_id });
-	const reservations_data = await read_reservations({ hotel_id });
+	const reservations_data = await reservationsCrud.readReservations(hotel_id);
 
 	const today_date = getTodaysDate();
 	if (reservations_data.returncode === 200) {
@@ -93,21 +99,21 @@ export const reservations_notifications = async (hotel_id) => {
 		reservations.forEach((reservation) => {
 			if (reservation.Date === today_date) {
 
+
 				const title = "Reservations for today";
-				const description = `${reservation.Customer.CustomerName} has booked a reservation for ${reservation.Time} for ${reservation.NoOfPersons} people.`;
+				const time = changeTimeFormat(reservation.Time)
+				const description = `${reservation.Customer.CustomerName} has booked a reservation for ${time} for ${reservation.NoOfPersons} people.`;
 				const type = "Reservation";
 				const notification = { title, description, type, hotel_id };
 				notifications.push(notification);
 			}
 		});
 	}
-	console.log(notifications);
 
 	// Notification Added
 	if (notifications.length > 0) {
-
 		notifications.forEach(async (notification) => {
-			await create_notification(notification);
+			await notificationCrud.createNotification(notification);
 		});
 	}
 }
@@ -124,6 +130,12 @@ export const subscriptions_notifications = async (hotel_id) => {
 		const endDate = parseISO(hotel_info.EndDate);
 		const daysLeft = differenceInDays(endDate, currentDate);
 		if (daysLeft <= 7 && daysLeft > 0) {
+			const hotel_subscription_id = hotel_info.id;
+			await hotelSubscriptionCrud.deactivateAccount({
+				hotel_subscription_id: hotel_subscription_id,
+				status: "About to Expire",
+				is_valid: false
+			});
 
 			const title = "Subscription is gonna end soon...";
 			const description = `Your Subscription is gonna end in ${daysLeft} days.`;
@@ -133,9 +145,9 @@ export const subscriptions_notifications = async (hotel_id) => {
 		}
 		if (daysLeft <= 0) {
 			const hotel_subscription_id = hotel_info.id;
-			await update_hotel_subscription_status({
+			await hotelSubscriptionCrud.deactivateAccount({
 				hotel_subscription_id: hotel_subscription_id,
-				status: "Inactive",
+				status: "Expired",
 				is_valid: false
 			});
 
@@ -151,7 +163,7 @@ export const subscriptions_notifications = async (hotel_id) => {
 	if (notifications.length > 0) {
 
 		notifications.forEach(async (notification) => {
-			await create_notification(notification);
+			await notificationCrud.createNotification(notification);
 		});
 	}
 

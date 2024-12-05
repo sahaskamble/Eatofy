@@ -1,94 +1,92 @@
-function groupBy(arr, key) {
-	return arr.reduce((acc, obj) => {
-		const groupKey = key.split('.').reduce((o, k) => (o || {})[k], obj);
-		if (!acc[groupKey]) {
-			acc[groupKey] = {
-				items: [],
-				TotalAmount: 0,
-				count: 0
-			};
-		}
-		acc[groupKey].items.push(obj);
-		acc[groupKey].TotalAmount += obj.TotalAmount || 0;
-		acc[groupKey].count += 1;
-		return acc;
-	}, {});
-}
-
-export function sales_values_mapper(orders, key) {
-	const groupByOrders = groupBy(orders, key);
-	const totalAmt = [];
-	const counts = [];
-	const category = [];
-
-	for (const [date, data] of Object.entries(groupByOrders)) {
-		totalAmt.push(data.TotalAmount);
-		counts.push(data.count);
-		category.push(date);
-	}
-
-	return {
-		Amount: totalAmt,
-		Count: counts,
-		Category: category
-	}
-}
-
 export function payment_mode_values_mapper(data) {
-	const summary = {
-		'Cash': 0,
-		'UPI': 0,
-		'Credit': 0
-	};
+    const result = {
+        Labels: [],
+        Amount: [],
+        Count: []
+    };
 
-	// Iterate through each entry in the attendance data
-	data.forEach(entry => {
-		const type = entry.PaymentMode;
+    // Group data by PaymentMode
+    const groupedData = data.reduce((acc, item) => {
+        const mode = item.PaymentMode || 'Unknown';
+        if (!acc[mode]) {
+            acc[mode] = {
+                amount: 0,
+                count: 0
+            };
+        }
+        acc[mode].amount += item.AmountPaid || item.GrandTotal || 0;
+        acc[mode].count += 1;
+        return acc;
+    }, {});
 
-		// Check if the type is valid and increment the corresponding count
-		if (summary.hasOwnProperty(type)) {
-			summary[type]++;
-		}
-	});
+    // Convert grouped data to arrays
+    for (const [mode, values] of Object.entries(groupedData)) {
+        result.Labels.push(mode);
+        result.Amount.push(values.amount);
+        result.Count.push(values.count);
+    }
 
-	return summary;
+    return result;
 }
 
+export function sales_values_mapper(data, key) {
+    const result = {
+        Labels: [],
+        Amount: [],
+        Count: []
+    };
 
+    // Group data by the key
+    const groupedData = data.reduce((acc, item) => {
+        const keyValue = item[key] || 'Unknown';
+        if (!acc[keyValue]) {
+            acc[keyValue] = {
+                amount: 0,
+                count: 0
+            };
+        }
+        acc[keyValue].amount += item.GrandTotal || 0;
+        acc[keyValue].count += 1;
+        return acc;
+    }, {});
 
-function groupByExpenses(arr, key) {
-	return arr.reduce((acc, obj) => {
-		const groupKey = key.split('.').reduce((o, k) => (o || {})[k], obj);
-		if (!acc[groupKey]) {
-			acc[groupKey] = {
-				items: [],
-				TotalAmount: 0,
-				count: 0
-			};
-		}
-		acc[groupKey].items.push(obj);
-		acc[groupKey].TotalAmount += obj.AmountPaid || 0;
-		acc[groupKey].count += 1;
-		return acc;
-	}, {});
+    // Convert grouped data to arrays
+    for (const [label, values] of Object.entries(groupedData)) {
+        result.Labels.push(label);
+        result.Amount.push(values.amount);
+        result.Count.push(values.count);
+    }
+
+    return result;
 }
 
+export function expenses_values_mapper(data, key) {
+    const result = {
+        Labels: [],
+        Amount: [],
+        Count: []
+    };
 
-export function expenses_values_mapper(orders, key) {
-	const groupByOrders = groupByExpenses(orders, key);
-	const totalAmt = [];
-	const counts = [];
-	const category = [];
+    // Group data by the key
+    const groupedData = data.reduce((acc, item) => {
+        const keyValue = item[key] || 'Unknown';
+        if (!acc[keyValue]) {
+            acc[keyValue] = {
+                amount: 0,
+                count: 0
+            };
+        }
+        acc[keyValue].amount += item.AmountPaid || 0;
+        acc[keyValue].count += 1;
+        return acc;
+    }, {});
 
-	for (const [date, data] of Object.entries(groupByOrders)) {
-		totalAmt.push(data.TotalAmount);
-		counts.push(data.count);
-		category.push(date);
-	}
+    // Convert grouped data to arrays
+    for (const [label, values] of Object.entries(groupedData)) {
+        result.Labels.push(label);
+        result.Amount.push(values.amount);
+        result.Count.push(values.count);
+    }
 
-	return {
-		Amount: totalAmt,
-		Count: counts,
-		Category: category
-	}
+    return result;
 }

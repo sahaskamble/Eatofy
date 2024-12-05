@@ -1,50 +1,57 @@
-import { add_opening_balance } from "../../../../../db/crud/cash_drawer/management/create";
-import { sum_of_sales_and_expenses } from "../closing_balance/utils";
+import cashDrawerCrud from "@/app/lib/crud/CashDrawer";
 
-export async function opening_balance(data) {
+export async function check_opening_balace(tokenData) {
 	try {
 
-		const hotel_id = data['hotel_id'] || null;
+		const hotel_id = await tokenData.hotelId;
+		const check = await cashDrawerCrud.checkOpeningBalance(hotel_id);
+
+		if (check.returncode === 200 && check.output.length === 0) {
+			return {
+				returncode: 409,
+				message: "No Opening Balance found.",
+				output: []
+			};
+		}
+
+		return check;
+
+	} catch (error) {
+		return {
+			returncode: 500,
+			message: error.message,
+			output: []
+		};
+	}
+}
+
+export async function opening_balance(data, tokenData) {
+	try {
+		// Verify if user has permission to create hotels
+		if (!tokenData || !tokenData.hotelId || !tokenData.role || !tokenData.hotelId || !['Backoffice', 'Owner'].includes(tokenData.role)) {
+			return {
+				returncode: 403,
+				message: "Insufficient permissions to create hotel",
+				output: []
+			};
+		}
+
+		// Extract data from FormData or direct JSON
+		const hotel_id = tokenData.hotelId || null;
 		const opening_balance = data['opening_balance'] || null;
 
-		// Default Invalid Checker
-		if (hotel_id == null) {
+		if (hotel_id === null || opening_balance === null) {
 			return {
 				returncode: 400,
-				message: 'Invalid Input',
+				message: "Missing required parameters",
 				output: []
-			}
-
+			};
 		}
 
-		// Create a new Date instance in UTC and format it in IST
-		const now = new Date().toLocaleString("en-US", {
-			timeZone: "Asia/Kolkata",
-		});
-
-		// Parse the IST date back to a Date object
-		const istDate = new Date(now);
-
-		// Format the date as "1 December 2023"
-		const formattedDate = new Intl.DateTimeFormat("en-GB", {
-			day: "numeric",
-			month: "long",
-			year: "numeric",
-		}).format(istDate);
-
-		// Adding the Opening Balance
-		const result = await add_opening_balance({
-			hotel_id,
-			open: `${istDate}`,
-			opening_balance,
-			date: formattedDate
-		});
-
-		const drawer_id = result?.output[0]?.id || null;
-		if (drawer_id != null || drawer_id != "") {
-			await sum_of_sales_and_expenses(hotel_id, drawer_id);
-		}
-
+		const Data = { hotel_id, opening_balance }
+		const result = await cashDrawerCrud.OpeningBalance(Data);
+		const sum = await cashDrawerCrud.sumSalesAndExpenses(hotel_id, result.output._id);
+		console.log(sum);
 		return result;
 
 	} catch (error) {
