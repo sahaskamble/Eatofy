@@ -26,7 +26,7 @@ class CashDrawerCrud extends BaseCrud {
         year: "numeric",
       }).format(istDate);
 
-      const result = this.readMany(
+      const result = await this.readMany(
         { HotelId: hotel_id, Date: formattedDate }
       );
       return result;
@@ -78,7 +78,7 @@ class CashDrawerCrud extends BaseCrud {
         OpeningBalance: data.opening_balance
       }
 
-      const result = this.create(normalizedData);
+      const result = await this.create(normalizedData);
       return result;
 
     } catch (error) {
@@ -99,7 +99,7 @@ class CashDrawerCrud extends BaseCrud {
         Refunds: data.refunds
       }
       const hotel_id = data.hotel_id;
-      const result = this.update(
+      const result = await this.update(
         { HotelId: hotel_id },
         updateData,
         { new: true }

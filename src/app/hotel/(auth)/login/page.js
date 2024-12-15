@@ -20,6 +20,8 @@ export default function Login() {
     try {
       const result = await login({ email, password });
       if (!result.success) {
+        const data = await result.json();
+        console.log(data);
         setError(result.message);
       }
     } catch (err) {

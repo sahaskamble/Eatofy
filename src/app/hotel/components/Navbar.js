@@ -2,7 +2,7 @@
 
 import { useHotelAuth } from '../contexts/AuthContext';
 import Link from 'next/link';
-import { 
+import {
   HomeIcon,
   UsersIcon,
   CalendarIcon,
@@ -10,26 +10,33 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   ClockIcon,
-  WrenchScrewdriverIcon
+  WrenchScrewdriverIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/hotel/dashboard', icon: <HomeIcon className="w-6 h-6" /> },
   { name: 'Punch Order', href: '/hotel/punch-order', icon: <ClockIcon className="w-6 h-6" /> },
-  { name: 'Bookings', href: '/hotel/bookings', icon: <CalendarIcon className="w-6 h-6" /> },
-  { name: 'Rooms', href: '/hotel/rooms', icon: <ClipboardDocumentListIcon className="w-6 h-6" /> },
+  { name: 'Order History', href: '/hotel/order-history', icon: <DocumentTextIcon className="w-6 h-6" /> },
+  { name: 'Reservations', href: '/hotel/reservations', icon: <CalendarIcon className="w-6 h-6" /> },
+  { name: 'Back Office', href: '/hotel/backoffice', icon: <ClipboardDocumentListIcon className="w-6 h-6" /> },
   { name: 'Staff', href: '/hotel/staff', icon: <UsersIcon className="w-6 h-6" /> },
-  { 
-    name: 'Settings', 
-    href: '/hotel/settings', 
+  {
+    name: 'Settings',
+    href: '/hotel/settings',
     icon: <Cog6ToothIcon className="w-6 h-6" />,
     subItems: [
-      { 
-        name: 'Manage', 
-        href: '/hotel/manage', 
-        icon: <WrenchScrewdriverIcon className="w-5 h-5" /> 
-      }
+      {
+        name: 'Manage',
+        href: '/hotel/manage',
+        icon: <WrenchScrewdriverIcon className="w-5 h-5" />
+      },
+      {
+        name: 'Menu Management',
+        href: '/hotel/menu-management',
+        icon: <ClipboardDocumentListIcon className="w-6 h-6" />
+      },
     ]
   },
 ];
@@ -52,7 +59,7 @@ export default function Navbar() {
           {user[0]?.hotelName}
         </span>
       </div>
-      
+
       <nav className="p-3">
         <ul className="space-y-2">
           {navigation.map((item, index) => (
@@ -77,6 +84,7 @@ export default function Navbar() {
                         <li key={subItem.name}>
                           <Link
                             href={subItem.href}
+                            onClick={() => setExpandedItem(null)}
                             className="flex items-center p-2 rounded hover:bg-red-500 text-white"
                           >
                             <span className="text-lg">{subItem.icon}</span>

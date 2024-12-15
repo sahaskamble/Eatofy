@@ -1,0 +1,5 @@
+{
+  "/hotel/(dashboard)/backoffice/page": "app/hotel/(dashboard)/backoffice/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/hotel/auth/check/route": "app/api/hotel/auth/check/route.js"
+}

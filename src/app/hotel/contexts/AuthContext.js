@@ -7,13 +7,25 @@ const HotelAuthContext = createContext();
 
 export function HotelAuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [waiter_id, setWaiter_id] = useState('');
+  const [waiter_id, setWaiter_id] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  const fetchWaiterId = () => {
+    try {
+      const waiterId = localStorage.getItem('waiter_id');
+      console.log(waiterId);
+      return waiterId;
+    } catch (error) {
+      console.error('Auth check failed Waiter ID not found:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const checkAuth = async () => {
     try {
@@ -46,6 +58,8 @@ export function HotelAuthProvider({ children }) {
       if (data.returncode === 200 && data.output.length > 0) {
         setUser(data.output[0]);
         setWaiter_id(data.output[0].staff_info._id);
+        console.log(data.output[0].staff_info._id);
+        localStorage.setItem('waiter_id', data.output[0].staff_info._id);
         await checkAuth();
         router.push('/hotel/dashboard');
         return { success: true };
@@ -125,6 +139,7 @@ export function HotelAuthProvider({ children }) {
       loading,
       login,
       logout,
+      fetchWaiterId,
       forgotPassword,
       resetPassword,
       checkAuth

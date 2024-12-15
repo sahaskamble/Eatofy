@@ -29,7 +29,7 @@ class ReservationCrud extends BaseCrud {
 
   async readReservations(hotel_id) {
     try {
-      const result = this.readMany({ HotelId: hotel_id });
+      const result = this.readMany({ HotelId: hotel_id },{ populate:[ {path:'CustomerId'} ] });
       return result;
     } catch (error) {
       return {

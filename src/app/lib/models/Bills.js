@@ -132,7 +132,7 @@ export const billsSchema = new mongoose.Schema(
 billsSchema.pre('deleteOne', { document: true }, async function(next) {
   try {
     const Orders = mongoose.model('Orders');
-    
+
     // Delete all related orders
     await Orders.deleteMany({ BillId: this._id });
 

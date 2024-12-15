@@ -20,7 +20,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 export default function TableOrderPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, waiter_id } = useHotelAuth();
+  const { user, fetchWaiterId } = useHotelAuth();
   const [loading, setLoading] = useState(true);
   const [table, setTable] = useState(null);
   const [menus, setMenus] = useState([]);
@@ -52,6 +52,18 @@ export default function TableOrderPage() {
   const searchInputRef = useRef(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
+  const waiter_id = fetchWaiterId();
+  const [kotNumber, setKotNumber] = useState(() => {
+    const savedKotNumber = localStorage.getItem('lastKotNumber');
+    return savedKotNumber ? parseInt(savedKotNumber) : 0;
+  });
+
+  const getNextKotNumber = useCallback(() => {
+    const nextNumber = kotNumber + 1;
+    setKotNumber(nextNumber);
+    localStorage.setItem('lastKotNumber', nextNumber.toString());
+    return nextNumber;
+  }, [kotNumber]);
 
   const handlePrint = useReactToPrint({
     contentRef: printComponentRef,
@@ -59,7 +71,6 @@ export default function TableOrderPage() {
     onAfterPrint: () => {
       toast.success('Order Saved & KOT printed successfully');
       fetchData();
-      // Add delay before redirect
       setTimeout(() => {
         router.push('/hotel/punch-order');
       }, 100.0);
@@ -93,7 +104,6 @@ export default function TableOrderPage() {
     onAfterPrint: () => {
       toast.success('Bill printed successfully');
       setShowPaymentForm(false);
-      // Add delay before redirect
       setTimeout(() => {
         router.push('/hotel/punch-order');
       }, 100.0);
@@ -138,6 +148,8 @@ export default function TableOrderPage() {
       return;
     }
     try {
+      const currentKotNumber = getNextKotNumber();
+
       const response = await fetch('/api/hotel/bills/add', {
         method: 'POST',
         headers: {
@@ -162,10 +174,11 @@ export default function TableOrderPage() {
 
       const data = await response.json();
       if (data.returncode === 200) {
-        // setExistingOrder(data.output);
         handlePrint();
       } else {
         toast.error(data.message || 'Failed to generate KOT');
+        setKotNumber(prev => prev - 1);
+        localStorage.setItem('lastKotNumber', (currentKotNumber - 1).toString());
       }
     } catch (error) {
       console.error('KOT generation error:', error);
@@ -206,6 +219,8 @@ export default function TableOrderPage() {
 
     if (existingBill) {
       try {
+        const currentKotNumber = getNextKotNumber();
+
         const requestData = {
           bill_id: latestBillId,
           response_data: cart.map(item => ({
@@ -231,6 +246,8 @@ export default function TableOrderPage() {
           handlePrint();
         } else {
           toast.error(data.message || 'Failed to generate Updated KOT');
+          setKotNumber(prev => prev - 1);
+          localStorage.setItem('lastKotNumber', (currentKotNumber - 1).toString());
         }
       } catch (error) {
         console.error('KOT generation error:', error);
@@ -292,8 +309,6 @@ export default function TableOrderPage() {
 
   const handleNoteSubmit = async (itemId) => {
     try {
-      // Here you can add the API call to update the note
-      // For now, just closing the note input
       setExpandedNoteId(null);
       setReasonInput('');
     } catch (error) {
@@ -335,9 +350,8 @@ export default function TableOrderPage() {
     setShowCustomerForm(false);
   });
 
-  // Focus search input after data is loaded and only if there's no existing bill
   useEffect(() => {
-    console.log('existingBill:', existingBill); // Debug log
+    console.log('existingBill:', existingBill);
     if (!loading && Array.isArray(existingBill) && existingBill.length === 0) {
       searchInputRef.current?.focus();
     }
@@ -345,7 +359,6 @@ export default function TableOrderPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      // Fetch table details
       const tableResponse = await fetch(`/api/hotel/bill_order/dine_in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -359,10 +372,8 @@ export default function TableOrderPage() {
         setExistingBill(latestBill);
         setLatestBillId(latestBill?._id);
         setExistingOrder(latestBill?.Orders);
-        setCart([]); // Clear cart when there's an existing bill
+        setCart([]);
 
-
-        // Get table info from the same response if available
         if (tableData.output?.[0]) {
           const { TableInfo, Categories, Menus } = tableData.output[0];
           setTable(TableInfo);
@@ -469,10 +480,8 @@ export default function TableOrderPage() {
         pauseOnHover
         theme="light"
       />
-      {/* Left side - Menu */}
       <div className="flex-1 overflow-y-auto pr-[400px]">
         <div className="p-6">
-          {/* Search and Category Section */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex-1">
               <input
@@ -486,7 +495,6 @@ export default function TableOrderPage() {
             </div>
           </div>
 
-          {/* Categories */}
           <div className="p-2 bg-white mb-6 flex justify-center items-center">
             <div className="w-full flex gap-2 overflow-x-auto">
               <button
@@ -513,7 +521,6 @@ export default function TableOrderPage() {
             </div>
           </div>
 
-          {/* Menu Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredMenus?.map((item) => (
               <div key={item._id}
@@ -563,9 +570,7 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Right side - Cart */}
       <div className="w-[400px] bg-white shadow-lg fixed right-0 h-screen flex flex-col">
-        {/* Cart Header */}
         <div className="p-4 border-b">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">ITEMS</h2>
@@ -586,7 +591,6 @@ export default function TableOrderPage() {
           </div>
         </div>
 
-        {/* Cart Items - Scrollable Area */}
         <div className="flex-1 overflow-y-auto">
           {existingBill && (
             <div className="space-y-4 p-4">
@@ -604,7 +608,6 @@ export default function TableOrderPage() {
                       {item.Note && (
                         <p className="text-sm text-gray-500">Note: {item.Note}</p>
                       )}
-                      {/* Slide down note input */}
                     </div>
                     <div className="flex items-center">
                       <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
@@ -641,7 +644,6 @@ export default function TableOrderPage() {
                 </div>
               ))}
 
-              {/* Show total only for existing order when cart is empty */}
               {cart.length === 0 && (
                 <div className="border-t border-gray-200 mt-4 pt-4">
                   <div className="flex justify-between text-lg font-semibold">
@@ -668,7 +670,6 @@ export default function TableOrderPage() {
                   >
                     <div className="flex-1">
                       <h3 className="font-medium">{item?.DishId?.DishName}</h3>
-                      {/* <p className="text-sm text-gray-500">Code: {item.DishId?.DishCode || 'N/A'}</p> */}
                       <p className="text-gray-600">{item?.DishId?.Description}</p>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -698,7 +699,6 @@ export default function TableOrderPage() {
                   </div>
                 ))}
 
-                {/* Show total only for new cart items */}
                 {cart.length > 0 && (
                   <div className="border-t border-gray-200 mt-4 pt-4">
                     <div className="flex justify-between text-lg font-semibold">
@@ -712,7 +712,6 @@ export default function TableOrderPage() {
           </div>
         </div>
 
-        {/* Action Buttons - Fixed at Bottom */}
         <div className="border-t p-4 bg-white">
           <div className="grid grid-cols-3 gap-3">
             <button
@@ -746,12 +745,19 @@ export default function TableOrderPage() {
               Print Bill
             </button>
             <button
-              onClick={() => { existingBill?._id ? handleKotPrint() : handleKotUpdatePrint() }}
+              onClick={() => { 
+                if (existingBill?._id) {
+                  handleKotUpdatePrint();
+                } else {
+                  handleKotPrint();
+                }
+              }}
               disabled={cart.length === 0 && !existingBill}
-              className={`col-span-1 py-2 rounded-lg transition-colors ${cart.length === 0 && !existingBill
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-red-500 text-white hover:bg-red-600'
-                }`}
+              className={`col-span-1 py-2 rounded-lg transition-colors ${
+                cart.length === 0 && !existingBill
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-red-500 text-white hover:bg-red-600'
+              }`}
             >
               {existingBill?._id ? 'Update Kot' : 'Print Kot'}
             </button>
@@ -759,11 +765,9 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Customer Form Slide-over */}
       <div className={`fixed inset-0 bg-black transition-opacity duration-300 ${showCustomerForm ? 'bg-opacity-50 pointer-events-auto' : 'bg-opacity-0 pointer-events-none'}`}>
         <div className={`absolute right-0 top-0 h-full w-96 bg-white shadow-lg transform transition-all duration-300 ease-out ${showCustomerForm ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="h-full flex flex-col">
-            {/* Header */}
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Add Customer</h2>
@@ -778,7 +782,6 @@ export default function TableOrderPage() {
               </div>
             </div>
 
-            {/* Form Content */}
             <div className="flex-1 overflow-y-auto p-6">
               <form className="space-y-6">
                 <div>
@@ -835,7 +838,6 @@ export default function TableOrderPage() {
               </form>
             </div>
 
-            {/* Footer */}
             <div className="p-6 border-t bg-gray-50">
               <div className="flex space-x-3">
                 <button
@@ -849,7 +851,6 @@ export default function TableOrderPage() {
                   className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   onClick={(e) => {
                     e.preventDefault();
-                    // Handle form submission here
                     console.log('Customer details:', customerDetails);
                     setShowCustomerForm(false);
                   }}
@@ -862,14 +863,11 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Payment Form Modal */}
       {showPaymentForm && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowPaymentForm(false)} />
 
-          {/* Slide-in panel */}
           <div className="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-xl flex flex-col">
-            {/* Header - Fixed */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-900">Payment Details</h2>
               <button
@@ -880,7 +878,6 @@ export default function TableOrderPage() {
               </button>
             </div>
 
-            {/* Form Content - Scrollable */}
             <div className="flex-1 overflow-y-auto">
               <form className="p-6 space-y-6">
                 <div>
@@ -990,7 +987,6 @@ export default function TableOrderPage() {
                   </div>
                 </div>
 
-                {/* Balance Amount - Only show for unpaid or part-paid */}
                 {(paymentDetails.paymentStatus === 'Unpaid' || paymentDetails.paymentStatus === 'Part-paid') && (
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Balance Amount</label>
@@ -1056,7 +1052,6 @@ export default function TableOrderPage() {
               </form>
             </div>
 
-            {/* Action Buttons - Fixed */}
             <div className="border-t border-gray-200 p-6">
               <button
                 onClick={handlePayment}
@@ -1069,17 +1064,17 @@ export default function TableOrderPage() {
         </div>
       )}
 
-      {/* Print component */}
+      {/* Kot Print Component */}
       <div style={{ display: 'none' }}>
-        <div ref={printComponentRef} style={{ width: '50mm', padding: '10px', fontFamily: 'monospace', fontSize: '12px' }}>
-          {/* Header */}
+        <div ref={printComponentRef} style={{ width: '80mm', padding: '10px', fontFamily: 'monospace', fontSize: '12px' }}>
           <div style={{ textAlign: 'center', marginBottom: '0px' }}>
             <h2 style={{ margin: '0', fontSize: '16px' }}>** KOT **</h2>
+            <div style={{ fontSize: '12px', fontWeight: 'bold' }}>KOT #: {kotNumber}</div>
             <div>Type: Dine-In</div>
-            <div>Date: {new Date().toLocaleString('en-IN', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
+            <div>Time: {new Date().toLocaleString('en-IN', {
+              // day: '2-digit',
+              // month: '2-digit',
+              // year: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
               hour12: true
@@ -1087,20 +1082,17 @@ export default function TableOrderPage() {
             <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
           </div>
 
-          {/* Table Name */}
           <div style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '10px' }}>
             {table?.TableName || ''}
             <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
           </div>
 
-          {/* Items Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
             <span style={{ fontWeight: 'bold' }}>Item</span>
             <span style={{ fontWeight: 'bold' }}>Qty</span>
           </div>
           <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
 
-          {/* Items */}
           <div>
             {Array.isArray(cart) && cart.map((item, index) => (
               <div key={index}>
@@ -1121,65 +1113,104 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Bill Print Component (Hidden) */}
+      {/* Bill Print Component */}
       <div style={{ display: 'none' }}>
-        <div ref={billPrintRef} style={{ width: '50mm', padding: '10px', fontFamily: 'monospace', fontSize: '12px' }}>
+        <div ref={billPrintRef} style={{ width: '80mm', padding: '10px', fontFamily: 'monospace', fontSize: '12px' }}>
           {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '0px' }}>
-            <h2 style={{ margin: '0', fontSize: '16px' }}>** BILL **</h2>
-            <div>Table: {table?.TableName || ''}</div>
-            <div>Date: {new Date().toLocaleString('en-IN', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            })}</div>
-            <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
+          <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+            <h2 style={{ margin: '0', fontSize: '20px', fontWeight: 'bold' }}>Appniche</h2>
+            <div style={{ fontSize: '12px', margin: '5px 0' }}>GST no: {user[0]?.gstNumber || 'N/A'}</div>
+            <div style={{ fontSize: '12px' }}>
+              Date: {new Date().toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </div>
+            <div style={{ fontSize: '12px', marginTop: '5px' }}>
+              {customerDetails.name && `Customer: ${customerDetails.name}`}
+            </div>
           </div>
 
-          {/* Items */}
-          <div>
-            {existingOrder?.map((item, index) => (
-              <div key={index}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{item?.MenuId?.DishId?.DishName?.substring(0, 20)}</span>
-                  <span>{item?.Quantity}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <span>₹{item?.TotalAmount}</span>
-                </div>
-                {item?.Note && (
-                  <div style={{ fontSize: '10px', fontStyle: 'italic' }}>
-                    Note: {item.Note}
-                  </div>
-                )}
+          {/* Items Table */}
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '10px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid black' }}>
+                <th style={{ textAlign: 'left', padding: '5px 0' }}>Item</th>
+                <th style={{ textAlign: 'center', padding: '5px 0' }}>Qty</th>
+                <th style={{ textAlign: 'right', padding: '5px 0' }}>Price</th>
+                <th style={{ textAlign: 'right', padding: '5px 0' }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {existingOrder?.map((item, index) => (
+                <tr key={index} style={{ borderBottom: '1px dotted #ccc' }}>
+                  <td style={{ textAlign: 'left', padding: '5px 0' }}>
+                    {item?.MenuId?.DishId?.DishName?.substring(0, 20)}
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '5px 0' }}>
+                    {item?.Quantity}
+                  </td>
+                  <td style={{ textAlign: 'right', padding: '5px 0' }}>
+                    {(item?.TotalAmount / item?.Quantity).toFixed(2)}
+                  </td>
+                  <td style={{ textAlign: 'right', padding: '5px 0' }}>
+                    {item?.TotalAmount?.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Totals Section */}
+          <div style={{ borderTop: '1px solid black', paddingTop: '5px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+              <span>Sub-Total</span>
+              <span>{existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0).toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+              <span>Quantity</span>
+              <span>{existingOrder?.reduce((sum, item) => sum + (item.Quantity || 0), 0)}</span>
+            </div>
+            {paymentDetails.discountPercentage > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+                <span>Discount ({paymentDetails.discountPercentage}%)</span>
+                <span>-{((existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0) * paymentDetails.discountPercentage / 100).toFixed(2))}</span>
               </div>
-            ))}
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+              <span>CGST (9%)</span>
+              <span>{(existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0) * 0.09).toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '5px 0' }}>
+              <span>SGST (9%)</span>
+              <span>{(existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0) * 0.09).toFixed(2)}</span>
+            </div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              margin: '5px 0',
+              borderTop: '1px solid black',
+              paddingTop: '5px',
+              fontWeight: 'bold'
+            }}>
+              <span>Grand Total</span>
+              <span>{(
+                existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0) * 1.18 -
+                (existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0) * paymentDetails.discountPercentage / 100
+              ).toFixed(2))}</span>
+            </div>
           </div>
-
-          <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
-
-          {/* Total */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-            <span>Total:</span>
-            <span>₹{existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0)}</span>
-          </div>
-
-          {/* Payment Details */}
-          <div style={{ marginTop: '10px' }}>
-            <div>Payment Method: {paymentDetails.paymentMethod.toUpperCase()}</div>
-            <div>Amount Paid: ₹{paymentDetails.amount}</div>
-            {paymentDetails.note && <div>Note: {paymentDetails.note}</div>}
-          </div>
-
-          <div style={{ borderBottom: '1px dashed black', margin: '10px 0' }} />
 
           {/* Footer */}
-          <div style={{ textAlign: 'center', fontSize: '10px' }}>
-            <div>Thank you for dining with us!</div>
-            <div>Please visit again</div>
+          <div style={{ 
+            textAlign: 'center', 
+            marginTop: '20px',
+            borderTop: '1px dashed black',
+            paddingTop: '10px',
+            fontSize: '10px' 
+          }}>
+            !!! Thank You visit us again !!!
           </div>
         </div>
       </div>

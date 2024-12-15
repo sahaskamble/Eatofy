@@ -54,14 +54,9 @@ export async function fetch_hotel_bills(tokenData) {
 		}
 
 		const existing_bill = await billsCrud.readBills(hotel_id);
-		console.log(existing_bill);
 
 		if (existing_bill.returncode === 200 && existing_bill.output.length > 0) {
-			return {
-				returncode: 200,
-				message: "Bills Data Fetched.",
-				output: existing_bill
-			};
+			return existing_bill;
 		}
 		return {
 			returncode: 409,

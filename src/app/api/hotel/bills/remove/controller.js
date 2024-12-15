@@ -1,4 +1,5 @@
 import billsCrud from "@/app/lib/crud/Bills";
+import { NextResponse } from "next/server";
 
 export async function remove_bills(data, tokenData) {
     try {
@@ -15,11 +16,11 @@ export async function remove_bills(data, tokenData) {
         const bill_id = data['bill_id'] || null;
 
         if (bill_id === null) {
-            return NextResponse.json({
+            return {
                 returncode: 400,
                 message: "Dish ID is required",
                 output: []
-            });
+            };
         }
 
         const result = await billsCrud.deleteBillById(bill_id);
