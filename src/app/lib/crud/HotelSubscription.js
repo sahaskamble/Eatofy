@@ -209,7 +209,7 @@ class HotelSubscriptionCrud extends BaseCrud {
   async readSubscription(hotel_id) {
     try {
 
-      const result = this.readMany(
+      const result = await this.readMany(
         { HotelId: hotel_id, isValid: true }
       );
 

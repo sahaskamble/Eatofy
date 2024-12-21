@@ -1,0 +1,27 @@
+{
+  "pages": {
+    "/hotel/(dashboard)/punch-order/page": [
+      "static/chunks/_f0b58d._.js",
+      "static/chunks/src_app_favicon_ico_mjs_19fb65._.js",
+      "static/chunks/src_app_c25c0a._.css",
+      "static/chunks/src_app_layout_4b4952.js",
+      "static/chunks/src_app_layout_d96937.js",
+      "static/chunks/_1422eb._.js",
+      "static/chunks/src_app_hotel_layout_c0769a.js",
+      "static/chunks/node_modules_10e06b._.js",
+      "static/chunks/src_app_hotel_6772b0._.js",
+      "static/chunks/src_app_hotel_(dashboard)_layout_222e52.js",
+      "static/chunks/_744c6c._.js",
+      "static/chunks/node_modules_react-toastify_dist_ReactToastify_391de2.css",
+      "static/chunks/src_app_hotel_(dashboard)_punch-order_page_8e0b5a.js",
+      "static/chunks/node_modules_next_dist_compiled_react-dom_1f56dc._.js",
+      "static/chunks/node_modules_next_dist_compiled_107ce8._.js",
+      "static/chunks/node_modules_next_dist_client_9bb038._.js",
+      "static/chunks/node_modules_next_dist_d09de6._.js",
+      "static/chunks/ed0b0_@swc_helpers_cjs_d9e50e._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_d044fa._.js",
+      "static/chunks/_c4c472._.js",
+      "static/chunks/_4f56ab._.js"
+    ]
+  }
+}

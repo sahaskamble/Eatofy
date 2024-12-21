@@ -8,10 +8,8 @@ class StaffAttendanceCrud extends BaseCrud {
 
   async checkAttendanceExist(date, staff_id) {
     try {
-
       const result = await this.readOne({ Date: date, StaffId: staff_id });
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -30,10 +28,8 @@ class StaffAttendanceCrud extends BaseCrud {
         Note: data.note,
         HotelId: data.hotel_id
       }
-
       const result = await this.create(normalizedData);
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -47,7 +43,6 @@ class StaffAttendanceCrud extends BaseCrud {
     try {
       const result = await this.readMany({ StaffId: staff_id });
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -61,7 +56,6 @@ class StaffAttendanceCrud extends BaseCrud {
     try {
       const result = await this.readMany({ HotelId: hotel_id, Date: date });
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -74,14 +68,12 @@ class StaffAttendanceCrud extends BaseCrud {
 
   async editAttendanceofStaff(attendance_id, type) {
     try {
-
       const result = await this.update(
         { _id: attendance_id },
         { Type: type },
         { new: true }
       );
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -103,6 +95,7 @@ class StaffAttendanceCrud extends BaseCrud {
       };
     }
   }
+
 }
 
 const staffAttendanceCrud = new StaffAttendanceCrud();

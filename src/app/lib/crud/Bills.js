@@ -770,6 +770,143 @@ class BillsCrud extends BaseCrud {
       };
     }
   }
+  async SyncBills({
+    Type,
+    TableId,
+    WaiterId,
+    HotelId,
+    CustomerId,
+    Customers,
+    Orders = [],
+    createdAt,
+    updatedAt,
+    MenuTotal,
+    VatAmount,
+    CGSTAmount,
+    SGSTAmount,
+    DeliveryChargesAmount,
+    DiscountAmount,
+    EatocoinsAmount,
+    DeliveryChargesRate,
+    DiscountRate,
+    CGSTRate,
+    SGSTRate,
+    VatRate,
+    EatocoinsRate,
+    TotalAmount,
+    Amount,
+    BalanceAmount,
+    PaymentMode,
+    PaymentStatus,
+    Status,
+  }) {
+    try {
+
+      if (WaiterId === "") {
+        WaiterId = null;
+      }
+
+      let bill;
+      if (CustomerId !== null) {
+        const customerData = await customersCrud.create({
+          CustomerName: Customers.CustomerName,
+          Email: Customers.Email,
+          Contact: Customers.Contact,
+          HotelId: Customers.HotelId,
+          StreetAddress: Customers.StreetAddress,
+          Apartment: Customers.Apartment,
+          City: Customers.City,
+          State: Customers.State,
+          Landmark: Customers.Landmark,
+          ZipCode: Customers.ZipCode,
+          Birthday: Customers.Birthday,
+          Anniversary: Customers.Anniversary,
+        });
+
+        const customer_id = customerData.output._id;
+        bill = await this.create({
+          Type,
+          TableId,
+          WaiterId,
+          HotelId,
+          CustomerId: customer_id,
+          createdAt,
+          updatedAt,
+          MenuTotal,
+          VatAmount,
+          CGSTAmount,
+          SGSTAmount,
+          DeliveryChargesAmount,
+          DiscountAmount,
+          EatocoinsAmount,
+          DeliveryChargesRate,
+          DiscountRate,
+          CGSTRate,
+          SGSTRate,
+          VatRate,
+          EatocoinsRate,
+          TotalAmount,
+          Amount,
+          BalanceAmount,
+          PaymentMode,
+          PaymentStatus,
+          Status,
+        });
+      } else {
+        bill = await this.create({
+          Type,
+          TableId,
+          WaiterId,
+          HotelId,
+          CustomerId,
+          createdAt,
+          updatedAt,
+          MenuTotal,
+          VatAmount,
+          CGSTAmount,
+          SGSTAmount,
+          DeliveryChargesAmount,
+          DiscountAmount,
+          EatocoinsAmount,
+          DeliveryChargesRate,
+          DiscountRate,
+          CGSTRate,
+          SGSTRate,
+          VatRate,
+          EatocoinsRate,
+          TotalAmount,
+          Amount,
+          BalanceAmount,
+          PaymentMode,
+          PaymentStatus,
+          Status,
+        });
+      }
+      console.log(bill);
+
+      const bill_id = bill.output._id;
+      Orders.map(async (Order) => {
+        const Data = {
+          Quantity: Order.Quantity,
+          Note: Order.Note,
+          TotalAmount: Order.TotalAmount,
+          MenuId: Order.MenuId._id,
+          bill_id,
+          Status: Order.Status,
+          HotelId: Order.HotelId
+        }
+        await ordersCrud.SyncOrder(Data);
+      })
+      return await this.readOne({ _id: bill_id });
+
+    } catch (error) {
+      return {
+        returncode: 500,
+        message: error.message,
+        output: []
+      };
+    }
+  }
 }
 
 const billsCrud = new BillsCrud();

@@ -294,7 +294,7 @@ class MenusCrud extends BaseCrud {
       }
 
       return {
-        returncode: 200,
+        returncode: 404,
         message: "No menus found to delete",
         output: []
       };
@@ -319,7 +319,7 @@ class MenusCrud extends BaseCrud {
       }
 
       return {
-        returncode: 200,
+        returncode: 404,
         message: "No menus found",
         output: []
       };
@@ -335,7 +335,7 @@ class MenusCrud extends BaseCrud {
   async doesMenuExists(section_id, dish_id) {
     try {
 
-      const result = this.readMany({ SectionId: section_id, DishId: dish_id });
+      const result = await this.readMany({ SectionId: section_id, DishId: dish_id });
       return result;
 
     } catch (error) {

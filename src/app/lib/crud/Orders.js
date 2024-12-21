@@ -21,9 +21,9 @@ class OrdersCrud extends BaseCrud {
       };
 
       // Check if the menu exists in the bill
-      const menu_exists = await this.readOne({ 
-        MenuId: data.menu_id, 
-        BillId: data.bill_id 
+      const menu_exists = await this.readOne({
+        MenuId: data.menu_id,
+        BillId: data.bill_id
       });
 
       if (menu_exists && menu_exists.returncode === 200 && menu_exists.output) {
@@ -35,8 +35,8 @@ class OrdersCrud extends BaseCrud {
 
         const orderResult = await this.update(
           { _id: menu_exists.output._id },
-          { 
-            Quantity: quantity, 
+          {
+            Quantity: quantity,
             TotalAmount: total_amount,
             Status: data.status || "Ordered"
           },
@@ -47,7 +47,7 @@ class OrdersCrud extends BaseCrud {
       } else {
         // Create new order
         const orderResult = await this.create(normalizedData);
-        
+
         if (orderResult.returncode === 200 && orderResult.output) {
           try {
             // Update Bill with new order
@@ -216,6 +216,56 @@ class OrdersCrud extends BaseCrud {
       };
     }
   }
+
+  async SyncOrder({
+    Quantity,
+    Note,
+    TotalAmount,
+    MenuId,
+    bill_id,
+    Status,
+    HotelId
+  }) {
+    try {
+      // Create new order
+      const orderResult = await this.create({
+        Quantity: Quantity,
+        Note: Note,
+        TotalAmount: TotalAmount,
+        MenuId: MenuId,
+        BillId: bill_id,
+        Status: Status,
+        HotelId: HotelId
+      });
+      if (orderResult.returncode === 200 && orderResult.output) {
+        try {
+          // Update Bill with new order
+          await Bills.findByIdAndUpdate(
+            bill_id,
+            { $push: { Orders: orderResult.output._id } },
+            { new: true }
+          );
+          return orderResult;
+        } catch (error) {
+          console.error('Error updating references:', error);
+          return {
+            returncode: 500,
+            message: "Failed to update bill or menu references",
+            output: null
+          };
+        }
+      }
+      return orderResult;
+    } catch (error) {
+      console.error('Error in addOrder:', error);
+      return {
+        returncode: 500,
+        message: error.message || "Failed to add order",
+        output: null
+      };
+    }
+  }
+
 }
 
 const ordersCrud = new OrdersCrud();

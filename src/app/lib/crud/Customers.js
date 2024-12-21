@@ -6,6 +6,59 @@ class CustomersCrud extends BaseCrud {
     super(Customers);
   }
 
+  async createCustomerBackup({ customer_id = null, customer_name, email, contact, hotel_id, street_address, apartment, city, state, landmark, zip_code, birthday, anniversary }) {
+    try {
+      const normalizedData = {
+        CustomerName: customer_name,
+        Email: email || null,
+        Contact: contact,
+        HotelId: hotel_id,
+        // Detailed address fields
+        StreetAddress: street_address || null,
+        Apartment: apartment || null,
+        City: city || null,
+        State: state || null,
+        Landmark: landmark || null,
+        ZipCode: zip_code || null,
+        Birthday: birthday || null,
+        Anniversary: anniversary || null
+      };
+
+      const exists = await this.readOne({
+        CustomerName: customer_name,
+        Contact: contact,
+        HotelId: hotel_id
+      });
+      customer_id = exists.output._id;
+
+      if (exists.output.length > 0) {
+        const updateData = {
+          CustomerName: customer_name,
+          Email: email || null,
+          Contact: contact,
+          StreetAddress: street_address || null,
+          Apartment: apartment || null,
+          City: city || null,
+          State: state || null,
+          Landmark: landmark || null,
+          ZipCode: zip_code || null,
+          Birthday: birthday || null,
+          Anniversary: anniversary || null
+        };
+
+        return await this.update(updateData);
+      }
+
+      return await this.create(normalizedData);
+    } catch (error) {
+      return {
+        returncode: 500,
+        message: error.message,
+        output: []
+      };
+    }
+  }
+
   async createCustomer(data) {
     try {
       const normalizedData = {
@@ -40,15 +93,6 @@ class CustomersCrud extends BaseCrud {
     try {
       const result = await this.readMany(
         { HotelId: hotel_id }
-        // {
-        //   populate: [
-        //     {
-        //       path: 'Bills',
-        //       select: 'TotalAmount PaymentStatus CreatedAt',
-        //       options: { sort: { CreatedAt: -1 }, limit: 5 }
-        //     }
-        //   ]
-        // }
       );
       return result;
     } catch (error) {

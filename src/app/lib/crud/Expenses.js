@@ -35,7 +35,7 @@ class ExpenseCrud extends BaseCrud {
 
   async readExpenses(hotel_id) {
     try {
-      const result = this.readMany({ HotelId: hotel_id });
+      const result = await this.readMany({ HotelId: hotel_id });
       return result;
     } catch (error) {
       return {
@@ -48,7 +48,7 @@ class ExpenseCrud extends BaseCrud {
 
   async checkExpense(expense_id) {
     try {
-      const result = this.exists({ _id: expense_id });
+      const result = await this.exists({ _id: expense_id });
       return result;
     } catch (error) {
       return {
@@ -101,7 +101,6 @@ class ExpenseCrud extends BaseCrud {
       }
     }
   }
-
 
 }
 

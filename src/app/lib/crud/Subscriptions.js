@@ -11,19 +11,15 @@ class SubscriptionsCrud extends BaseCrud {
   // Create Subscription
   async createSubscription(subscriptionData) {
     try {
-
       // Normalize field names to match schema
       const normalizedData = {
         SubscriptionName: subscriptionData.subscription_name,
         Price: subscriptionData.price,
         Validity: subscriptionData.validity
       };
-
       const result = await this.create(normalizedData);
       return result;
-
     } catch (error) {
-
       return {
         returncode: 500,
         message: error.message,
@@ -36,12 +32,9 @@ class SubscriptionsCrud extends BaseCrud {
   // Read Subscriptions
   async readSubscriptions() {
     try {
-
       const result = await this.readMany({});
       return result;
-
     } catch (error) {
-
       return {
         returncode: 500,
         message: error.message,
@@ -52,23 +45,18 @@ class SubscriptionsCrud extends BaseCrud {
 
   async updateSubscription(subscriptionData) {
     try {
-
       const updateData = {
         SubscriptionName: subscriptionData.subscription_name,
         Price: subscriptionData.price,
         Validity: subscriptionData.validity
       };
-
       const result = await this.update(
         { _id: subscriptionData.subscription_id },
         updateData,
         { new: true }
       );
-
       return result;
-
     } catch (error) {
-
       return {
         returncode: 500,
         message: error.message,
@@ -78,43 +66,26 @@ class SubscriptionsCrud extends BaseCrud {
   }
 
   async deleteSubscription(subscription_id) {
-
-    const session = await mongoose.startSession();
-    session.startTransaction();
     try {
-      const subscription_object_id = new mongoose.Types.ObjectId(subscription_id);
-      const subscription = await this.model.findOne({ _id: subscription_object_id });
-
+      const subscription = await this.model.findOne({ _id: subscription_id });
       if (!subscription) {
         return {
           returncode: 404,
-          message: "Hotel not found",
+          message: "Subscription not found",
           output: []
         };
       }
-
-      // Delete all related data in a transaction
-      const hotelSubscriptionResult = await hotelSubscriptionCrud.deleteByFilter({ SubscriptionId: subscription_object_id });
-      if (hotelSubscriptionResult.returncode === 200 || hotelSubscriptionResult.returncode === 404) {
-        // Finally, delete the subscription itself
-        await this.model.deleteOne({ _id: subscription_object_id });
-        await session.commitTransaction();
-
+      // Finally, delete the subscription itself
+      const result = await this.delete({ _id: subscription_id });
+      if (result.returncode === 200) {
         return {
           returncode: 200,
-          message: "Subscription and all related data deleted successfully",
+          message: "Subscription deleted successfully.",
           output: []
         };
       }
-
-      return {
-        returncode: 500,
-        message: "Hotel Subscription not deleted, Please try again later",
-        output: []
-      };
-
+      return result;
     } catch (error) {
-
       return {
         returncode: 500,
         message: error.message,

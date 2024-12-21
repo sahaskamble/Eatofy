@@ -16,7 +16,6 @@ class TablesCrud extends BaseCrud {
         HotelId: data.hotel_id,
         SectionId: data.section_id
       };
-
       const result = await this.create(normalizedData);
       return result;
     } catch (error) {
@@ -103,7 +102,6 @@ class TablesCrud extends BaseCrud {
         TableName: data.table_name,
         Capacity: data.capacity
       };
-
       const result = await this.update(
         { _id: data.table_id },
         updateData,
@@ -127,7 +125,6 @@ class TablesCrud extends BaseCrud {
           TableId: data.table_id,
           Status: "Open"
         });
-
         if (!openBills) {
           return {
             returncode: 400,
@@ -136,11 +133,9 @@ class TablesCrud extends BaseCrud {
           };
         }
       }
-
       const updateData = {
         Status: data.status
       };
-
       const result = await this.update(
         { _id: data.table_id },
         updateData,
@@ -163,7 +158,6 @@ class TablesCrud extends BaseCrud {
         TableId: data.table_id,
         Status: "Open"
       });
-
       if (openBills) {
         return {
           returncode: 400,
@@ -171,11 +165,9 @@ class TablesCrud extends BaseCrud {
           output: []
         };
       }
-
       const updateData = {
         SectionId: data.section_id
       };
-
       const result = await this.update(
         { _id: data.table_id },
         updateData,
@@ -198,7 +190,6 @@ class TablesCrud extends BaseCrud {
         Status: "Open",
         TableId: { $in: (await this.readMany({ SectionId: from_section_id })).output.map(t => t._id) }
       });
-
       if (tablesWithBills) {
         return {
           returncode: 400,
@@ -206,7 +197,6 @@ class TablesCrud extends BaseCrud {
           output: []
         };
       }
-
       const result = await this.update(
         { SectionId: from_section_id },
         { SectionId: to_section_id },
@@ -226,14 +216,12 @@ class TablesCrud extends BaseCrud {
     try {
       // Check if any tables are currently in use
       const tables = await this.readMany(filter);
-
       if (tables.returncode === 200) {
         for (const table of tables.output) {
           const openBills = await Bills.findOne({
             TableId: table._id,
             Status: "Open"
           });
-
           if (openBills) {
             return {
               returncode: 400,
@@ -242,12 +230,10 @@ class TablesCrud extends BaseCrud {
             };
           }
         }
-
         // If no open bills, proceed with deletion
         const result = await this.delete(filter);
         return result;
       }
-
       return tables;
     } catch (error) {
       return {
@@ -273,6 +259,7 @@ class TablesCrud extends BaseCrud {
       };
     }
   }
+
 }
 
 const tablesCrud = new TablesCrud();

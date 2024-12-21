@@ -16,7 +16,7 @@ class EbillEmailSettingsCrud extends BaseCrud {
         UPIID: data.upi_id,
         MerchantName: data.merchant_name,
       }
-      const result = this.create(normalizedData);
+      const result = await this.create(normalizedData);
       return result;
 
     } catch (error) {
@@ -30,7 +30,7 @@ class EbillEmailSettingsCrud extends BaseCrud {
 
   async readSettings(hotel_id) {
     try {
-      const result = this.readOne({ HotelId: hotel_id });
+      const result = await this.readOne({ HotelId: hotel_id });
       return result;
     } catch (error) {
       return {
@@ -51,7 +51,7 @@ class EbillEmailSettingsCrud extends BaseCrud {
         MerchantName: data.merchant_name,
       }
       const hotel_id = data.hotel_id;
-      const result = this.update(
+      const result = await this.update(
         { HotelId: hotel_id },
         updateData,
         { new: true }
@@ -69,7 +69,7 @@ class EbillEmailSettingsCrud extends BaseCrud {
 
   async deleteSettings(hotel_id) {
     try {
-      const result = this.delete({ HotelId: hotel_id });
+      const result = await this.delete({ HotelId: hotel_id });
       return result;
     } catch (error) {
       return {

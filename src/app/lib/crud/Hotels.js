@@ -196,8 +196,7 @@ class HotelsCrud extends BaseCrud {
         };
       }
 
-      const hotel_object_id = new mongoose.Types.ObjectId(id);
-      const hotel = await this.model.findOne({ _id: hotel_object_id });
+      const hotel = await this.readOne({ _id: id });
 
       if (!hotel) {
         return {
@@ -208,12 +207,10 @@ class HotelsCrud extends BaseCrud {
       }
 
       // Delete all related data in a transaction
-      const hotelSubscriptionResult = await hotelSubscriptionCrud.deleteByFilter({ HotelId: hotel_object_id });
-      console.log(hotelSubscriptionResult);
-      if (hotelSubscriptionResult.returncode === 200 || hotelSubscriptionResult.returncode === 404) {
+      if (hotel.returncode === 200) {
 
         // Delete the Hotel
-        await this.model.deleteOne({ _id: hotel_object_id });
+        await this.delete({ _id: id });
 
         return {
           returncode: 200,
@@ -223,8 +220,8 @@ class HotelsCrud extends BaseCrud {
       }
 
       return {
-        returncode: 500,
-        message: "Hotel Subscription not deleted, Please try again later",
+        returncode: 400,
+        message: "Hotel not Found",
         output: []
       };
 

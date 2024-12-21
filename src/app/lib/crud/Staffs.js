@@ -25,10 +25,8 @@ class StaffCrud extends BaseCrud {
         HotelId: data.hotel_id,
         Role: data.role
       }
-
       const result = await this.create(normalizedData);
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -48,10 +46,8 @@ class StaffCrud extends BaseCrud {
           output: []
         };
       }
-
       // Verify password
       const isValid = await comparePassword(password, staff.output.Password, staff.output.SaltPassword);
-
       if (!isValid) {
         return {
           returncode: 401,
@@ -59,7 +55,6 @@ class StaffCrud extends BaseCrud {
           output: []
         };
       }
-
       // Get hotel information
       const hotel = await hotelsCrud.readHotelByID(staff.output.HotelId);
       if (!hotel) {
@@ -69,7 +64,6 @@ class StaffCrud extends BaseCrud {
           output: []
         };
       }
-
       // Return staff data with hotel information
       const userData = {
         hotelId: hotel.output._id,
@@ -77,13 +71,11 @@ class StaffCrud extends BaseCrud {
         role: staff.output.Role,
         staff_info: staff.output
       };
-
       return {
         returncode: 200,
         message: 'Login successful',
         output: [userData]
       };
-
     } catch (error) {
       return {
         returncode: 500,
@@ -95,7 +87,6 @@ class StaffCrud extends BaseCrud {
 
   async fetchStaffByHotelId(hotel_id) {
     try {
-
       const staff = await this.readMany({ HotelId: hotel_id });
       if (staff.returncode !== 200) {
         return {
@@ -105,7 +96,6 @@ class StaffCrud extends BaseCrud {
         };
       }
       return staff;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -117,7 +107,6 @@ class StaffCrud extends BaseCrud {
 
   async fetchStaffByEmail(email) {
     try {
-
       const staff = await this.readOne({ Email: email });
       if (staff.returncode !== 200) {
         return {
@@ -127,7 +116,6 @@ class StaffCrud extends BaseCrud {
         };
       }
       return staff;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -148,9 +136,7 @@ class StaffCrud extends BaseCrud {
           output: []
         };
       }
-
       return hotel;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -161,22 +147,17 @@ class StaffCrud extends BaseCrud {
   }
 
   async updatePassword(data) {
-
     try {
-
       const updateData = {
         Password: data.hashedPassword,
         SaltPassword: data.salt
       };
-
       const result = await this.update(
         { _id: data.staff_id },
         updateData,
         { new: true }
       );
-
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -184,7 +165,6 @@ class StaffCrud extends BaseCrud {
         output: []
       };
     }
-
   }
 
   async updateStaffInfo(data) {
@@ -202,14 +182,12 @@ class StaffCrud extends BaseCrud {
         Incentive: data.incentives,
         Role: data.role
       }
-
       const result = await this.update(
         { _id: data.staff_id },
         updateData,
         { new: true }
       );
       return result;
-
     } catch (error) {
       return {
         returncode: 500,
@@ -220,9 +198,7 @@ class StaffCrud extends BaseCrud {
   }
 
   async deleteStaff(filter) {
-
     try {
-
       const result = await this.delete(filter);
       return result;
     } catch (error) {
@@ -237,7 +213,6 @@ class StaffCrud extends BaseCrud {
 
   async deleteStaffById(staff_id) {
     try {
-
       // Finally, delete the staff itself
       const deleteResult = await this.delete({ _id: staff_id });
       return deleteResult;

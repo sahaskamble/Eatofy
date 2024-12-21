@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 47, "column": 0}, "map": {"version":3,"sources":["file:///home/batman/Workspace/Eatofy/src/app/api/hotel/auth/logout/route.js"],"sourcesContent":["import { NextResponse } from 'next/server';\n\nexport async function POST() {\n  const response = NextResponse.json({\n    returncode: 200,\n    message: 'Logged out successfully',\n    output: []\n  });\n\n  response.cookies.delete('hotel_auth_token');\n\n  return response;\n}\n"],"names":[],"mappings":";;;AAAA;;AAEO,eAAe;IACpB,MAAM,WAAW,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;QACjC,YAAY;QACZ,SAAS;QACT,QAAQ,EAAE;IACZ;IAEA,SAAS,OAAO,CAAC,MAAM,CAAC;IAExB,OAAO;AACT"}},
+    {"offset": {"line": 61, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

@@ -16,7 +16,7 @@ class ReservationCrud extends BaseCrud {
         CustomerId: data.customer_id,
         HotelId: data.hotel_id
       }
-      const result = this.create(normalizedData);
+      const result = await this.create(normalizedData);
       return result;
     } catch (error) {
       return {
@@ -29,7 +29,7 @@ class ReservationCrud extends BaseCrud {
 
   async readReservations(hotel_id) {
     try {
-      const result = this.readMany({ HotelId: hotel_id },{ populate:[ {path:'CustomerId'} ] });
+      const result = await this.readMany({ HotelId: hotel_id }, { populate: [{ path: 'CustomerId' }] });
       return result;
     } catch (error) {
       return {
@@ -42,7 +42,7 @@ class ReservationCrud extends BaseCrud {
 
   async deleteReservations(reservation_id) {
     try {
-      const result = this.delete({ _id: reservation_id });
+      const result = await this.delete({ _id: reservation_id });
       return result;
     } catch (error) {
       return {

@@ -43,6 +43,19 @@ class EatocoinsSettingsCrud extends BaseCrud {
     }
   }
 
+  async readAllSettings(hotel_id) {
+    try {
+      const result = await this.readMany({ HotelId: hotel_id });
+      return result;
+    } catch (error) {
+      return {
+        returncode: 500,
+        message: error.message,
+        output: []
+      }
+    }
+  }
+
   async updateSettings(data) {
     try {
       const updateData = {

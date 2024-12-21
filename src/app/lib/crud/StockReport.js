@@ -12,7 +12,6 @@ class StockReportCrud extends BaseCrud {
     try {
       const today = new Date();
       const date = FormatDate(today);
-
       const normalizedData = {
         HotelId: data.hotel_id,
         ItemId: data.item_id,
@@ -21,7 +20,6 @@ class StockReportCrud extends BaseCrud {
         Date: date,
         Status: data.quantity > 20 ? "Available" : (data.quantity === 0 ? "Unavailable" : "Low Stock")
       }
-
       const stock_exists = await this.readOne({ ItemId: data.item_id });
       if (stock_exists.returncode === 200 || stock_exists.output.length !== 0) {
         const old_quantity = stock_exists.output.Quantity;
@@ -30,7 +28,6 @@ class StockReportCrud extends BaseCrud {
           Quantity: quantity,
           Status: quantity > 20 ? "Available" : (quantity === 0 ? "Unavailable" : "Low Stock")
         }
-
         const result = await this.update(
           { ItemId: data.item_id },
           updateData,

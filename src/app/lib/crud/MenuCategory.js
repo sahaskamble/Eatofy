@@ -52,7 +52,7 @@ class MenuCategoryCrud extends BaseCrud {
 
   async readMenuCategories(hotel_id) {
     try {
-      const result = this.readMany({ HotelId: hotel_id });
+      const result = await this.readMany({ HotelId: hotel_id });
       return result;
     } catch (error) {
       return {
@@ -65,7 +65,7 @@ class MenuCategoryCrud extends BaseCrud {
 
   async doesMenuCategoryExists(hotel_id, category_name) {
     try {
-      const result = this.readMany({ HotelId: hotel_id, CategoryName: category_name });
+      const result = await this.readMany({ HotelId: hotel_id, CategoryName: category_name });
       return result;
     } catch (error) {
       return {
@@ -79,28 +79,17 @@ class MenuCategoryCrud extends BaseCrud {
   async deleteCategoriesById(category_id) {
     try {
       // Delete all related data
-      const DishesResult = await dishesCrud.deleteDishesByCategoryId(category_id);
-      if (DishesResult.returncode === 200 || DishesResult.returncode === 404) {
+      const deleteResult = await this.delete({ _id: category_id });
 
-        // Finally, delete the staff itself
-        const deleteResult = await this.delete({ _id: category_id });
-
-        if (deleteResult.returncode === 200) {
-          return {
-            returncode: 200,
-            message: "Menu Categories and all related data deleted successfully",
-            output: []
-          };
-        }
-
-        return deleteResult;
+      if (deleteResult.returncode === 200) {
+        return {
+          returncode: 200,
+          message: "Menu Categories and all related data deleted successfully",
+          output: []
+        };
       }
 
-      return {
-        returncode: 500,
-        message: "Dishes deletion failed, please try again later",
-        output: []
-      };
+      return deleteResult;
 
     } catch (error) {
       return {
@@ -109,7 +98,6 @@ class MenuCategoryCrud extends BaseCrud {
         output: []
       };
     }
-
   }
 
 }

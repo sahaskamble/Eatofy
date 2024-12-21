@@ -1,0 +1,51 @@
+/* [project]/src/app/hotel/(dashboard)/punch-order/[tableId]/styles.module.css [app-client] (css) */
+@keyframes styles-module__FIYeSa__fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes styles-module__FIYeSa__scaleIn {
+  from {
+    transform: scale(.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.styles-module__FIYeSa__menuItem {
+  animation: .3s ease-out styles-module__FIYeSa__scaleIn;
+}
+
+.styles-module__FIYeSa__cartItem {
+  animation: .3s ease-out styles-module__FIYeSa__fadeIn;
+}
+
+.styles-module__FIYeSa__categoryButton {
+  transition: all .3s;
+}
+
+.styles-module__FIYeSa__categoryButton:hover {
+  transform: scale(1.05);
+}
+
+.styles-module__FIYeSa__scrollbarHide::-webkit-scrollbar {
+  display: none;
+}
+
+.styles-module__FIYeSa__scrollbarHide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/*# sourceMappingURL=src_app_hotel_%28dashboard%29_punch-order_%5BtableId%5D_styles_module_b52d8e.css.map*/

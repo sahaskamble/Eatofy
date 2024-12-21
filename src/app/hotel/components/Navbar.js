@@ -11,7 +11,10 @@ import {
   ArrowRightOnRectangleIcon,
   ClockIcon,
   WrenchScrewdriverIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  CloudIcon,
+  CloudArrowDownIcon,
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
@@ -36,6 +39,23 @@ const navigation = [
         name: 'Menu Management',
         href: '/hotel/menu-management',
         icon: <ClipboardDocumentListIcon className="w-6 h-6" />
+      },
+    ]
+  },
+  {
+    name: 'Data Syncing',
+    href: '/hotel/settings',
+    icon: <CloudIcon className="w-6 h-6" />,
+    subItems: [
+      {
+        name: 'Backup',
+        href: '/hotel/backup',
+        icon: <CloudArrowDownIcon className="w-5 h-5" />
+      },
+      {
+        name: 'Restore',
+        href: '/hotel/restore',
+        icon: <CloudArrowUpIcon className="w-6 h-6" />
       },
     ]
   },
