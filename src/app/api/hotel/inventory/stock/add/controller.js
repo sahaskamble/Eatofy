@@ -16,10 +16,9 @@ export async function add_stock(data, tokenData) {
         const hotel_id = tokenData.hotelId || null;
         const item_id = data['item_id'] || null;
         const quantity = data['quantity'] || null;
-        const unit = data['unit'] || null;
 
         // Default Invalid Checker
-        if (item_id === null || quantity === null || hotel_id == null || unit === null) {
+        if (item_id === null || quantity === null || hotel_id == null) {
             return {
                 returncode: 400,
                 message: "Missing required parameters",
@@ -28,7 +27,7 @@ export async function add_stock(data, tokenData) {
         }
 
         const Data = {
-            item_id, quantity, hotel_id, unit
+            item_id, quantity, hotel_id
         };
 
         const result = await inventoryStockCrud.addStock(Data);

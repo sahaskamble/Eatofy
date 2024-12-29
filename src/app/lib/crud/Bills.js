@@ -5,6 +5,7 @@ import gstSettingsCrud from "./GSTSettings";
 import vatSettingsCrud from "./VATSettings";
 import eatocoinsSettingsCrud from "./EatocoinsSettings";
 import customersCrud from "./Customers";
+import ordersCrud from "./Orders";
 
 class BillsCrud extends BaseCrud {
   constructor() {
@@ -808,7 +809,7 @@ class BillsCrud extends BaseCrud {
 
       let bill;
       if (CustomerId !== null) {
-        const customerData = await customersCrud.create({
+        const customerData = await customersCrud.createCustomerBackup({
           CustomerName: Customers.CustomerName,
           Email: Customers.Email,
           Contact: Customers.Contact,

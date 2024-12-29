@@ -1,7 +1,7 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'Eatofy';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = {
 	Bills: 'Bills',
 	Customers: 'Customers',
@@ -285,13 +285,18 @@ class DatabaseService {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ data: unsyncedRecords }),
 			});
+			const data = await response.json();
 
-			if (response.ok) {
-				const result = await response.json();
-
-				// Mark records as synced in IndexedDB
-				await this.markAsSynced(storeName, result.syncedIds);
-				console.log(`Successfully synced ${storeName} to server.`);
+			if (data.returncode === 200) {
+				const data = await this.getByFilter(storeName, "HotelId", null);
+				console.log(data);
+				if (data.output.length !== 0) {
+					data.output.forEach(async (bill) => {
+						const deleted = await this.delete(storeName, bill._id);
+						console.log("Deleted", deleted)
+						console.log(`Successfully synced ${storeName} to server.`);
+					});
+				}
 			}
 		} catch (error) {
 			if (retries > 0) {
@@ -325,16 +330,11 @@ class DatabaseService {
 	}
 
 	// Mark records as synced in IndexedDB.
-	async markAsSynced(storeName, syncedIds) {
+	async markAsSynced(storeName) {
 		const store = await this.getStore(storeName, 'readwrite');
-		const tx = store.transaction;
-		for (const id of syncedIds) {
-			const record = await store.get(id);
-			if (record) {
-				await store.delete(record);
-			}
-		}
-		await tx.done;
+		const deletePromise = store.delete(); // Create a delete promise
+		console.log(deletePromise)
+		console.log(`Deleted records from ${storeName}`);
 	}
 
 	// Applies server-side updates to a specific store in IndexedDB.

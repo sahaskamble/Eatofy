@@ -17,13 +17,13 @@ export async function add_item(data, tokenData) {
 
         // Category params
         let category_name = data['category_name'] || null;
-        const unit = data['unit'] || null;
 
         // Item Params
         const item_name = data['item_name'] || null;
+        const unit = data['unit'] || null;
 
         // Default Invalid Checker
-        if (hotel_id === null || category_name === null || unit === null || item_name === null) {
+        if (hotel_id === null || category_name === null || item_name === null || unit === null) {
             return {
                 returncode: 400,
                 message: "Missing required parameters",
@@ -38,15 +38,12 @@ export async function add_item(data, tokenData) {
             if (category_exists.returncode !== 200 || category_exists.output.length === 0) {
                 const categoryData = {
                     category_name,
-                    unit,
                     hotel_id
                 };
                 const category_result = await itemCategoriesCrud.addCategory(categoryData);
-                console.log(category_result);
                 category_id = category_result.output._id;
             }
             else {
-                console.log(category_exists);
                 category_id = category_exists.output._id;
             }
         }
@@ -66,6 +63,7 @@ export async function add_item(data, tokenData) {
         const Data = {
             hotel_id,
             category_id,
+            unit,
             item_name
         };
 

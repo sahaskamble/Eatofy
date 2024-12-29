@@ -1,15 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { ArrowDownTrayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import customersCrud from '@/app/offline/crud/Customers';
-import menusCrud from '@/app/offline/crud/Menus';
-import menuCategoryCrud from '@/app/offline/crud/MenuCategory';
-import sectionsCrud from '@/app/offline/crud/Sections';
-import tablesCrud from '@/app/offline/crud/Tables';
-import staffsCrud from '@/app/offline/crud/Staffs';
+import { ArrowUpTrayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import billsCrud from '@/app/offline/crud/Bills';
 
 export default function BackupPage() {
   const [pendingBackups, setPendingBackups] = useState([]);
@@ -23,28 +18,14 @@ export default function BackupPage() {
   const checkPendingBackups = async () => {
     setIsLoading(true);
     try {
-      const backupChecks = await Promise.all([
-        customersCrud.checkPendingBackups(),
-        menusCrud.checkPendingBackups(),
-        menuCategoryCrud.checkPendingBackups(),
-        sectionsCrud.checkPendingBackups(),
-        tablesCrud.checkPendingBackups(),
-        staffsCrud.checkPendingBackups()
-      ]);
-
+      const backupCheck = await billsCrud.getHotelBills();
       const pending = [];
-      
-      if (backupChecks[0].length > 0) pending.push({ type: 'Customers', count: backupChecks[0].length });
-      if (backupChecks[1].length > 0) pending.push({ type: 'Menus', count: backupChecks[1].length });
-      if (backupChecks[2].length > 0) pending.push({ type: 'Menu Categories', count: backupChecks[2].length });
-      if (backupChecks[3].length > 0) pending.push({ type: 'Sections', count: backupChecks[3].length });
-      if (backupChecks[4].length > 0) pending.push({ type: 'Tables', count: backupChecks[4].length });
-      if (backupChecks[5].length > 0) pending.push({ type: 'Staff', count: backupChecks[5].length });
-
+      if (backupCheck.output.length > 0) {
+        pending.push({ type: 'Bills', count: backupCheck.output.length });
+      }
       setPendingBackups(pending);
     } catch (error) {
       toast.error('Error checking pending backups');
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -54,31 +35,18 @@ export default function BackupPage() {
     try {
       let result;
       switch (type) {
-        case 'Customers':
-          result = await customersCrud.syncToServer();
-          break;
-        case 'Menus':
-          result = await menusCrud.syncToServer();
-          break;
-        case 'Menu Categories':
-          result = await menuCategoryCrud.syncToServer();
-          break;
-        case 'Sections':
-          result = await sectionsCrud.syncToServer();
-          break;
-        case 'Tables':
-          result = await tablesCrud.syncToServer();
-          break;
-        case 'Staff':
-          result = await staffsCrud.syncToServer();
+        case 'Bills':
+          result = await billsCrud.syncToServer();
           break;
         default:
           throw new Error('Invalid backup type');
       }
 
+      console.log('Backup result:', result);
+
       if (result.returncode === 200) {
         toast.success(`${type} backed up successfully`);
-        checkPendingBackups(); // Refresh the pending backups list
+        setPendingBackups([]);
       } else {
         toast.error(result.message || `Failed to backup ${type}`);
       }
@@ -123,7 +91,7 @@ export default function BackupPage() {
                   {backup.count} {backup.count === 1 ? 'item' : 'items'} pending
                 </p>
               </div>
-              <ArrowDownTrayIcon className="h-6 w-6 text-red-500" />
+              <ArrowUpTrayIcon className="h-6 w-6 text-red-500" />
             </div>
             <div className="mt-4 text-sm text-gray-500">
               Click to backup {backup.type.toLowerCase()}
@@ -131,7 +99,7 @@ export default function BackupPage() {
           </div>
         ))}
       </div>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-right" />
     </div>
   );
 }

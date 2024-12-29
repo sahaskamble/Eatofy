@@ -4,16 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import {
   UserGroupIcon,
   MagnifyingGlassIcon,
-  BellIcon,
-  ShoppingBagIcon,
-  TruckIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useHotelAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FaArrowAltCircleDown } from 'react-icons/fa';
+import { Switch } from '@headlessui/react';
+import sectionsCrud from '@/app/offline/crud/Sections';
+import tablesCrud from '@/app/offline/crud/Tables';
 
 export default function PunchOrderPage() {
   const router = useRouter();
@@ -22,33 +21,11 @@ export default function PunchOrderPage() {
   const [tables, setTables] = useState([]);
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState(null);
-  const [selectedTable, setSelectedTable] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isOffline, setIsOffline] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sectionsResponse = await fetch('/api/hotel/sections/fetch');
-        const sectionsData = await sectionsResponse.json();
-        if (sectionsData.returncode === 200) {
-          setSections(sectionsData.output);
-        }
-
-        const tablesResponse = await fetch('/api/hotel/tables/fetch');
-        const tablesData = await tablesResponse.json();
-        if (tablesData.returncode === 200) {
-          setTables(tablesData.output);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Failed to load restaurant data');
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -59,19 +36,53 @@ export default function PunchOrderPage() {
     }
   }, [loading]);
 
+  const fetchData = async () => {
+    try {
+      let sectionsData = [], tablesData = [];
+      if (!isOffline) {
+        const sectionsResponse = await fetch('/api/hotel/sections/fetch');
+        sectionsData = await sectionsResponse.json();
+        const tablesResponse = await fetch('/api/hotel/tables/fetch');
+        tablesData = await tablesResponse.json();
+      } else {
+        sectionsData = await sectionsCrud.readAllSections();
+        tablesData = await tablesCrud.readTables();
+      }
+
+      if (sectionsData.returncode === 200) {
+        setSections(sectionsData.output);
+      }
+      if (tablesData.returncode === 200) {
+        setTables(tablesData.output);
+      }
+
+
+      setLoading(false);
+    } catch (error) {
+      toast.error('Failed to load Restaurant Tables');
+      setLoading(false);
+    }
+  };
+
   const handleTableClick = async (table) => {
     router.push(`/hotel/punch-order/${table._id}`);
   };
 
-  const getTableStatus = (tableId) => {
-    return 'available';
-  };
-
-  const filteredTables = tables.filter((table) => {
-    const matchesSearch = table.TableName?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSection = !selectedSection || table.SectionId?._id === selectedSection;
+  const filteredTables = tables?.filter((table) => {
+    const matchesSearch = table?.TableName?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSection = !selectedSection || table?.SectionId?._id === selectedSection;
     return matchesSearch && matchesSection;
   });
+
+  const toggleOfflineMode = () => {
+    setIsOffline((prev) => !prev);
+    if (!isOffline) {
+      toast.info('Switched to Offline Mode');
+    } else {
+      toast.info('Switched to Online Mode');
+    }
+    fetchData();
+  };
 
   if (loading) {
     return (
@@ -83,6 +94,24 @@ export default function PunchOrderPage() {
 
   return (
     <div className="p-6">
+      <div className="flex items-center mb-4">
+        <Switch
+          checked={isOffline}
+          onChange={toggleOfflineMode}
+          className={`${isOffline ? 'bg-blue-600' : 'bg-gray-200'
+            } relative inline-flex items-center h-6 rounded-full w-11`}
+        >
+          <span className="sr-only">Toggle Offline/Online Mode</span>
+          <span
+            className={`${isOffline ? 'translate-x-6' : 'translate-x-1'
+              } inline-block w-4 h-4 transform bg-white rounded-full transition`}
+          />
+        </Switch>
+        <span className="ml-3 text-sm font-medium text-gray-900">
+          {isOffline ? 'Offline' : 'Online'}
+        </span>
+      </div>
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-4">Tables Overview</h1>
         <div className="flex space-x-4 mb-4">
@@ -94,8 +123,8 @@ export default function PunchOrderPage() {
           >
             <option value="">All Sections</option>
             {sections.map((section) => (
-              <option key={section._id} value={section._id}>
-                {section.SectionName}
+              <option key={section?._id} value={section?._id}>
+                {section?.SectionName}
               </option>
             ))}
           </select>

@@ -183,6 +183,17 @@ class BillsCrud extends OfflineBaseCrud {
 		return adding_orders;
 	}
 
+	async getHotelBills(hotel_id) {
+		try {
+			return await this.read("HotelId", hotel_id);
+		} catch (error) {
+			return {
+				returncode: 500,
+				message: error.message,
+				output: []
+			};
+		}
+	}
 
 	async dineInRead(table_id) {
 		try {
@@ -248,7 +259,7 @@ class BillsCrud extends OfflineBaseCrud {
 			// GST Params
 			let gst_amount = 0; let cgst_rate = 0; let sgst_rate = 0; let cgst_amount = 0; let sgst_amount = 0;
 			const gstSettings = await gstSettingsCrud.readSettings();
-			if (gstSettings.output[0]?.Visibility) {
+			if (gstSettings?.output[0]?.Visibility) {
 				gst_amount = (menu_total * gstSettings.output[0].GSTPercent) / 100;
 				console.log(gst_amount);
 				cgst_amount = (gst_amount / 2) | 0;
@@ -260,7 +271,7 @@ class BillsCrud extends OfflineBaseCrud {
 			// Vat Params
 			let vat_rate = 0; let vat_amount = 0;
 			const vatSettings = await vatSettingsCrud.readSettings();
-			if (vatSettings.output[0]?.Visibility) {
+			if (vatSettings?.output[0]?.Visibility) {
 				vat_rate = vatSettings.output[0].VATPercent;
 				vat_amount = (menu_total * vat_rate) / 100;
 			}
@@ -284,7 +295,7 @@ class BillsCrud extends OfflineBaseCrud {
 			// Eatocoins Params 
 			let eatocoins_rate = 0; let credit_eatocoins = 0;
 			const eatocoinsSettings = await eatoCoinsSettingsCrud.readSettings();
-			if (eatocoinsSettings.output[0]?.Visibility) {
+			if (eatocoinsSettings?.output[0]?.Visibility) {
 
 				eatocoins_rate = eatocoinsSettings.output[0].RedeemLimitPercent || 0;
 				let redeem_limit_amt = eatocoinsSettings.output[0].RedeemLimitAmount || 0;

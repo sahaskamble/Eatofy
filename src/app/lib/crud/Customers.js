@@ -23,14 +23,12 @@ class CustomersCrud extends BaseCrud {
         Birthday: birthday || null,
         Anniversary: anniversary || null
       };
-
       const exists = await this.readOne({
         CustomerName: customer_name,
         Contact: contact,
         HotelId: hotel_id
       });
       customer_id = exists.output._id;
-
       if (exists.output.length > 0) {
         const updateData = {
           CustomerName: customer_name,
@@ -45,10 +43,8 @@ class CustomersCrud extends BaseCrud {
           Birthday: birthday || null,
           Anniversary: anniversary || null
         };
-
         return await this.update(updateData);
       }
-
       return await this.create(normalizedData);
     } catch (error) {
       return {

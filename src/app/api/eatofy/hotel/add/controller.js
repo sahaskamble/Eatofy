@@ -26,8 +26,8 @@ export async function add_hotel(data, tokenData) {
         // Staff Params
         const first_name = data.get ? data.get('first_name') : data.first_name || null;
         const last_name = data.get ? data.get('last_name') : data.last_name || null;
-        const owner_address = data.get ? data.get('owner_address') : data.last_name || null;
-        const owner_contact = data.get ? data.get('owner_contact') : data.contact || null;
+        const owner_address = data.get ? data.get('owner_address') : data.owner_address || null;
+        const owner_contact = data.get ? data.get('owner_contact') : data.owner_contact || null;
         const password = data.get ? data.get('password') : data.password || null;
         const department_name = data.get ? data.get('department_name') : data.department_name || null;
         const designation = data.get ? data.get('designation') : data.designation || null;

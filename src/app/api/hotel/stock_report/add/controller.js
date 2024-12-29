@@ -28,7 +28,6 @@ export async function inventory_day_push(tokenData) {
                 hotel_id,
                 item_id: stock.ItemId,
                 quantity: stock.Quantity,
-                unit: stock.Unit
             }
 
             const result = await stockReportCrud.createInstance(Data);

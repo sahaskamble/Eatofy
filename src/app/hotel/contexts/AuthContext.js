@@ -18,7 +18,6 @@ export function HotelAuthProvider({ children }) {
   const fetchWaiterId = () => {
     try {
       const waiterId = localStorage.getItem('waiter_id');
-      console.log(waiterId);
       return waiterId;
     } catch (error) {
       console.error('Auth check failed Waiter ID not found:', error);
@@ -31,15 +30,24 @@ export function HotelAuthProvider({ children }) {
     try {
       const response = await fetch('/api/hotel/auth/check');
       const data = await response.json();
-      
+
       if (data.returncode === 200 && data.output) {
         setUser(data.output);
       } else {
         setUser(null);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setUser(null);
+      try {
+
+        const userLoggedIn = JSON.parse(localStorage.getItem('UserLoggedIn'));
+        const userJson = JSON.parse(localStorage.getItem('User'));
+        console.log("User Data", userJson);
+        if (userLoggedIn) {
+          setUser(userJson);
+        }
+      } catch (error) {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -52,27 +60,28 @@ export function HotelAuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.returncode === 200 && data.output.length > 0) {
         setUser(data.output[0]);
         setWaiter_id(data.output[0].staff_info._id);
-        console.log(data.output[0].staff_info._id);
+        localStorage.setItem('UserLoggedIn', JSON.stringify(true));
+        localStorage.setItem('User', JSON.stringify(data.output[0]));
         localStorage.setItem('waiter_id', data.output[0].staff_info._id);
         await checkAuth();
         router.push('/hotel/dashboard');
         return { success: true };
       }
-      
-      return { 
-        success: false, 
+
+      return {
+        success: false,
         message: data.message || 'Login failed'
       };
     } catch (error) {
       console.error('Login error:', error);
-      return { 
-        success: false, 
+      return {
+        success: false,
         message: 'An error occurred during login'
       };
     }
@@ -80,8 +89,11 @@ export function HotelAuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/hotel/auth/logout',{ method: 'POST' });
+      await fetch('/api/hotel/auth/logout', { method: 'POST' });
       setUser(null);
+      localStorage.removeItem('waiter_id')
+      localStorage.removeItem('UserLoggedIn')
+      localStorage.removeItem('User')
       router.push('/hotel/login');
     } catch (error) {
       console.error('Logout error:', error);
@@ -95,7 +107,7 @@ export function HotelAuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      
+
       const data = await response.json();
       return {
         success: data.returncode === 200,
@@ -117,7 +129,7 @@ export function HotelAuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),
       });
-      
+
       const data = await response.json();
       return {
         success: data.returncode === 200,

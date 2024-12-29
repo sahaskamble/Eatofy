@@ -14,7 +14,8 @@ import {
   DocumentTextIcon,
   CloudIcon,
   CloudArrowDownIcon,
-  CloudArrowUpIcon
+  CloudArrowUpIcon,
+  ShoppingCartIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
@@ -29,18 +30,18 @@ const navigation = [
     name: 'Settings',
     href: '/hotel/settings',
     icon: <Cog6ToothIcon className="w-6 h-6" />,
-    subItems: [
-      {
-        name: 'Manage',
-        href: '/hotel/manage',
-        icon: <WrenchScrewdriverIcon className="w-5 h-5" />
-      },
-      {
-        name: 'Menu Management',
-        href: '/hotel/menu-management',
-        icon: <ClipboardDocumentListIcon className="w-6 h-6" />
-      },
-    ]
+    // subItems: [
+    //   {
+    //     name: 'Manage',
+    //     href: '/hotel/manage',
+    //     icon: <WrenchScrewdriverIcon className="w-5 h-5" />
+    //   },
+    //   {
+    //     name: 'Menu Management',
+    //     href: '/hotel/menu-management',
+    //     icon: <ClipboardDocumentListIcon className="w-6 h-6" />
+    //   },
+    // ]
   },
   {
     name: 'Data Syncing',

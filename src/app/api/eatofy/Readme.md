@@ -84,6 +84,14 @@
     "fssai_code": "HJBJCHGUDGCJD",
     "gstin": "JGDCJGDJJ",
     "logo": Image
+    "first_name": "Owner",
+    "last_name": "Eatofy",
+    "address": "India",
+    "contact": "9090909090",
+    "email": "owner@eatofy.com",
+    "password": "owner123",
+    "department_name": "Board of Directors",
+    "designation": "Owners",
 }
 ```
 
