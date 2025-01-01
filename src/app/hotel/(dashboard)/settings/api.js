@@ -91,4 +91,29 @@ export async function updateLoyaltySettings(data) {
   });
   if (!response.ok) throw new Error('Failed to update loyalty settings');
   return response.json();
+}
+
+// Hotel Profile
+export async function fetchHotelProfile() {
+  const response = await fetch('/api/hotel/settings/profile/fetch',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ hotel_id: localStorage.getItem('hotel_id') }),
+  });
+  if (!response.ok) throw new Error('Failed to fetch hotel profile');
+  return response.json();
+}
+
+export async function updateHotelProfile(data) {
+  const response = await fetch('/api/hotel/settings/profile/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update hotel profile');
+  return response.json();
 } 

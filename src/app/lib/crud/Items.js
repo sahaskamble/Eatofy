@@ -10,6 +10,7 @@ class ItemsCrud extends BaseCrud {
   async addItem(data) {
     try {
       const normalizedData = {
+        Unit: data.unit,
         ItemName: data.item_name,
         CategoryId: data.category_id,
         HotelId: data.hotel_id

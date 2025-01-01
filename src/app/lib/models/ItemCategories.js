@@ -11,14 +11,6 @@ export const itemCategorySchema = new mongoose.Schema(
       },
       message: "Category Name should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
     },
-    Unit: {
-      type: String, // KG, LTR, etc.
-      required: true,
-      validate: {
-        validator: (value) => StringValidators(value)
-      },
-      message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
-    },
     HotelId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Hotels", // Reference to the `Hotels` collection
@@ -54,7 +46,7 @@ itemCategorySchema.pre('remove', async function(next) {
       { CategoryId: this._id },
       { $unset: { CategoryId: 1 } }
     );
-    
+
     next();
   } catch (error) {
     next(error);
@@ -81,7 +73,7 @@ itemCategorySchema.pre('deleteMany', async function(next) {
         )
       ]);
     }
-    
+
     next();
   } catch (error) {
     next(error);

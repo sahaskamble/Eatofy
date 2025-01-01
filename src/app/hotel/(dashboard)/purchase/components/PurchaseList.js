@@ -1,11 +1,31 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import EditPurchaseModal from './EditPurchaseModal';
 import { toast } from 'react-toastify';
+import { fetchSuppliers } from '../../supplier_management/api';
 
 export default function PurchaseList({ invoices, isLoading, onRefresh }) {
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [suppliers, setSuppliers] = useState(null);
+
+    useEffect(() => {
+        loadSuppliers();
+    }, [])
+
+    const loadSuppliers = async () => {
+        try {
+            const data = await fetchSuppliers();
+            if (data.returncode === 200) {
+                setSuppliers(data.output);
+            } else {
+                toast.error(data.message || 'Failed to load suppliers');
+            }
+        } catch (error) {
+            toast.error('Error loading suppliers');
+            console.error('Error:', error);
+        }
+    };
 
     const handleDelete = async (invoiceId) => {
         if (!confirm('Are you sure you want to delete this invoice?')) return;
@@ -46,6 +66,8 @@ export default function PurchaseList({ invoices, isLoading, onRefresh }) {
         );
     };
 
+    console.log(suppliers)
+
     if (isLoading) {
         return <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
@@ -70,14 +92,14 @@ export default function PurchaseList({ invoices, isLoading, onRefresh }) {
                         <tbody className="bg-white divide-y divide-gray-200">
                             {invoices.map((invoice) => (
                                 <tr key={invoice._id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{invoice.invoice_no}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{invoice.InvoiceNo}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {new Date(invoice.invoice_date).toLocaleDateString()}
+                                        {new Date(invoice.Date).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{invoice.supplier_name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{invoice.amount_paid}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{suppliers.map((s)=>( s._id === invoice.SupplierId ? s.SupplierName : 'N/A'))}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{invoice.AmountPaid}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {getStatusBadge(invoice.payment_status)}
+                                        {getStatusBadge(invoice.PaymentStatus)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                         <button

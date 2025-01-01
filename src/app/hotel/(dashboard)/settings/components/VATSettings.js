@@ -18,9 +18,9 @@ export default function VATSettings() {
     try {
       setLoading(true);
       const data = await fetchVATSettings();
-      setVatEnabled(data.enabled || false);
-      setVatNumber(data.vatNumber || '');
-      setVatPercentage(data.percentage || '');
+      console.log(data)
+      setVatEnabled(data.output.Visibility || false);
+      setVatPercentage(data.output.VATPercent);
     } catch (err) {
       setError('Failed to load VAT settings');
       console.error('Error loading VAT settings:', err);
@@ -34,9 +34,8 @@ export default function VATSettings() {
       setLoading(true);
       setError(null);
       await updateVATSettings({
-        enabled: vatEnabled,
-        vatNumber,
-        percentage: vatPercentage
+        visibility: vatEnabled,
+        vat_percent: vatPercentage
       });
       // Show success message or notification here
     } catch (err) {

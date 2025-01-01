@@ -18,8 +18,9 @@ export default function GSTSettings() {
     try {
       setLoading(true);
       const data = await fetchGSTSettings();
+      console.log(data)
       setGstEnabled(data.output.Visibility || false);
-      setGstPercentage(data.output.GSTPercent || '');
+      setGstPercentage(data.output.GSTPercent);
     } catch (err) {
       setError('Failed to load GST settings');
       console.error('Error loading GST settings:', err);

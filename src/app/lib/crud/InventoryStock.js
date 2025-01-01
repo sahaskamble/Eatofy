@@ -12,7 +12,6 @@ class InventoryStockCrud extends BaseCrud {
         HotelId: data.hotel_id,
         ItemId: data.item_id,
         Quantity: data.quantity,
-        Unit: data.unit,
         Status: data.quantity > 20 ? "Available" : (data.quantity === 0 ? "Unavailable" : "Low Stock")
       }
 
@@ -46,8 +45,14 @@ class InventoryStockCrud extends BaseCrud {
 
   async readStock(hotel_id) {
     try {
-      const result = await this.readMany({ HotelId: hotel_id });
-      return result;
+      return await this.readMany({ HotelId: hotel_id }, {
+        populate: [{
+          path: "ItemId",
+          populate: {
+            path: "CategoryId"
+          }
+        }]
+      });
     } catch (error) {
       return {
         returncode: 500,

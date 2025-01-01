@@ -16,7 +16,6 @@ class StockReportCrud extends BaseCrud {
         HotelId: data.hotel_id,
         ItemId: data.item_id,
         Quantity: data.quantity,
-        Unit: data.unit,
         Date: date,
         Status: data.quantity > 20 ? "Available" : (data.quantity === 0 ? "Unavailable" : "Low Stock")
       }

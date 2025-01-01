@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import FloatValidator from "../utils/FloatValidator";
-import StringValidators from "../utils/StringValidator";
 import { StockStatusValidator } from "../utils/SpecialStringsValidator";
 
 export const inventoryStockSchema = new mongoose.Schema(
@@ -22,14 +21,6 @@ export const inventoryStockSchema = new mongoose.Schema(
         validator: (value) => FloatValidator(value)
       },
       message: "Quantity must be a non-negative number."
-    },
-    Unit: {
-      type: String, // KG, LTR, etc.
-      required: true,
-      validate: {
-        validator: (value) => StringValidators(value)
-      },
-      message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
     },
     Status: {
       type: String,

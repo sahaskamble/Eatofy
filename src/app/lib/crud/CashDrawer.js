@@ -1,7 +1,8 @@
 import CashDrawer from "../models/CashDrawer";
 import { BaseCrud } from "./BaseCrud";
-import Bills from "../models/Bills";
 import Expenses from "../models/Expenses";
+import billsCrud from "./Bills";
+import expenseCrud from "./Expenses";
 
 class CashDrawerCrud extends BaseCrud {
   constructor() {
@@ -42,16 +43,10 @@ class CashDrawerCrud extends BaseCrud {
 
   async readDrawer(hotel_id, date) {
     try {
-      const result = await this.readOne({ HotelId: hotel_id, Date: date });
-      return result;
+      return await this.readOne({ HotelId: hotel_id, Date: date });
     } catch (error) {
-      return {
-        returncode: 500,
-        message: error.message,
-        output: []
-      }
+      return { returncode: 500, message: error.message, output: [] }
     }
-
   }
 
   async OpeningBalance(data) {
@@ -117,60 +112,48 @@ class CashDrawerCrud extends BaseCrud {
 
   async sumSalesAndExpenses(hotel_id, drawer_id) {
     try {
-      // Get current date in IST
-      const now = new Date();
-      const startOfDay = new Date(now);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(now);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      // Aggregate sales
-      const salesResult = await Bills.aggregate([
-        {
-          $match: {
-            HotelId: hotel_id,
-            createdAt: {
-              $gte: startOfDay,
-              $lte: endOfDay
-            },
-            Status: { $ne: "Inactive" }
-          }
+      const drawer = await this.readOne({ _id: drawer_id });
+      if (!drawer) {
+        throw new Error('Cash drawer not found');
+      }
+      const [day, month, year] = drawer.output.Date.split(' ');
+      // Create start and end dates directly in UTC for the calendar date
+      const startOfDay = new Date(Date.UTC(
+        parseInt(year),
+        new Date(`${month} 1, ${year}`).getMonth(),
+        parseInt(day),
+        0, // 00:00 UTC
+        0
+      ));
+      const endOfDay = new Date(Date.UTC(
+        parseInt(year),
+        new Date(`${month} 1, ${year}`).getMonth(),
+        parseInt(day),
+        23, // 23:59:59.999 UTC
+        59,
+        59,
+        999
+      ));
+      // Aggregate sales with proper date range
+      const salesData = await billsCrud.readMany({
+        HotelId: hotel_id,
+        createdAt: {
+          $gte: startOfDay,
+          $lte: endOfDay
         },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: "$Amount" },
-            count: { $sum: 1 }
-          }
-        }
-      ]);
-
+      });
+      // Calculate totals from salesData
+      const totalSales = salesData.output.length;
+      const salesAmount = salesData.output.reduce((sum, bill) => sum + (bill.Amount || 0), 0);
       // Aggregate expenses
-      const expensesResult = await Expenses.aggregate([
-        {
-          $match: {
-            HotelId: hotel_id,
-            createdAt: {
-              $gte: startOfDay,
-              $lte: endOfDay
-            },
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: "$AmountPaid" },
-            count: { $sum: 1 }
-          }
-        }
-      ]);
-
-      const totalSales = salesResult[0]?.count || 0;
-      const salesAmount = salesResult[0]?.totalAmount || 0;
-      const totalExpenses = expensesResult[0]?.count || 0;
-      const expensesAmount = expensesResult[0]?.totalAmount || 0;
-
-      // Update cash drawer
+      const expensesResult = await expenseCrud.readMany({
+        HotelId: hotel_id,
+        Date: drawer.output.Date
+      });
+      // Calculate expenses
+      const totalExpenses = expensesResult.output.length || 0;
+      const expensesAmount = expensesResult.output.reduce((sum, invoice) => sum + (invoice.AmountPaid || 0), 0);
+      // Update cash drawer with the calculated values
       const updateResult = await this.update(
         { _id: drawer_id },
         {
@@ -181,9 +164,7 @@ class CashDrawerCrud extends BaseCrud {
         },
         { new: true }
       );
-
       return updateResult;
-
     } catch (error) {
       return {
         returncode: 500,

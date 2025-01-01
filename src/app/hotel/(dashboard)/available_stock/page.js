@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 export default function AvailableStock() {
-  const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(false);
     const [stock, setStock] = useState([]);
     const [items, setItems] = useState([]);
     const [showAddForm, setShowAddForm] = useState(false);
@@ -16,16 +16,14 @@ export default function AvailableStock() {
     const [formData, setFormData] = useState({
         item_id: '',
         quantity: '',
-        unit: '',
-        stock_id: ''
     });
-  const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
 
-  useEffect(() => {
-    fetchItems();
-    fetchStock();
-  }, []);
+    useEffect(() => {
+        fetchItems();
+        fetchStock();
+    }, []);
 
     const fetchStock = async () => {
         setLoading(true);
@@ -37,18 +35,18 @@ export default function AvailableStock() {
                 },
             });
 
-      const data = await response.json();
-      if (data.returncode === 200) {
+            const data = await response.json();
+            if (data.returncode === 200) {
                 setStock(data.output);
-      } else {
+            } else {
                 toast.error(data.message);
-      }
+            }
         } catch (error) {
             toast.error('Error fetching stock:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchItems = async () => {
         try {
@@ -59,10 +57,10 @@ export default function AvailableStock() {
                 },
             });
 
-      const data = await response.json();
-      if (data.returncode === 200) {
+            const data = await response.json();
+            if (data.returncode === 200) {
                 setItems(data.output);
-      } else {
+            } else {
                 toast.error(data.message);
             }
         } catch (error) {
@@ -81,12 +79,12 @@ export default function AvailableStock() {
                 body: JSON.stringify(formData),
             });
 
-      const data = await response.json();
-      if (data.returncode === 200) {
+            const data = await response.json();
+            if (data.returncode === 200) {
                 setShowAddForm(false);
-        fetchStock();
+                fetchStock();
                 resetForm();
-      } else {
+            } else {
                 alert(data.message || 'Failed to add stock');
             }
         } catch (error) {
@@ -108,12 +106,12 @@ export default function AvailableStock() {
                 }),
             });
 
-      const data = await response.json();
-      if (data.returncode === 200) {
+            const data = await response.json();
+            if (data.returncode === 200) {
                 setShowEditForm(false);
                 fetchStock();
                 resetForm();
-      } else {
+            } else {
                 alert(data.message || 'Failed to update stock');
             }
         } catch (error) {
@@ -133,8 +131,6 @@ export default function AvailableStock() {
         setFormData({
             item_id: '',
             quantity: '',
-            unit: '',
-            stock_id: ''
         });
     };
 
@@ -151,9 +147,9 @@ export default function AvailableStock() {
         if (quantity === 0) return 'bg-red-100 text-red-600';
         if (quantity < 20) return 'bg-yellow-100 text-yellow-600';
         return 'bg-green-100 text-green-600';
-  };
+    };
 
-  return (
+    return (
         <div className="min-h-screen bg-gray-50/50">
             {/* Add Stock Modal */}
             {showAddForm && (
@@ -167,14 +163,14 @@ export default function AvailableStock() {
                                     className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-all"
                                 >
                                     <FaTimes size={20} />
-            </button>
-          </div>
+                                </button>
+                            </div>
                             <form onSubmit={handleAddStock} className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Select Item
                                     </label>
-                      <select
+                                    <select
                                         name="item_id"
                                         value={formData.item_id}
                                         onChange={handleInputChange}
@@ -183,50 +179,29 @@ export default function AvailableStock() {
                                     >
                                         <option value="">Select an item</option>
                                         {items.map((item) => (
-                                            <option key={item.id} value={item.id}>
+                                            <option key={item.id} value={item._id}>
                                                 {item.ItemName}
                                             </option>
-                        ))}
-                      </select>
-                    </div>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Quantity
                                         </label>
-                      <input
+                                        <input
                                             type="number"
                                             name="quantity"
                                             value={formData.quantity}
                                             onChange={handleInputChange}
                                             className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-red-500 focus:border-transparent"
-                        required
+                                            required
                                             placeholder="Enter quantity"
-                      />
-                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Unit
-                                        </label>
-                      <select
-                                            name="unit"
-                                            value={formData.unit}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-red-500 focus:border-transparent"
-                        required
-                      >
-                                            <option value="">Select unit</option>
-                        <option value="kg">kg (Kilograms)</option>
-                        <option value="g">g (Grams)</option>
-                        <option value="mg">mg (Milligrams)</option>
-                        <option value="l">l (Litres)</option>
-                        <option value="ml">ml (Millilitres)</option>
-                                            <option value="piece">piece</option>
-                      </select>
-                    </div>
-                  </div>
+                                        />
+                                    </div>
+                                </div>
 
                                 <div className="flex justify-end gap-3 pt-3">
                                     <button
@@ -236,18 +211,18 @@ export default function AvailableStock() {
                                     >
                                         Cancel
                                     </button>
-                <button
-                  type="submit"
+                                    <button
+                                        type="submit"
                                         className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
-                >
+                                    >
                                         Add Stock
-                </button>
+                                    </button>
                                 </div>
-              </form>
+                            </form>
                         </div>
-            </div>
-          </div>
-        )}
+                    </div>
+                </div>
+            )}
 
             {/* Edit Stock Modal */}
             {showEditForm && (
@@ -256,28 +231,28 @@ export default function AvailableStock() {
                         <div className="p-5">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-semibold text-gray-800">Update Stock</h2>
-              <button
+                                <button
                                     onClick={() => setShowEditForm(false)}
                                     className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-all"
-              >
+                                >
                                     <FaTimes size={20} />
-              </button>
+                                </button>
                             </div>
                             <form onSubmit={handleEditStock} className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Quantity
                                     </label>
-                      <input
+                                    <input
                                         type="number"
                                         name="quantity"
                                         value={formData.quantity}
                                         onChange={handleInputChange}
                                         className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-red-500 focus:border-transparent"
-                        required
+                                        required
                                         placeholder="Enter new quantity"
-                      />
-                    </div>
+                                    />
+                                </div>
 
                                 <div className="flex justify-end gap-3 pt-3">
                                     <button
@@ -287,25 +262,25 @@ export default function AvailableStock() {
                                     >
                                         Cancel
                                     </button>
-                  <button
-                    type="submit"
+                                    <button
+                                        type="submit"
                                         className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
-                  >
+                                    >
                                         Update Stock
-                  </button>
-                </div>
-              </form>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-            </div>
-          </div>
-        )}
+                    </div>
+                </div>
+            )}
 
             {/* Main Content */}
             <div className="max-w-[1600px] mx-auto p-4">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                        <button 
+                        <button
                             onClick={() => router.back()}
                             className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
                         >
@@ -315,8 +290,8 @@ export default function AvailableStock() {
                             Available Stock
                         </h1>
                     </div>
-                    <button 
-                        onClick={() => setShowAddForm(true)} 
+                    <button
+                        onClick={() => setShowAddForm(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm"
                     >
                         <FaPlus size={12} />
@@ -352,12 +327,12 @@ export default function AvailableStock() {
                                 </div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-1">No Stock Items Found</h3>
                                 <p className="text-gray-500 text-sm text-center mb-4">
-                                    {searchQuery 
-                                        ? "No stock items match your search criteria" 
+                                    {searchQuery
+                                        ? "No stock items match your search criteria"
                                         : "Start by adding your first stock item"}
                                 </p>
-                                <button 
-                                    onClick={() => setShowAddForm(true)} 
+                                <button
+                                    onClick={() => setShowAddForm(true)}
                                     className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm"
                                 >
                                     <FaPlus size={12} />
@@ -377,7 +352,7 @@ export default function AvailableStock() {
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
                                     {filteredStock.map((item) => (
-                                        <tr 
+                                        <tr
                                             key={item.id}
                                             className="hover:bg-gray-50 transition-colors"
                                         >
@@ -402,12 +377,12 @@ export default function AvailableStock() {
                                                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusColor(Number(item.Quantity))}`}>
                                                         {item.Status}
                                                     </span>
-                    </div>
-                  </td>
+                                                </div>
+                                            </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex justify-center">
-                      <button
-                        onClick={() => {
+                                                    <button
+                                                        onClick={() => {
                                                             setFormData({
                                                                 ...formData,
                                                                 stock_id: item.id,
@@ -418,17 +393,17 @@ export default function AvailableStock() {
                                                         className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
                                                     >
                                                         <MdOutlineEdit size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
                     </div>
                 </div>
             </div>
         </div>
-  );
+    );
 }

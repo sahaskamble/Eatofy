@@ -11,7 +11,6 @@ class ItemCategoriesCrud extends BaseCrud {
     try {
       const normalizedData = {
         CategoryName: data.category_name,
-        Unit: data.unit,
         HotelId: data.hotel_id
       }
       const result = await this.create(normalizedData);

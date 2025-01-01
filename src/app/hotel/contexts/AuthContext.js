@@ -68,7 +68,8 @@ export function HotelAuthProvider({ children }) {
         setWaiter_id(data.output[0].staff_info._id);
         localStorage.setItem('UserLoggedIn', JSON.stringify(true));
         localStorage.setItem('User', JSON.stringify(data.output[0]));
-        localStorage.setItem('waiter_id', data.output[0].staff_info._id);
+        localStorage.setItem('hotel_id', data.output[0]?.hotelId);
+        localStorage.setItem('waiter_id', data.output[0]?.staff_info._id);
         await checkAuth();
         router.push('/hotel/dashboard');
         return { success: true };
