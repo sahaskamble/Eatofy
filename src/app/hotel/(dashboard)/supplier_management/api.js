@@ -6,12 +6,12 @@ export async function fetchSuppliers() {
       'Content-Type': 'application/json',
     },
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to fetch suppliers');
   }
-  
+
   return response.json();
 }
 
@@ -24,12 +24,12 @@ export async function addSupplier(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to add supplier');
   }
-  
+
   return response.json();
 }
 
@@ -42,12 +42,12 @@ export async function editSupplier(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to edit supplier');
   }
-  
+
   return response.json();
 }
 
@@ -60,11 +60,11 @@ export async function removeSupplier(supplierId) {
     },
     body: JSON.stringify({ supplier_id: supplierId }),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to delete supplier');
   }
-  
+
   return response.json();
 } 

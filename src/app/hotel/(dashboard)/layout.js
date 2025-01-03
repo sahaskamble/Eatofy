@@ -10,7 +10,6 @@ import {
   Cog8ToothIcon,
   ArrowLeftOnRectangleIcon
 } from '@heroicons/react/24/outline';
-import { ToastContainer } from 'react-toastify';
 
 const navigation = [
   { name: 'Dashboard', href: '/hotel/dashboard', icon: HomeIcon },
@@ -47,7 +46,6 @@ export default function DashboardLayout({ children }) {
         <div className="container mx-auto px-2 py-2">
           {children}
         </div>
-        {/* <ToastContainer /> */}
       </main>
     </div>
   );

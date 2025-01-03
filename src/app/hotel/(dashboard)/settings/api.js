@@ -95,7 +95,7 @@ export async function updateLoyaltySettings(data) {
 
 // Hotel Profile
 export async function fetchHotelProfile() {
-  const response = await fetch('/api/hotel/settings/profile/fetch',{
+  const response = await fetch('/api/hotel/settings/profile/fetch', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

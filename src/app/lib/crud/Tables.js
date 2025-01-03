@@ -100,7 +100,7 @@ class TablesCrud extends BaseCrud {
     try {
       const updateData = {
         TableName: data.table_name,
-        Capacity: data.capacity
+        PersonsOccupiable: data.persons_occupiable
       };
       const result = await this.update(
         { _id: data.table_id },

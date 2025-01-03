@@ -15,11 +15,11 @@ export async function remove_items(data, tokenData) {
         const item_id = data['item_id'] || null;
 
         if (item_id === null) {
-            return NextResponse.json({
+            return {
                 returncode: 400,
                 message: "Item ID is required",
                 output: []
-            });
+            };
         }
 
         const result = await itemsCrud.deleteItem(item_id);

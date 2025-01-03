@@ -20,7 +20,7 @@ export function HotelAuthProvider({ children }) {
       const waiterId = localStorage.getItem('waiter_id');
       return waiterId;
     } catch (error) {
-      console.error('Auth check failed Waiter ID not found:', error);
+      console.log('Auth check failed Waiter ID not found:', error);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export function HotelAuthProvider({ children }) {
         localStorage.setItem('UserLoggedIn', JSON.stringify(true));
         localStorage.setItem('User', JSON.stringify(data.output[0]));
         localStorage.setItem('hotel_id', data.output[0]?.hotelId);
-        localStorage.setItem('waiter_id', data.output[0]?.staff_info._id);
+        localStorage.setItem('waiter_id', data.output[0].staff_info._id);
         await checkAuth();
         router.push('/hotel/dashboard');
         return { success: true };
@@ -93,6 +93,7 @@ export function HotelAuthProvider({ children }) {
       await fetch('/api/hotel/auth/logout', { method: 'POST' });
       setUser(null);
       localStorage.removeItem('waiter_id')
+      localStorage.removeItem('hotel_id')
       localStorage.removeItem('UserLoggedIn')
       localStorage.removeItem('User')
       router.push('/hotel/login');

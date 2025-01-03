@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { addPurchase, fetchItems } from '../../inventory/api';
@@ -65,7 +65,6 @@ export default function AddPurchaseModal({ onClose, onSuccess }) {
       }
     } catch (error) {
       toast.error('Error loading items');
-      console.error('Error:', error);
     }
   };
 
@@ -91,8 +90,8 @@ export default function AddPurchaseModal({ onClose, onSuccess }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('name',name);
-    console.log('Value',value);
+    console.log('name', name);
+    console.log('Value', value);
     setFormData(prev => ({
       ...prev,
       [name]: name === 'amount_paid' ? parseFloat(value) || 0 : value,
@@ -123,32 +122,36 @@ export default function AddPurchaseModal({ onClose, onSuccess }) {
   };
 
   const updateStockItem = (index, field, value) => {
-    setFormData(prev => {
-      const newStockData = [...prev.stock_data];
-      newStockData[index] = {
-        ...newStockData[index],
-        [field]: field === 'item_id' ? value : parseFloat(value) || 0,
-        ...(field === 'item_id' && {
-          unit: items.find(item => item.id === value)?.Unit || ''
-        }),
-        ...(field === 'quantity' || field === 'per_price' ? {
-          total_price: (
-            parseFloat(field === 'quantity' ? value : newStockData[index].quantity || 0) *
-            parseFloat(field === 'per_price' ? value : newStockData[index].per_price || 0)
-          )
-        } : {})
-      };
+    try {
+      setFormData(prev => {
+        const newStockData = [...prev.stock_data];
+        newStockData[index] = {
+          ...newStockData[index],
+          [field]: field === 'item_id' ? value : parseFloat(value) || 0,
+          ...(field === 'item_id' && {
+            unit: items.find(item => item.id === value)?.Unit || ''
+          }),
+          ...(field === 'quantity' || field === 'per_price' ? {
+            total_price: (
+              parseFloat(field === 'quantity' ? value : newStockData[index].quantity || 0) *
+              parseFloat(field === 'per_price' ? value : newStockData[index].per_price || 0)
+            )
+          } : {})
+        };
 
-      // Calculate total amount as number
-      const totalAmount = newStockData.reduce((sum, item) => sum + (item.total_price || 0), 0);
+        // Calculate total amount as number
+        const totalAmount = newStockData.reduce((sum, item) => sum + (item.total_price || 0), 0);
 
-      return {
-        ...prev,
-        stock_data: newStockData,
-        amount_paid: totalAmount,
-        [prev.payment_mode.toLowerCase()]: totalAmount
-      };
-    });
+        return {
+          ...prev,
+          stock_data: newStockData,
+          amount_paid: totalAmount,
+          [prev.payment_mode.toLowerCase()]: totalAmount
+        };
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -261,6 +264,7 @@ export default function AddPurchaseModal({ onClose, onSuccess }) {
                   <input
                     type="number"
                     name="amount_paid"
+                    disabled={true}
                     value={formData.amount_paid}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
@@ -299,7 +303,7 @@ export default function AddPurchaseModal({ onClose, onSuccess }) {
                     >
                       <option value="">Select Item</option>
                       {items.map((item, index) => (
-                        <option key={index} value={item.id}>
+                        <option key={index} value={item._id}>
                           {item.ItemName}
                         </option>
                       ))}

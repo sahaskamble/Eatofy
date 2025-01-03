@@ -93,26 +93,26 @@ export default function HotelProfile() {
       )}
 
       {/* Logo Display Section */}
-        <div className="flex flex-col items-center space-y-4 p-4 bg-white shadow-lg rounded-lg">
+      <div className="flex flex-col items-center space-y-4 p-4 bg-white shadow-lg rounded-lg">
         <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 transition-transform transform hover:scale-105">
           {settings.logo && !imageError ? (
-          <Image
-            src={settings.logo.includes('base64') ? settings.logo : `data:image/jpeg;base64,${settings.logo}`}
-            alt="Hotel Logo"
-            width={128}
-            height={128}
-            className="w-full h-full object-cover rounded-full"
-            onError={(e) => {
-            console.error("Image failed to load");
-            setImageError(true);
-            }}
-            priority
-            unoptimized={true}
-          />
+            <Image
+              src={settings.logo.includes('base64') ? settings.logo : `data:image/jpeg;base64,${settings.logo}`}
+              alt="Hotel Logo"
+              width={128}
+              height={128}
+              className="w-full h-full object-cover rounded-full"
+              onError={(e) => {
+                console.error("Image failed to load");
+                setImageError(true);
+              }}
+              priority
+              unoptimized={true}
+            />
           ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            {imageError ? 'Failed to load logo' : 'No logo available'}
-          </div>
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              {imageError ? 'Failed to load logo' : 'No logo available'}
+            </div>
           )}
         </div>
         <button className="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Change Logo</button>

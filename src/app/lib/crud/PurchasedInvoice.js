@@ -37,6 +37,8 @@ class PurchaseInvoiceCrud extends BaseCrud {
       const result = await this.readMany({ HotelId: hotel_id }, {
         populate: [{
           path: "Stock"
+        }, {
+          path: "SupplierId"
         }]
       });
       return result;

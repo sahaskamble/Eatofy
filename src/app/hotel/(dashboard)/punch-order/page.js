@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { Switch } from '@headlessui/react';
 import sectionsCrud from '@/app/offline/crud/Sections';
 import tablesCrud from '@/app/offline/crud/Tables';
+import { useOffline } from '@/app/hotel/contexts/OfflineContext';
 
 export default function PunchOrderPage() {
   const router = useRouter();
@@ -23,11 +24,11 @@ export default function PunchOrderPage() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isOffline, setIsOffline] = useState(true);
+  const { isOffline, toggleOfflineMode } = useOffline();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isOffline]);
 
   useEffect(() => {
     // Focus search input when loading is complete
@@ -74,16 +75,6 @@ export default function PunchOrderPage() {
     return matchesSearch && matchesSection;
   });
 
-  const toggleOfflineMode = () => {
-    setIsOffline((prev) => !prev);
-    if (!isOffline) {
-      toast.info('Switched to Offline Mode');
-    } else {
-      toast.info('Switched to Online Mode');
-    }
-    fetchData();
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -110,6 +101,9 @@ export default function PunchOrderPage() {
         <span className="ml-3 text-sm font-medium text-gray-900">
           {isOffline ? 'Offline' : 'Online'}
         </span>
+        <button onClick={() => router.push('/hotel/punch-order/takeaway')}>
+          Takeaway
+        </button>
       </div>
 
       <div className="mb-6">

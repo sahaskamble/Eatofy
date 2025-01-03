@@ -15,34 +15,39 @@ import {
   CloudIcon,
   CloudArrowDownIcon,
   CloudArrowUpIcon,
-  ShoppingCartIcon
+  PresentationChartLineIcon,
+  // ShoppingCartIcon
 } from '@heroicons/react/24/outline';
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { PiCashRegister } from "react-icons/pi";
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/hotel/dashboard', icon: <HomeIcon className="w-6 h-6" /> },
+  {
+    name: 'Reports',
+    href: '/hotel/reports',
+    icon: <PresentationChartLineIcon className="w-6 h-6" />,
+    subItems: [
+      {
+        name: 'Sales',
+        href: '/hotel/reports/sales',
+        icon: <FaMoneyBillTrendUp className="w-5 h-5" />
+      },
+      // {
+      //   name: 'Purchases',
+      //   href: '/hotel/reports/purchases',
+      //   icon: <ShoppingCartIcon className="w-6 h-6" />
+      // },
+    ]
+  },
+  { name: 'Day Closing', href: '/hotel/day_closing', icon: <PiCashRegister className="w-6 h-6" /> },
   { name: 'Punch Order', href: '/hotel/punch-order', icon: <ClockIcon className="w-6 h-6" /> },
   { name: 'Order History', href: '/hotel/order-history', icon: <DocumentTextIcon className="w-6 h-6" /> },
   { name: 'Reservations', href: '/hotel/reservations', icon: <CalendarIcon className="w-6 h-6" /> },
   { name: 'Back Office', href: '/hotel/backoffice', icon: <ClipboardDocumentListIcon className="w-6 h-6" /> },
   { name: 'Staff', href: '/hotel/staff', icon: <UsersIcon className="w-6 h-6" /> },
-  {
-    name: 'Settings',
-    href: '/hotel/settings',
-    icon: <Cog6ToothIcon className="w-6 h-6" />,
-    // subItems: [
-    //   {
-    //     name: 'Manage',
-    //     href: '/hotel/manage',
-    //     icon: <WrenchScrewdriverIcon className="w-5 h-5" />
-    //   },
-    //   {
-    //     name: 'Menu Management',
-    //     href: '/hotel/menu-management',
-    //     icon: <ClipboardDocumentListIcon className="w-6 h-6" />
-    //   },
-    // ]
-  },
+  { name: 'Settings', href: '/hotel/settings', icon: <Cog6ToothIcon className="w-6 h-6" /> },
   {
     name: 'Data Syncing',
     href: '/hotel/settings',

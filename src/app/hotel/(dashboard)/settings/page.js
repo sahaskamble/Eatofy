@@ -13,56 +13,51 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Restaurant Settings</h1>
-      
+
       <div className="w-full">
         <div className="grid w-full grid-cols-5 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`py-2 px-4 rounded-md transition-all ${
-              activeTab === 'profile'
+            className={`py-2 px-4 rounded-md transition-all ${activeTab === 'profile'
                 ? 'bg-white shadow-sm'
                 : 'hover:bg-gray-200'
-            }`}
+              }`}
           >
             Hotel Profile
           </button>
           <button
             onClick={() => setActiveTab('gst')}
-            className={`py-2 px-4 rounded-md transition-all ${
-              activeTab === 'gst'
+            className={`py-2 px-4 rounded-md transition-all ${activeTab === 'gst'
                 ? 'bg-white shadow-sm'
                 : 'hover:bg-gray-200'
-            }`}
+              }`}
           >
             GST Settings
           </button>
           <button
             onClick={() => setActiveTab('vat')}
-            className={`py-2 px-4 rounded-md transition-all ${
-              activeTab === 'vat'
+            className={`py-2 px-4 rounded-md transition-all ${activeTab === 'vat'
                 ? 'bg-white shadow-sm'
                 : 'hover:bg-gray-200'
-            }`}
+              }`}
           >
             VAT Settings
           </button>
           <button
             onClick={() => setActiveTab('bill-kot')}
-            className={`py-2 px-4 rounded-md transition-all ${
-              activeTab === 'bill-kot'
+            className={`py-2 px-4 rounded-md transition-all ${activeTab === 'bill-kot'
                 ? 'bg-white shadow-sm'
                 : 'hover:bg-gray-200'
-            }`}
+              }`}
           >
             Bill & KOT
           </button>
           <button
             onClick={() => setActiveTab('loyalty')}
-            className={`py-2 px-4 rounded-md transition-all ${
-              activeTab === 'loyalty'
+            className={`py-2 px-4 rounded-md transition-all ${activeTab === 'loyalty'
                 ? 'bg-white shadow-sm'
                 : 'hover:bg-gray-200'
-            }`}
+              }`}
           >
             Loyalty Program
           </button>

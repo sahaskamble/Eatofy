@@ -1,4 +1,4 @@
-import { HomeIcon, UsersIcon, CalendarIcon, ClipboardDocumentListIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UsersIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function BackofficePage() {

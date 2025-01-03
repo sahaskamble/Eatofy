@@ -6,12 +6,12 @@ export async function fetchItems() {
       'Content-Type': 'application/json',
     },
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to fetch items');
   }
-  
+
   return response.json();
 }
 
@@ -23,12 +23,12 @@ export async function addItem(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to add item');
   }
-  
+
   return response.json();
 }
 
@@ -40,12 +40,12 @@ export async function editItem(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to edit item');
   }
-  
+
   return response.json();
 }
 
@@ -57,12 +57,12 @@ export async function removeItem(itemId) {
     },
     body: JSON.stringify({ item_id: itemId }),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to delete item');
   }
-  
+
   return response.json();
 }
 
@@ -74,12 +74,12 @@ export async function fetchStock() {
       'Content-Type': 'application/json',
     },
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to fetch stock');
   }
-  
+
   return response.json();
 }
 
@@ -91,12 +91,12 @@ export async function updateStock(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to update stock');
   }
-  
+
   return response.json();
 }
 
@@ -108,12 +108,12 @@ export async function fetchPurchases() {
       'Content-Type': 'application/json',
     },
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to fetch purchases');
   }
-  
+
   return response.json();
 }
 
@@ -125,12 +125,12 @@ export async function addPurchase(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to add purchase');
   }
-  
+
   return response.json();
 }
 
@@ -142,12 +142,12 @@ export async function editPurchase(data) {
     },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to edit purchase');
   }
-  
+
   return response.json();
 }
 
@@ -159,11 +159,11 @@ export async function removePurchase(purchaseId) {
     },
     body: JSON.stringify({ purchase_id: purchaseId }),
   });
-  
+
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to delete purchase');
   }
-  
+
   return response.json();
 } 

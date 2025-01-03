@@ -6,7 +6,7 @@ export default function BackofficePage() {
     { name: 'Inventory Management', href: '/hotel/backoffice/inventory', icon: <ClipboardDocumentListIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Menu Management', href: '/hotel/menu', icon: <ClipboardDocumentListIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Staff Management', href: '/hotel/staff', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },
-    { name: 'Table Management', href: '/hotel/table', icon: <HomeIcon className="w-12 h-12 text-gray-500" /> },
+    { name: 'Table & Section Management', href: '/hotel/manage', icon: <HomeIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Customer Relationship Management', href: '/hotel/customer', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Orders History', href: '/hotel/order-history', icon: <CalendarIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Staff Attendance', href: '/hotel/staff-attendance', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },

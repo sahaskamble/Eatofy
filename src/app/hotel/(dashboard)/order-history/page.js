@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { useHotelAuth } from '../../contexts/AuthContext';
+import { Switch } from '@headlessui/react';
+import billsCrud from '@/app/offline/crud/Bills';
+import { useOffline } from '@/app/hotel/contexts/OfflineContext';
 
 export default function OrderHistory() {
   const { loading } = useHotelAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [orders, setOrders] = useState([]);
+  const { isOffline, toggleOfflineMode } = useOffline();
 
   // Delete order handler
   const handleDeleteOrder = async (orderId) => {
@@ -18,14 +22,17 @@ export default function OrderHistory() {
     }
 
     try {
-      const response = await fetch(`/api/hotel/bills/remove`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bill_id: orderId }),
-      });
-
-      const data = await response.json();
-
+      let data
+      if (isOffline) {
+        data = await billsCrud.deleteBillById(orderId);
+      } else {
+        const response = await fetch(`/api/hotel/bills/remove`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bill_id: orderId }),
+        });
+        data = await response.json();
+      }
       if (data.returncode === 200) {
         toast.success('Order deleted successfully');
         // Refresh the orders list
@@ -42,8 +49,15 @@ export default function OrderHistory() {
   // fetch data
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/hotel/bills/fetch');
-      const data = await response.json();
+      let data;
+      if (isOffline) {
+        console.log("Offline")
+        data = await billsCrud.getHotelBills();
+      } else {
+        console.log("Online")
+        const response = await fetch('/api/hotel/bills/fetch');
+        data = await response.json();
+      }
       setOrders(data.output);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -54,9 +68,7 @@ export default function OrderHistory() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
-
-  console.log(orders);
+  }, [isOffline]);
 
   if (loading) {
     return (
@@ -72,6 +84,24 @@ export default function OrderHistory() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">ORDER HISTORY</h1>
         </div>
+      </div>
+
+      <div className="flex items-center mb-4">
+        <Switch
+          checked={isOffline}
+          onChange={toggleOfflineMode}
+          className={`${isOffline ? 'bg-blue-600' : 'bg-gray-200'
+            } relative inline-flex items-center h-6 rounded-full w-11`}
+        >
+          <span className="sr-only">Toggle Offline/Online Mode</span>
+          <span
+            className={`${isOffline ? 'translate-x-6' : 'translate-x-1'
+              } inline-block w-4 h-4 transform bg-white rounded-full transition`}
+          />
+        </Switch>
+        <span className="ml-3 text-sm font-medium text-gray-900">
+          {isOffline ? 'Offline' : 'Online'}
+        </span>
       </div>
 
       <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -91,21 +121,19 @@ export default function OrderHistory() {
         <div className="flex gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${
-              filter === 'all'
-                ? 'bg-red-600 text-white'
-                : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-            }`}
+            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${filter === 'all'
+              ? 'bg-red-600 text-white'
+              : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+              }`}
           >
             All
           </button>
           <button
             onClick={() => setFilter('qr')}
-            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${
-              filter === 'qr'
-                ? 'bg-red-600 text-white'
-                : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-            }`}
+            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${filter === 'qr'
+              ? 'bg-red-600 text-white'
+              : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+              }`}
           >
             QR Orders
           </button>
@@ -161,12 +189,33 @@ export default function OrderHistory() {
                         {typeof order?.Amount === 'number' ? `Rs. ${order.Amount}` : 'Rs. 0'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        <span className={`inline-flex rounded-full px-3 py-1 font-semibold leading-5 ${
-                          order?.Status === 'Open' ? 'bg-green-200 text-green-800' :
-                          'bg-gray-200 text-gray-800'
-                        }`}>
-                          {order?.Status || "N/A"}
-                        </span>
+                        {
+                          order?.PaymentStatus === "Paid" ? (
+                            <span
+                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-green-300 text-green-800 bg-opacity-80"
+                            >
+                              {order?.PaymentStatus}
+                            </span>
+                          ) : order?.PaymentStatus === "Part-paid" ? (
+                            <span
+                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-yellow-300 text-yellow-800"
+                            >
+                              {order?.PaymentStatus}
+                            </span>
+                          ) : order?.PaymentStatus === "Unpaid" ? (
+                            <span
+                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-red-300 text-red-800"
+                            >
+                              {order?.PaymentStatus}
+                            </span>
+                          ) : (
+                            <span
+                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-gray-300 text-gray-800"
+                            >
+                              {order?.PaymentStatus}
+                            </span>
+                          )
+                        }
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6">
                         <button

@@ -10,7 +10,6 @@ import {
   TrashIcon,
   ShoppingBagIcon,
 } from '@heroicons/react/24/outline';
-import styles from './styles.module.css';
 import { useHotelAuth } from '@/app/hotel/contexts/AuthContext';
 import { useReactToPrint } from 'react-to-print';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -23,7 +22,6 @@ import menuCategoryCrud from '@/app/offline/crud/MenuCategory';
 import { useOffline } from '@/app/hotel/contexts/OfflineContext';
 
 export default function TableOrderPage() {
-  const params = useParams();
   const router = useRouter();
   const { user, waiter_id } = useHotelAuth();
   const [loading, setLoading] = useState(true);
@@ -57,7 +55,7 @@ export default function TableOrderPage() {
   const searchInputRef = useRef(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
-  const { isOffline } = useOffline();
+  const { isOffline, setIsOffline } = useOffline();
 
   const toggleOfflineMode = () => {
     setIsOffline((prev) => !prev);
@@ -76,9 +74,6 @@ export default function TableOrderPage() {
       toast.success('Order Saved & KOT printed successfully');
       fetchData();
       // Add delay before redirect
-      setTimeout(() => {
-        router.push('/hotel/punch-order');
-      }, 100.0);
     },
     onPrintError: (error) => {
       console.error('Print error:', error);
@@ -109,10 +104,6 @@ export default function TableOrderPage() {
     onAfterPrint: () => {
       toast.success('Bill printed successfully');
       setShowPaymentForm(false);
-      // Add delay before redirect
-      setTimeout(() => {
-        router.push('/hotel/punch-order');
-      }, 100.0);
     },
     onPrintError: (error) => {
       console.error('Bill print error:', error);
@@ -161,8 +152,7 @@ export default function TableOrderPage() {
           customer_name: customer_name || null,
           contact: customerDetails.phone,
           email: customerDetails.email,
-          type: 'Dine-In',
-          table_id: params.tableId,
+          type: 'Takeaway',
           waiter_id: waiter_id,
           hotel_id: user[0].hotelId,
           menu_data: cart.map(item => ({
@@ -179,8 +169,7 @@ export default function TableOrderPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            type: 'Dine-In',
-            table_id: params.tableId,
+            type: 'Takeaway',
             waiter_id: waiter_id,
             hotel_id: user[0].hotelId,
             customer_name: customerDetails.name,
@@ -205,35 +194,6 @@ export default function TableOrderPage() {
     } catch (error) {
       console.error('KOT generation error:', error);
       toast.error('Failed to generate KOT');
-    }
-  };
-
-  const handleTableStatusUpdate = async (Status) => {
-    try {
-      let data;
-      if (isOffline) {
-        data = await tablesCrud.updateTableStatus(params.tableId, Status);
-      } else {
-        const response = await fetch('/api/hotel/tables/edit/status', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            table_id: params.tableId,
-            status: Status,
-          }),
-        });
-        data = await response.json();
-      }
-      if (data.returncode === 200) {
-        toast.success('Table status updated successfully');
-      } else {
-        toast.error(data.message || 'Failed to update table status');
-      }
-    } catch (error) {
-      console.error('Table status update error:', error);
-      toast.error('Failed to update table status');
     }
   };
 
@@ -402,34 +362,28 @@ export default function TableOrderPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      if (isOffline) {
-        // Fetch table details
-        const existingBill = await billsCrud.dineInRead(params.tableId);
-        if (existingBill.returncode === 200) {
-          const billInfo = existingBill?.output[0];
-          setExistingBill(billInfo);
-          // console.log(existingBill.output[0].Orders)
-          setLatestBillId(billInfo._id);
-          setExistingOrder(billInfo.Orders);
-          setCart([]); // Clear cart when there's an existing bill
-        }
-        const tableData = await tablesCrud.readTable(params.tableId);
-        if (tableData.returncode === 200) {
-          const tableInfo = tableData.output[0];
-          const menusData = await menusCrud.readMenusBySectionId(tableInfo.SectionId._id);
-          const categoryData = await menuCategoryCrud.readMenuCategories();
-          setMenus(menusData.output);
-          setTable(tableInfo);
-          setCategories(categoryData.output)
-        }
-      } else {
-        const tableResponse = await fetch(`/api/hotel/bill_order/dine_in`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            table_id: params.tableId,
-          }),
-        });
+      // if (isOffline) {
+      //   // Fetch table details
+      //   const existingBill = await billsCrud.dineInRead(params.tableId);
+      //   if (existingBill.returncode === 200) {
+      //     const billInfo = existingBill?.output[0];
+      //     setExistingBill(billInfo);
+      //     // console.log(existingBill.output[0].Orders)
+      //     setLatestBillId(billInfo._id);
+      //     setExistingOrder(billInfo.Orders);
+      //     setCart([]); // Clear cart when there's an existing bill
+      //   }
+      //   const tableData = await tablesCrud.readTable(params.tableId);
+      //   if (tableData.returncode === 200) {
+      //     const tableInfo = tableData.output[0];
+      //     const menusData = await menusCrud.readMenusBySectionId(tableInfo.SectionId._id);
+      //     const categoryData = await menuCategoryCrud.readMenuCategories();
+      //     setMenus(menusData.output);
+      //     setTable(tableInfo);
+      //     setCategories(categoryData.output)
+      //   }
+      // } else {
+        const tableResponse = await fetch(`/api/hotel/bill_order/takeaway`);
         const tableData = await tableResponse.json();
         if (tableData.returncode === 200) {
           const latestBill = tableData.output[0].ExistingBill;
@@ -447,17 +401,17 @@ export default function TableOrderPage() {
             setMenus(Menus);
           }
         }
-      }
+      // }
       setLoading(false);
     } catch (error) {
       toast.error('Failed to load data');
       setLoading(false);
     }
-  }, [params.tableId]);
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, [isOffline]);
+  }, []);
 
   const handleOrderItemDelete = async (orderId) => {
     try {

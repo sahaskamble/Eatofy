@@ -72,9 +72,11 @@ export async function add_invoice(data, tokenData) {
             }
 
             const stockResult = await purchaseStockCrud.addItems(data);
+            console.log(stockResult);
             const inventoryResult = await inventoryStockCrud.addStock({
                 hotel_id, item_id: stock.item_id, quantity: stock.quantity
             });
+            console.log(inventoryResult);
 
             if ((stockResult.returncode !== 200 || stockResult.output.length === 0) && (inventoryResult.returncode !== 200 || inventoryResult.output.length === 0)) {
                 error_flag = true;

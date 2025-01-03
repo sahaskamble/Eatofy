@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
@@ -18,7 +18,6 @@ export default function MenuManagementPage() {
     type: '',
     code: ''
   });
-  const [editingMenuItemId, setEditingMenuItemId] = useState(null);
   const [newCategory, setNewCategory] = useState({
     name: '',
     description: ''
@@ -125,7 +124,7 @@ export default function MenuManagementPage() {
 
   const handleDeleteCategory = async (categoryId, categoryName) => {
     const isConfirmed = window.confirm(`Are you sure you want to delete the category "${categoryName}"? This will also delete all menu items in this category.`);
-    
+
     if (!isConfirmed) {
       return;
     }
@@ -186,7 +185,7 @@ export default function MenuManagementPage() {
                     <p className="text-gray-600 text-sm mt-1">{category.Description}</p>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={() => handleDeleteCategory(category._id, category.CategoryName)}
                   className="text-gray-600 hover:text-red-500"
                 >
@@ -270,10 +269,10 @@ export default function MenuManagementPage() {
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold">{item.DishId.DishName}</h3>
                   <Image
-                    src={item.DishId.Type?.startsWith('V') ? '/veg-icon.svg' : 
-                         item.DishId.Type?.startsWith('N') ? '/non-veg-icon.svg' : 
-                         item.DishId.Type?.startsWith('B') ? '/beverage-icon.svg' :
-                         '/egg-icon.svg'}
+                    src={item.DishId.Type?.startsWith('V') ? '/veg-icon.svg' :
+                      item.DishId.Type?.startsWith('N') ? '/non-veg-icon.svg' :
+                        item.DishId.Type?.startsWith('B') ? '/beverage-icon.svg' :
+                          '/egg-icon.svg'}
                     alt={item.DishId.Type}
                     width={20}
                     height={20}
