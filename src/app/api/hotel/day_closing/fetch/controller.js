@@ -35,6 +35,7 @@ export async function fetch_day_closing(data, tokenData) {
 
 		const startOfDay = new Date(start.toISOString());
 		const endOfDay = new Date(end.toISOString());
+		const purchase_date = startOfDay.toISOString().split('T')[0];
 
 		// Fetch bills created on this day
 		const sales_result = await Bills.find({
@@ -57,7 +58,7 @@ export async function fetch_day_closing(data, tokenData) {
 		// Fetch purchases created on this day
 		const purchases_result = await PurchasedInvoice.find({
 			HotelId: hotel_id,
-			Date: date
+			Date: purchase_date
 		}).populate(['SupplierId']);
 
 		// Attendances Fetch

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FaTimes, FaPlus, FaSearch, FaBox } from "react-icons/fa";
+import { FaTimes, FaPlus, FaSearch, FaBox, FaEye } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdOutlineEdit } from "react-icons/md";
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,8 @@ export default function AvailableStock() {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -149,6 +151,41 @@ export default function AvailableStock() {
     return 'bg-green-100 text-green-600';
   };
 
+  const viewItem = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const Modal = ({ item, onClose }) => {
+    return (
+      <div className="fixed z-50 inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300">
+        <div className="bg-white w-full max-w-lg rounded-lg shadow-lg transform transition-all overflow-hidden scale-100 hover:scale-105">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-gray-800">{item.ItemId?.ItemName}</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-all"
+              >
+                <FaTimes size={20} />
+              </button>
+            </div>
+            <div className="border-t border-gray-200 pt-4">
+              <p className="text-lg text-gray-700">Category: {item.ItemId?.CategoryId?.CategoryName}</p>
+              <p className="text-lg text-gray-700">Quantity: {item.Quantity} {item.ItemId?.Unit}</p>
+              {/* Add more item details as needed */}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* Add Stock Modal */}
@@ -275,6 +312,9 @@ export default function AvailableStock() {
         </div>
       )}
 
+      {/* Item Details Modal */}
+      {isModalOpen && <Modal item={selectedItem} onClose={closeModal} />}
+
       {/* Main Content */}
       <div className="max-w-[1600px] mx-auto p-4">
         {/* Header */}
@@ -370,7 +410,7 @@ export default function AvailableStock() {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-600">
-                        {`${item.Quantity} ${item.ItemId?.Unit}`}
+                        {`${item.Quantity}`}
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex justify-center">
@@ -381,6 +421,12 @@ export default function AvailableStock() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex justify-center">
+                          <button
+                            onClick={() => viewItem(item)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
+                          >
+                            <FaEye size={16} />
+                          </button>
                           <button
                             onClick={() => {
                               setFormData({

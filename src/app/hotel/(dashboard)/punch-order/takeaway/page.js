@@ -16,7 +16,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@headlessui/react';
 import billsCrud from '@/app/offline/crud/Bills';
-import tablesCrud from '@/app/offline/crud/Tables';
 import menusCrud from '@/app/offline/crud/Menus';
 import menuCategoryCrud from '@/app/offline/crud/MenuCategory';
 import { useOffline } from '@/app/hotel/contexts/OfflineContext';
@@ -55,17 +54,7 @@ export default function TableOrderPage() {
   const searchInputRef = useRef(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
-  const { isOffline, setIsOffline } = useOffline();
-
-  const toggleOfflineMode = () => {
-    setIsOffline((prev) => !prev);
-    if (!isOffline) {
-      toast.info('Switched to Offline Mode');
-    } else {
-      toast.info('Switched to Online Mode');
-    }
-    fetchData();
-  };
+  const { isOffline, toggleOfflineMode } = useOffline();
 
   const handlePrint = useReactToPrint({
     contentRef: printComponentRef,
@@ -362,56 +351,44 @@ export default function TableOrderPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      // if (isOffline) {
-      //   // Fetch table details
-      //   const existingBill = await billsCrud.dineInRead(params.tableId);
-      //   if (existingBill.returncode === 200) {
-      //     const billInfo = existingBill?.output[0];
-      //     setExistingBill(billInfo);
-      //     // console.log(existingBill.output[0].Orders)
-      //     setLatestBillId(billInfo._id);
-      //     setExistingOrder(billInfo.Orders);
-      //     setCart([]); // Clear cart when there's an existing bill
-      //   }
-      //   const tableData = await tablesCrud.readTable(params.tableId);
-      //   if (tableData.returncode === 200) {
-      //     const tableInfo = tableData.output[0];
-      //     const menusData = await menusCrud.readMenusBySectionId(tableInfo.SectionId._id);
-      //     const categoryData = await menuCategoryCrud.readMenuCategories();
-      //     setMenus(menusData.output);
-      //     setTable(tableInfo);
-      //     setCategories(categoryData.output)
-      //   }
-      // } else {
-        const tableResponse = await fetch(`/api/hotel/bill_order/takeaway`);
-        const tableData = await tableResponse.json();
-        if (tableData.returncode === 200) {
-          const latestBill = tableData.output[0].ExistingBill;
-          if (latestBill.length !== 0) {
-            setExistingBill(latestBill);
-            setLatestBillId(latestBill?._id);
-            setExistingOrder(latestBill?.Orders);
-            setCart([]);
-          }
+      let menusData = null;
+      let categoryData = null;
 
-          if (tableData.output?.[0]) {
-            const { TableInfo, Categories, Menus } = tableData.output[0];
-            setTable(TableInfo);
-            setCategories(Categories);
-            setMenus(Menus);
-          }
+      if (isOffline) {
+        // Fetch menus
+        menusData = await menusCrud.readTakeawayMenus();
+        // Fetch categories
+        categoryData = await menuCategoryCrud.readMenuCategories();
+      } else {
+        const response = await fetch(`/api/hotel/bill_order/takeaway`);
+        const takeawayResponse = await response.json();
+        if (takeawayResponse.returncode === 200 && takeawayResponse.output.length > 0) {
+          const { Categories, Menus } = takeawayResponse.output[0];
+          console.log(Menus, Categories);
+          menusData = { output: Menus, returncode: 200 };
+          categoryData = { output: Categories, returncode: 200 };
         }
-      // }
+      }
+
+      console.log(menusData)
+      if (menusData?.returncode === 200) {
+        setMenus(menusData.output);
+      }
+
+      if (categoryData?.returncode === 200) {
+        setCategories(categoryData.output);
+      }
+
       setLoading(false);
     } catch (error) {
       toast.error('Failed to load data');
       setLoading(false);
     }
-  }, []);
+  }, [isOffline]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isOffline]);
 
   const handleOrderItemDelete = async (orderId) => {
     try {

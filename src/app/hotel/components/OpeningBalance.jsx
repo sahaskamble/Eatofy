@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { BiRupee } from 'react-icons/bi';
+import { IoClose } from 'react-icons/io5';
 
 export default function OpeningBalance() {
   const [displayModal, setdisplayModal] = useState(false);
@@ -65,44 +66,65 @@ export default function OpeningBalance() {
 
   return (
     <>
-      {
-        displayModal && (
-          <div className="fixed top-0 left-0 w-full h-dvh bg-black bg-opacity-55 flex justify-center items-center backdrop-blur-sm">
-            <div className='w-[450px] h-[260px] bg-white p-2 relative rounded-lg'>
-              <div className='absolute flex justify-between items-center z-0 top-0 left-0 w-full h-[60px] rounded-lg pl-8'>
-                <h3 className='text-2xl font-bold text-red-500'> Opening Balance (Galla Entry) </h3>
+      {displayModal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white w-full max-w-[450px] rounded-xl shadow-2xl transform transition-all">
+            {/* Header */}
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Opening Balance Entry
+                </h3>
               </div>
-              <form className="h-full w-full flex justify-center items-center flex-col" onSubmit={handleSubmit}>
-                <div className="w-full flex justify-evenly items-start rounded-lg p-4">
-                  <div className='w-full'>
-                    <div className='p-2 w-full flex flex-col gap-2'>
-                      <label htmlFor="customer">Opening Balance<span className="text-red-500 text-lg">*</span></label>
-                      <div className='border-2 border-zinc-500 rounded-lg flex px-2 items-center'>
-                        <div className='border-r-2 border-zinc-500 py-1'>
-                          <BiRupee size={25} />
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="Please enter cash amount in your Drawer(Galla)"
-                          value={opening_balance}
-                          required
-                          className="w-full text-sm outline-none border-none"
-                          onChange={(e) => {
-                            setopening_balance(`${e.target.value}`)
-                          }}
-                        />
-                      </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label 
+                    htmlFor="opening-balance" 
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Opening Balance <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative rounded-lg border border-gray-300 shadow-sm hover:border-gray-400 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500 transition-all">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <BiRupee className="text-gray-500" size={20} />
                     </div>
+                    <input
+                      type="text"
+                      id="opening-balance"
+                      placeholder="Enter cash amount in drawer"
+                      value={opening_balance}
+                      required
+                      className="block w-full pl-10 pr-3 py-3 text-gray-700 rounded-lg focus:outline-none sm:text-sm"
+                      onChange={(e) => setopening_balance(e.target.value)}
+                    />
                   </div>
                 </div>
-                <div className='w-full px-5 flex gap-4 justify-end mt-4'>
-                  <button type='submit' className="bg-red-500 text-white p-2 font-bold rounded-lg">Start Working</button>
-                </div>
-              </form>
-            </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  onClick={() => setdisplayModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                >
+                  Start Working
+                </button>
+              </div>
+            </form>
           </div>
-        )
-      }
+        </div>
+      )}
     </>
   )
 }

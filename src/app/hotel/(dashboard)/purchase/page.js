@@ -7,18 +7,62 @@ import AddPurchaseModal from './components/AddPurchaseModal';
 import PurchaseList from './components/PurchaseList';
 import { toast } from 'react-toastify';
 import { fetchPurchases } from '../inventory/api';
+import { FaTimes, FaEye } from 'react-icons/fa';
+
+const Modal = ({ item, onClose }) => {
+    return (
+        <div className="fixed z-50 inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300">
+            <div className="bg-white w-full max-w-lg rounded-lg shadow-lg transform transition-all overflow-hidden scale-100 hover:scale-105">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold text-gray-800">Invoice No: {item.InvoiceNo}</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-all"
+                        >
+                            <FaTimes size={20} />
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 border-t border-gray-200 pt-4">
+                        {Object.entries({
+                            'Date': item.Date,
+                            'Payment Mode': item.PaymentMode,
+                            'Payment Status': item.PaymentStatus,
+                            'Amount Paid': item.AmountPaid,
+                            'Balance Amount': item.BalanceAmount,
+                            'Supplier Name': item.SupplierName,
+                            'Supplier Type': item.SupplierType,
+                            'Supplier Contact': item.Contact,
+                            'Supplier Address': item.Address,
+                            'Supplier Email': item.Email,
+                            'Supplier GSTIN': item.GSTIN
+                        }).map(([key, value]) => (
+                            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+                                <p className="font-semibold text-gray-700">{key}:</p>
+                                <p className="text-lg text-gray-700">{value}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function PurchasePage() {
   const router = useRouter();
   const [invoices, setInvoices] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadPurchases = async () => {
     setIsLoading(true);
     try {
       const data = await fetchPurchases();
       if (data.returncode === 200) {
+        console.log(data.output); // Log the fetched invoices data
         setInvoices(data.output);
       } else {
         toast.error(data.message || 'Failed to load purchases');
@@ -28,6 +72,16 @@ export default function PurchasePage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const viewItem = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
   };
 
   useEffect(() => {
@@ -63,6 +117,7 @@ export default function PurchasePage() {
         invoices={invoices}
         isLoading={isLoading}
         onRefresh={loadPurchases}
+        onViewItem={viewItem}
       />
 
       {isAddModalOpen && (
@@ -74,6 +129,7 @@ export default function PurchasePage() {
           }}
         />
       )}
+      {isModalOpen && <Modal item={selectedItem} onClose={closeModal} />}
     </div>
   );
 } 

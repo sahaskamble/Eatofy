@@ -54,7 +54,15 @@ class StaffAttendanceCrud extends BaseCrud {
 
   async readAttendance(hotel_id, date) {
     try {
-      const result = await this.readMany({ HotelId: hotel_id, Date: date });
+      const result = await this.readMany({
+        Date: date
+      },
+        {
+          populate: [{
+            path: 'StaffId',
+            match: { HotelId: hotel_id }
+          }]
+        });
       return result;
     } catch (error) {
       return {
@@ -64,7 +72,6 @@ class StaffAttendanceCrud extends BaseCrud {
       }
     }
   }
-
 
   async editAttendanceofStaff(attendance_id, type) {
     try {

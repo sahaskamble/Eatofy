@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaPlus, FaTimes, FaTrash, FaSearch, FaBox, FaLayerGroup } from "react-icons/fa";
+import { FaPlus, FaTimes, FaTrash, FaSearch, FaBox, FaLayerGroup, FaEye } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { toast } from 'react-toastify';
 
@@ -18,6 +18,8 @@ export default function ItemManagement() {
   const [editItemName, setEditItemName] = useState('');
   const [editUnit, setEditUnit] = useState('');
   const [editItemId, setEditItemId] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -171,6 +173,16 @@ export default function ItemManagement() {
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
+  };
+
+  const viewItem = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
   };
 
   const filteredItems = items.filter((item) =>
@@ -329,6 +341,29 @@ export default function ItemManagement() {
         </div>
       )}
 
+      {isModalOpen && (
+        <div className="fixed z-50 inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-lg transform transition-all overflow-hidden scale-100 hover:scale-105">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-800">{selectedItem.ItemName}</h2>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-all"
+                >
+                  <FaTimes size={20} />
+                </button>
+              </div>
+              <div className="border-t border-gray-200 pt-4">
+                <p className="text-lg text-gray-700">Category: {selectedItem.CategoryId?.CategoryName}</p>
+                <p className="text-lg text-gray-700">Quantity: {selectedItem.Quantity} {selectedItem.Unit}</p>
+                {/* Add more item details as needed */}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-[1600px] mx-auto p-4">
         {/* Header */}
@@ -435,12 +470,12 @@ export default function ItemManagement() {
                           >
                             <FaTrash size={14} />
                           </button>
-                          {/* <button
-                            onClick={() => openEditModal(item)}
+                          <button
+                            onClick={() => viewItem(item)}
                             className="p-1.5 text-gray-400 hover:text-blue-500 rounded transition-colors"
                           >
-                            Edit
-                          </button> */}
+                            <FaEye size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>

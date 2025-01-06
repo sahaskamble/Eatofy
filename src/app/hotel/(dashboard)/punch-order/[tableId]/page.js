@@ -57,17 +57,7 @@ export default function TableOrderPage() {
   const searchInputRef = useRef(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
-  const { isOffline } = useOffline();
-
-  const toggleOfflineMode = () => {
-    setIsOffline((prev) => !prev);
-    if (!isOffline) {
-      toast.info('Switched to Offline Mode');
-    } else {
-      toast.info('Switched to Online Mode');
-    }
-    fetchData();
-  };
+  const { isOffline, toggleOfflineMode } = useOffline();
 
   const handlePrint = useReactToPrint({
     contentRef: printComponentRef,
@@ -402,25 +392,30 @@ export default function TableOrderPage() {
 
   const fetchData = useCallback(async () => {
     try {
+      let billInfo = null;
+      let menusData = null;
+      let tableInfo = null;
+      let categoryData = null;
+
       if (isOffline) {
-        // Fetch table details
-        const existingBill = await billsCrud.dineInRead(params.tableId);
-        if (existingBill.returncode === 200) {
-          const billInfo = existingBill?.output[0];
-          setExistingBill(billInfo);
-          // console.log(existingBill.output[0].Orders)
-          setLatestBillId(billInfo._id);
-          setExistingOrder(billInfo.Orders);
-          setCart([]); // Clear cart when there's an existing bill
-        }
+        // Fetch table details first
         const tableData = await tablesCrud.readTable(params.tableId);
-        if (tableData.returncode === 200) {
-          const tableInfo = tableData.output[0];
-          const menusData = await menusCrud.readMenusBySectionId(tableInfo.SectionId._id);
-          const categoryData = await menuCategoryCrud.readMenuCategories();
-          setMenus(menusData.output);
-          setTable(tableInfo);
-          setCategories(categoryData.output)
+        if (tableData.returncode === 200 && tableData.output.length > 0) {
+          tableInfo = tableData.output[0];
+
+          // Only fetch menus if we have table info
+          if (tableInfo.SectionId) {
+            menusData = await menusCrud.readMenusBySectionId(tableInfo.SectionId._id);
+          }
+
+          // Fetch categories
+          categoryData = await menuCategoryCrud.readMenuCategories();
+
+          // Fetch existing bill
+          const existingBill = await billsCrud.dineInRead(params.tableId);
+          if (existingBill.returncode === 200) {
+            billInfo = existingBill.output[0];
+          }
         }
       } else {
         const tableResponse = await fetch(`/api/hotel/bill_order/dine_in`, {
@@ -431,33 +426,63 @@ export default function TableOrderPage() {
           }),
         });
         const tableData = await tableResponse.json();
-        if (tableData.returncode === 200) {
-          const latestBill = tableData.output[0].ExistingBill;
-          if (latestBill.length !== 0) {
-            setExistingBill(latestBill);
-            setLatestBillId(latestBill?._id);
-            setExistingOrder(latestBill?.Orders);
-            setCart([]);
-          }
 
-          if (tableData.output?.[0]) {
-            const { TableInfo, Categories, Menus } = tableData.output[0];
-            setTable(TableInfo);
-            setCategories(Categories);
-            setMenus(Menus);
-          }
+        if (tableData.returncode === 200 && tableData.output.length > 0) {
+          const { TableInfo, Categories, Menus, ExistingBill } = tableData.output[0];
+          tableInfo = TableInfo;
+          menusData = { output: Menus, returncode: 200 };
+          categoryData = { output: Categories, returncode: 200 };
+          billInfo = ExistingBill;
         }
       }
+
+      // Update states only if we have valid data
+      if (tableInfo) {
+        setTable(tableInfo);
+      }
+
+      if (menusData?.returncode === 200) {
+        setMenus(menusData.output);
+      }
+
+      if (categoryData?.returncode === 200) {
+        setCategories(categoryData.output);
+      }
+
+      if (billInfo) {
+        setExistingBill(billInfo);
+        setLatestBillId(billInfo._id);
+        setExistingOrder(billInfo.Orders);
+        setCart([]); // Clear cart when bill exists
+      } else {
+        // Clear bill-related states if no bill exists
+        setExistingBill(null);
+        setLatestBillId(null);
+        setExistingOrder(null);
+      }
+
       setLoading(false);
     } catch (error) {
       toast.error('Failed to load data');
       setLoading(false);
     }
-  }, [params.tableId]);
+  }, [params.tableId, isOffline]);
 
   useEffect(() => {
-    fetchData();
-  }, [isOffline]);
+    let mounted = true;
+
+    const loadData = async () => {
+      if (!mounted) return;
+      setLoading(true);
+      await fetchData();
+    };
+
+    loadData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [isOffline, fetchData]);
 
   const handleOrderItemDelete = async (orderId) => {
     try {
@@ -523,6 +548,29 @@ export default function TableOrderPage() {
       return matchesSearch && matchesCategory;
     });
   }, [menus, selectedCategory, searchQuery]);
+
+  const updateStates = (data) => {
+    try {
+      if (data?.TableInfo) {
+        setTable(data.TableInfo);
+      }
+      if (data?.Menus) {
+        setMenus(data.Menus);
+      }
+      if (data?.Categories) {
+        setCategories(data.Categories);
+      }
+      if (data?.ExistingBill) {
+        setExistingBill(data.ExistingBill);
+        setLatestBillId(data.ExistingBill._id);
+        setExistingOrder(data.ExistingBill.Orders);
+        setCart([]);
+      }
+    } catch (error) {
+      console.error('Error updating states:', error);
+      toast.error('Error updating display data');
+    }
+  };
 
   if (loading) {
     return (

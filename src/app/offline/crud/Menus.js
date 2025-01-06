@@ -36,7 +36,6 @@ class MenusCrud extends OfflineBaseCrud {
 		try {
 
 			const result = await this.read("SectionId.Type", "Takeaway");
-
 			return result;
 
 		} catch (error) {

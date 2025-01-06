@@ -2,6 +2,8 @@
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
 import React, { useEffect, useState } from 'react';
@@ -53,40 +55,48 @@ export default function DayClosing() {
 
   // PDF Generation function
   const handlePdfGeneration = async () => {
-    const inputData = document.getElementById("Report");  // Replace with your specific element if needed
+    const loadingToast = toast.info('Generating PDF...');
 
-    // Take a screenshot of the whole page
-    const canvas = await html2canvas(inputData, { scale: 2 });
+    try {
+      const inputData = document.getElementById("Report");  // Replace with your specific element if needed
 
-    // Get the image dimensions
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 270;  // Updated width of the Image for landscape mode in mm
-    const pageWidth = 297;  // Updated width of the PDF page (in mm) for landscape mode
-    const pageHeight = 210; // Updated height of the PDF page in mm for landscape mode
-    const imgHeight = ((canvas.height * imgWidth) / canvas.width);
-    const heightLeft = imgHeight;
+      // Take a screenshot of the whole page
+      const canvas = await html2canvas(inputData, { scale: 2 });
 
-    // Calculate margins to center the image on the page
-    const xOffset = (pageWidth - imgWidth) / 2;  // Horizontal centering
+      // Get the image dimensions
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 270;  // Updated width of the Image for landscape mode in mm
+      const pageWidth = 297;  // Updated width of the PDF page (in mm) for landscape mode
+      const pageHeight = 210; // Updated height of the PDF page in mm for landscape mode
+      const imgHeight = ((canvas.height * imgWidth) / canvas.width) - 20;
+      const heightLeft = imgHeight;
 
-    // Create a new PDF document in landscape mode ('l' stands for landscape)
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    let position = 10;
+      // Calculate margins to center the image on the page
+      const xOffset = (pageWidth - imgWidth) / 2;  // Horizontal centering
 
-    // Add the image to the first page
-    pdf.addImage(imgData, 'PNG', xOffset, position, imgWidth, imgHeight);
-    let remainingHeight = heightLeft - pageHeight + 20;
+      // Create a new PDF document in landscape mode ('l' stands for landscape)
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      let position = 10;
 
-    // Loop through the rest of the image, adding new pages as needed
-    while (remainingHeight > 0) {
-      position = remainingHeight - imgHeight;
-      pdf.addPage();
+      // Add the image to the first page
       pdf.addImage(imgData, 'PNG', xOffset, position, imgWidth, imgHeight);
-      remainingHeight -= pageHeight;
-    }
+      let remainingHeight = heightLeft - pageHeight + 15;
 
-    // Save the PDF
-    pdf.save(`Day_Closing_Report_ (${today_default}).pdf`);
+      // Loop through the rest of the image, adding new pages as needed
+      while (remainingHeight > 0) {
+        position = remainingHeight - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', xOffset, position, imgWidth, imgHeight);
+        remainingHeight -= pageHeight;
+      }
+
+      // Save the PDF
+      pdf.save(`Day_Closing_Report_ (${today_default}).pdf`);
+      toast.success('PDF generated successfully!', { id: loadingToast });
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      toast.error('Failed to generate PDF', { id: loadingToast });
+    }
   };
 
   function DateFormatter(date) {
@@ -141,7 +151,7 @@ export default function DayClosing() {
         setStock(data?.output?.Inventory || []);
       }
       else {
-        router.push("/hotels/day_closing")
+        router.push("/hotel/day_closing")
       }
     } catch (e) {
       throw console.error(e);
@@ -179,11 +189,8 @@ export default function DayClosing() {
 
   const closingStock = async () => {
     try {
-      const hotel_id = localStorage.getItem('hotel_id');
-      const response = await fetch(`/api/hotel/inventory/stock_report/management/closing_stock`, {
+      const response = await fetch(`/api/hotel/stock_report/add`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hotel_id, date }),
       });
       const data = await response.json();
       if (data.returncode != 200) {
@@ -199,16 +206,13 @@ export default function DayClosing() {
     handleClosingBalance();
     await closingStock();
 
-    const hotel_id = localStorage.getItem("hotel_id");
-
     try {
       const response = await fetch(`/api/hotel/cash_drawer/closing_balance`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          hotel_id,
           closing_balance: parseInt(ClosingBalance) || 0,
           dropped_cash: parseInt(DroppedCash) || 0,
           cash_withdrawn: parseInt(CashWithdrawn) || 0,
@@ -219,7 +223,7 @@ export default function DayClosing() {
       const data = await response.json();
 
       if (data.returncode === 200) {
-        router.push("/hotels/home")
+        router.push("/hotel/punch-order")
       }
 
     } catch (error) {
@@ -248,13 +252,15 @@ export default function DayClosing() {
 
     try {
       const response = await fetch(`/api/hotel/staff/attendance/edit`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          attendance_id: selectedStaff.id,
+          attendance_id: selectedStaff._id,
           type: status,
+          date: date,
+          staff_id: selectedStaff.StaffId._id
         }),
       });
 
@@ -275,506 +281,454 @@ export default function DayClosing() {
 
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-100">
       <OpeningBalance />
-      <div className="bg-zinc-200 flex h-auto">
-        <div className="flex-1 p-4">
-          <div className="w-full flex justify-between items-center">
-
-            <div className="flex gap-4 items-center">
-              <IoIosArrowBack size={50} color="red" className="cursor-pointer" onClick={() => {
-                router.back()
-              }} />
-
-              <h1 className="bg-gradient-to-r from-red-600 via-orange-500 to-red-400 inline-block text-transparent bg-clip-text text-3xl uppercase font-bold">
-                Day Closing
-              </h1>
+      <div className="p-6 space-y-6">
+        {/* Header Section */}
+        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => router.back()}
+                className="p-3 hover:bg-red-50 rounded-xl transition-colors group"
+              >
+                <IoIosArrowBack size={28} className="text-red-500 group-hover:translate-x-[-2px] transition-transform" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  Day Closing
+                </h1>
+                <p className="text-gray-500 mt-1">Manage your daily business closing</p>
+              </div>
             </div>
 
-            <div className='flex justify-center items-center'>
-              <div className="flex items-center space-x-4">
-                <div className='flex flex-col justify-center text-sm font-semibold text-zinc-700 items-center'>
-                  <label htmlFor="to" className='text-'>
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    id='date'
-                    value={displayDate}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setdisplayDate(e.target.value)
-                      const temp_date = e.target.value;
-                      const request_date = DateFormatter(temp_date);
-                      setDate(request_date);
-                    }}
-                  />
-                </div>
-                <div className='flex items-end pr-4 pt-6'>
-                  <button
-                    className='bg-red-500 text-white px-4 py-2 rounded-lg'
-                    onClick={
-                      () => {
-                        fetchData();
-                      }
-                    }
-                  >
-                    Filter
-                  </button>
-                </div>
+            {/* Date Filter */}
+            <div className="flex items-center gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-600 mb-1">Select Date</label>
+                <input
+                  type="date"
+                  value={displayDate}
+                  onChange={(e) => {
+                    setdisplayDate(e.target.value);
+                    setDate(DateFormatter(e.target.value));
+                  }}
+                  className="text-sm focus:outline-none bg-transparent"
+                />
+              </div>
+              <button
+                onClick={fetchData}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-all hover:shadow-md active:scale-95"
+              >
+                Apply Filter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="Report" className="space-y-6">
+          {/* Report Header */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Day Closing Report
+                </h2>
+                <p className="text-red-500 font-medium mt-1">{date}</p>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all hover:shadow-md active:scale-95 flex items-center gap-2"
+                >
+                  <span>Close Day</span>
+                </button>
+                <button
+                  onClick={handlePdfGeneration}
+                  className="bg-white hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-xl text-sm font-medium transition-all hover:shadow-md active:scale-95 border border-gray-200 flex items-center gap-2"
+                >
+                  <FaRegFilePdf className="text-red-500" size={18} />
+                  <span>Export PDF</span>
+                </button>
               </div>
             </div>
           </div>
-          <div className='justify-end w-full flex pt-4'>
-            <div></div>
-          </div>
 
-          <div id="Report">
-            <div className="flex flex-col w-full gap-4 mt-6 mb-4">
-              <h1 className="text-red-500 font-bold text-lg p-2">Day Closing report of {date}.</h1>
-              <div className="w-full flex flex-row gap-4">
-                <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2 w-1/5">
-                  <div className='flex justify-between'>
-                    <h2 className="text-zinc-500 text-sm">Opening Balance</h2>
-                    <MdOutlineBalance size={20} />
+          {/* Stats Cards */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-6">Overview</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              {[
+                {
+                  title: "Opening Balance",
+                  value: Opening_Balance,
+                  icon: <MdOutlineBalance size={24} />,
+                  gradient: "from-red-500 via-orange-500 to-yellow-500"
+                },
+                {
+                  title: "Cash in Drawer",
+                  value: ClosingBalance,
+                  icon: <MdOutlineAccountBalanceWallet size={24} />,
+                  gradient: "from-yellow-500 via-orange-500 to-red-500"
+                },
+                {
+                  title: "Sales",
+                  value: SalesAmount,
+                  icon: <GiReceiveMoney size={24} />,
+                  subtitle: `${TotalSales} Orders`,
+                  gradient: "from-orange-500 via-yellow-500 to-red-500"
+                },
+                {
+                  title: "Expenses",
+                  value: ExpensesAmount,
+                  icon: <GiPayMoney size={24} />,
+                  subtitle: `${TotalExpenses} Invoices`,
+                  gradient: "from-red-500 via-yellow-500 to-orange-500"
+                },
+                {
+                  title: "Cash Withdrawn",
+                  value: CashWithdrawn,
+                  icon: <PiHandWithdrawLight size={24} />,
+                  gradient: "from-orange-500 via-red-500 to-yellow-500"
+                }
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="relative bg-white rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300"
+                >
+                  {/* Gradient Border */}
+                  <div className="absolute inset-0">
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 opacity-75 group-hover:opacity-100 group-hover:bg-gradient-to-l transition-all duration-700 bg-[length:200%_200%] group-hover:bg-[position:100%_50%]" />
+                    <div className="absolute inset-[3px] bg-white rounded-2xl" />
                   </div>
-                  <p className="text-lg font-bold">Rs. {Opening_Balance | 0}</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2 w-1/5">
-                  <div className='flex justify-between'>
-                    <h2 className="text-zinc-500 text-sm">Cash in Drawer</h2>
-                    <MdOutlineAccountBalanceWallet size={20} />
-                  </div>
-                  <p className="text-lg font-bold">Rs. {ClosingBalance | 0}</p>
-                </div>
 
-                <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2 w-1/5">
-                  <div className='flex justify-between'>
-                    <h2 className="text-zinc-500 text-sm">Sales</h2>
-                    <GiReceiveMoney size={20} />
-                  </div>
-                  <p className="text-lg font-bold">Rs. {SalesAmount | 0}</p>
-                  <p className="text-zinc-500 text-sm">{TotalSales} Order(s)</p>
-                </div>
-
-                <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2 w-1/5">
-                  <div className='flex justify-between'>
-                    <h2 className="text-zinc-500 text-sm">Expenses</h2>
-                    <GiPayMoney size={20} />
-                  </div>
-                  <p className="text-lg font-bold">Rs. {ExpensesAmount | 0}</p>
-                  <p className="text-zinc-500 text-sm">{TotalExpenses} Invoice(s)</p>
-                </div>
-
-                <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2 w-1/5">
-                  <div className='flex justify-between'>
-                    <h2 className="text-zinc-500 text-sm">Cash Withdrawn</h2>
-                    <PiHandWithdrawLight size={20} />
-                  </div>
-                  <p className="text-lg font-bold">Rs. {CashWithdrawn | 0}</p>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <div className="w-full flex items-center justify-center">
-                  <div className="flex gap-8 items-center">
-                    <label htmlFor="CashWithdrawn" className="text-zinc-500 font-bold"> Cash Withdrawn Today </label>
-                    <div className='border-2 border-zinc-500 rounded-lg flex px-2 items-center w-96'>
-                      <div className='border-r-2 border-zinc-500 py-1'>
-                        <BiRupee size={25} />
+                  {/* Content */}
+                  <div className="relative p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <div className="p-3 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl group-hover:from-orange-100 group-hover:to-red-50 transition-colors">
+                        {React.cloneElement(stat.icon, { className: "text-red-500" })}
                       </div>
-                      <input
-                        type="text"
-                        placeholder="Please enter amount of Cash Withdrawn"
-                        value={CashWithdrawn}
-                        className="w-full focus:outline-none outline-none border-none"
-                        onChange={(e) => {
-                          setCashWithdrawn(e.target.value);
-                        }}
-                      />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-2xl font-bold text-gray-900">₹ {stat.value || 0}</h3>
+                      {stat.subtitle && (
+                        <p className="text-sm text-gray-500">{stat.subtitle}</p>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <h2 className="text-lg font-semibold text-card-foreground text-zinc-500">Employees Attendance</h2>
-                <div className="flex flex-wrap gap-4 pt-4">
-                  {
-                    StaffList.length > 0 ?
-                      StaffList
-                        .filter((staff) => {
-                          return staff.Role != "Owner"
-                        })
-                        .map((staff, index) => {
-                          return (
-                            <div
-                              key={index}
-                              onContextMenu={(event) => handleRightClick(event, staff)}
-                              className={`w-40 h-20 border flex justify-center items-center 
-                            ${staff.Type === "Present" ? "border-green-700 text-green-700" :
-                                  staff.Type === "Absent" ? "border-red-700 text-red-700" :
-                                    "border-yellow-700 text-yellow-700"}`}
-                            >
-                              <div className="flex flex-col gap-2 items-center">
-                                <h1 className="text-sm font-bold">
-                                  {staff.Staff.FirstName} {staff.Staff.LastName}
-                                </h1>
-                                <h2 className="text-xs">
-                                  {staff.Type}
-                                </h2>
-                              </div>
-
-                            </div>
-
-                          )
-                        }) : (<></>)
-                  }
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <div className="flex justify-start items-center">
-                  <div>
-                    <h1 className="text-zinc-500 text-lg font-bold"> Sales Data </h1>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <table className="text-sm min-w-full text-black border-collapse">
-                    <thead>
-                      <tr className="bg-gray-500 text-white font-bold">
-                        <th className="border px-4 py-2">SR#</th>
-                        <th className="border px-4 py-2">Type</th>
-                        <th className="border px-4 py-2">Waiter</th>
-                        <th className="border px-4 py-2">Customer Name</th>
-                        <th className="border px-4 py-2">Customer Contact</th>
-                        <th className="border px-4 py-2">Total Amount</th>
-                        <th className="border px-4 py-2">Balance Amount</th>
-                        <th className="border px-4 py-2">Payment Mode</th>
-                        <th className="border px-4 py-2">Payment Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Sales.length > 0 ? (
-                        Sales.map((row, index) => (
-                          <tr
-                            key={index}
-                            className={
-                              index % 2 === 0
-                                ? "bg-zinc-100 text-black font-light text-center text-sm"
-                                : "text-center text-black font-light text-sm"
-                            }
-                          >
-                            <td className="border px-4 py-2">{index + 1}</td>
-                            <td className="border px-4 py-2">{row.Type}</td>
-                            <td className="border px-4 py-2">
-                              {row.Waiter ? `${row.Waiter.FirstName} ${row.Waiter.LastName}` : 'N/A'}
-                            </td>
-                            <td className="border px-4 py-2">
-                              {row.Customer?.CustomerName || "N/A"}
-                            </td>
-                            <td className="border px-4 py-2">
-                              {row.Customer?.Contact || "N/A"}
-                            </td>
-                            <td className="border px-4 py-2">
-                              {row.TotalAmount}
-                            </td>
-                            <td className="border px-4 py-2">
-                              {row.BalanceAmount}
-                            </td>
-                            <td className="border px-4 py-2">
-                              {row.PaymentMode}
-                            </td>
-                            <td className="border px-4 py-2">
-                              <span
-                                className={`px-2 py-1 inline-flex text-sm leading-5 font-semibold rounded-lg ${row.PaymentStatus.toLowerCase() === "paid"
-                                  ? "bg-green-200 text-green-800"
-                                  : row.PaymentStatus.toLowerCase() === "unpaid"
-                                    ? "bg-red-200 text-red-800"
-                                    : row.PaymentStatus.toLowerCase() === "part-paid"
-                                      ? "bg-yellow-200 text-yellow-800"
-                                      : "bg-gray-200 text-gray-800"
-                                  }`}
-                              >
-                                {row.PaymentStatus}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td
-                            className="border px-4 py-2 text-center"
-                            colSpan="8"
-                          >
-                            No Orders Found
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h1 className="text-zinc-500 text-lg font-bold"> Expenses Data </h1>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="px-2 py-1 bg-red-200 text-red-500 border border-red-500 rounded-xl font-bold"
-                      onClick={() => {
-                        router.push('/hotels/expence_tracking')
-                      }}
-                    >
-                      Add +
-                    </button>
-                  </div>
-
-                </div>
-                <div className=" flex justify-center items-center">
-                  <table className="min-w-full text-sm text-black border-collapse">
-                    <thead>
-                      <tr className="bg-gray-500 text-white font-bold">
-                        <th className="border px-4 py-2">SR#</th>
-                        <th className="border px-4 py-2">Category</th>
-                        <th className="border px-4 py-2">Bearer</th>
-                        <th className="border px-4 py-2">Balance Amount</th>
-                        <th className="border px-4 py-2">Paid Amount</th>
-                        <th className="border px-4 py-2">Payment Mode</th>
-                        <th className="border px-4 py-2">Payment Status</th>
-                        <th className="border px-4 py-2">Note</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Expenses.map((row, index) => (
-                        <tr
-                          key={index}
-                          className={
-                            index % 2 === 0
-                              ? "bg-zinc-100 text-black font-light"
-                              : "text-black font-light"
-                          }
-                        >
-                          <td className="border px-4 py-2">{index + 1}</td>
-                          <td className="border px-4 py-2">
-                            {row.ExpenseName}
-                          </td>
-                          <td className="border px-4 py-2">{row.PayableTo}</td>
-                          <td className="border px-4 py-2">
-                            {row.AmountPayable}
-                          </td>
-                          <td className="border px-4 py-2">{row.AmountPaid}</td>
-                          <td className="border px-4 py-2">
-                            {row.PaymentMode}
-                          </td>
-                          <td className="border px-4 py-2">
-                            <span
-                              className={`px-2 py-1 inline-flex text-sm leading-5 font-semibold rounded-lg ${row.PaymentStatus.toLowerCase() === "paid"
-                                ? "bg-green-200 text-green-800"
-                                : row.PaymentStatus.toLowerCase() === "unpaid"
-                                  ? "bg-red-200 text-red-800"
-                                  : row.PaymentStatus.toLowerCase() ===
-                                    "part-paid"
-                                    ? "bg-yellow-200 text-yellow-800"
-                                    : "bg-gray-200 text-gray-800"
-                                }`}
-                            >
-                              {row.PaymentStatus}
-                            </span>
-                          </td>
-                          <td className="border px-4 py-2">
-                            {row.Note || "N/A"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h1 className="text-zinc-500 text-lg font-bold"> Purchases Data </h1>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="px-2 py-1 bg-red-200 text-red-500 border border-red-500 rounded-xl font-bold"
-                      onClick={() => {
-                        router.push('/hotels/purchase_management')
-                      }}
-                    >
-                      Add +
-                    </button>
-                  </div>
-                </div>
-
-                <div className=" flex justify-center items-center">
-                  <table className="table-fixed w-full p-2 text-sm">
-                    <thead className="bg-gray-500 text-white">
-                      <tr className="font-bold text-left">
-                        <th className="border px-4 py-2">SR#</th>
-                        <th className="border px-4 py-2">Invoice No</th>
-                        <th className="border px-4 py-2">From</th>
-                        <th className="border px-4 py-2">Total</th>
-                        <th className="border px-4 py-2">Balance(amt)</th>
-                        <th className="border px-4 py-2">Payment mode</th>
-                        <th className="border px-4 py-2">Payment</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-zinc-100">
-                      {PurchaseTable.map((items, index) => (
-                        <tr
-                          key={index}
-                          className={
-                            index % 2 === 0
-                              ? "bg-zinc-100 text-black font-light"
-                              : "text-black font-light"
-                          }
-                        >
-                          <td className="border px-4 py-2">{index + 1}</td>
-                          <td className="border px-4 py-2">{items.InvoiceNo}</td>
-                          <td className="border px-4 py-2">
-                            {items.Suppliers.SupplierName}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {items.TotalAmount}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {items.BalanceAmount}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {items.PaymentMode}
-                          </td>
-                          <td className="border px-4 py-2 inline-flex justify-center items-center">
-                            <span
-                              className={`px-2 py-1 inline-flex text-sm leading-5 font-semibold rounded-lg ${items.PaymentStatus.toLowerCase() === "paid"
-                                ? "bg-green-200 text-green-800"
-                                : items.PaymentStatus.toLowerCase() ===
-                                  "unpaid"
-                                  ? "bg-red-200 text-red-800"
-                                  : items.PaymentStatus.toLowerCase() ===
-                                    "part-paid"
-                                    ? "bg-yellow-200 text-yellow-800"
-                                    : "bg-gray-200 text-gray-800"
-                                }`}
-                            >
-                              {items.PaymentStatus}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-red-500 flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h1 className="text-zinc-500 text-lg font-bold"> Available Stock </h1>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="px-2 py-1 bg-red-200 text-red-500 border border-red-500 rounded-xl font-bold"
-                      onClick={() => {
-                        router.push('/hotels/available_stock')
-                      }}
-                    >
-                      Add +
-                    </button>
-                  </div>
-                </div>
-
-                <div className=" flex justify-center items-center">
-                  <table className="table-fixed w-full p-2 text-sm">
-                    <thead className="bg-gray-500 text-white">
-                      <tr className="font-bold text-left">
-                        <th className="border px-4 py-2">SR#</th>
-                        <th className="border px-4 py-2">Category</th>
-                        <th className="border px-4 py-2">Stock</th>
-                        <th className="border px-4 py-2">Quantity</th>
-                        <th className="border px-4 py-2">Unit</th>
-                        <th className="border px-4 py-2">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-zinc-100">
-                      {Stock.length === 0 ? (<></>) : Stock.map((items, index) => (
-                        <tr
-                          key={index}
-                          className={
-                            index % 2 === 0
-                              ? "bg-zinc-100 text-black font-light"
-                              : "text-black font-light"
-                          }
-                        >
-                          <td className="border px-4 py-2">{index + 1}</td>
-                          <td className="p-4">{items?.ItemId?.CategoryId?.CategoryName}</td>
-                          <td className="p-4">{items?.ItemId?.ItemName}</td>
-                          <td className="p-4">{items?.Quantity}</td>
-                          <td className="p-4">{items?.ItemId?.Unit}</td>
-                          <td className="p-4">
-                            <div className="flex justify-center items-center">
-                              <h3
-                                className={`text-center px-2 py-1 rounded-lg font-semibold
-                            ${(items.Status === "Available" && Number(items.Quantity) > 20) ? 'bg-green-200 text-green-500' :
-                                    (Number(items.Quantity) === 0) ? 'bg-red-200 text-red-500' :
-                                      (Number(items.Quantity) < 20) ? 'bg-yellow-200 text-yellow-500' :
-                                        'border-gray-500'
-                                  }`}
-                              >
-                                {items.Status}
-                              </h3>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
-          <div className="flex justify-end gap-4">
-            <button
-              className="bg-red-500 text-white font-bold rounded-lg px-4 py-2"
-              onClick={handleSubmit}
-            >
-              Done
-            </button>
 
-            <div>
-              <a onClick={() => { handlePdfGeneration() }} className="flex gap-2 cursor-pointer items-center bg-red-500 text-white px-4 py-2 font-semibold rounded-lg">
-                Download PDF <FaRegFilePdf />
-              </a>
+          {/* Cash Withdrawn Input */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-red-100">
+            <h3 className="text-xl font-bold text-gray-800 mb-6">Cash Withdrawal Entry</h3>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-full max-w-md">
+                <label className="text-sm font-medium text-gray-600 mb-2 block">Enter Amount Withdrawn</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <BiRupee className="text-gray-400" size={20} />
+                  </div>
+                  <input
+                    type="text"
+                    value={CashWithdrawn}
+                    onChange={(e) => setCashWithdrawn(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl ring-2 ring-red-500 focus:border-transparent transition-all"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
             </div>
-
           </div>
 
+          {/* Employee Attendance */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-4 border-b border-gray-100">
+              Employee Attendance
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {StaffList.length > 0 ? (
+                StaffList
+                  .filter((staff) => staff.Role !== "Owner")
+                  .map((staff, index) => (
+                    <div
+                      key={index}
+                      onContextMenu={(event) => handleRightClick(event, staff)}
+                      className={`relative group p-6 rounded-2xl transition-all hover:shadow-lg cursor-pointer
+                        ${staff.Type === "Present"
+                          ? "bg-gradient-to-br from-green-50 to-white border border-green-200"
+                          : staff.Type === "Absent"
+                            ? "bg-gradient-to-br from-red-50 to-white border border-red-200"
+                            : "bg-gradient-to-br from-yellow-50 to-white border border-yellow-200"
+                        }`}
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                          <span className="text-lg font-medium text-gray-600">
+                            {staff.StaffId.FirstName.charAt(0)}
+                          </span>
+                        </div>
+                        <h4 className="font-medium text-gray-800 text-center">
+                          {staff.StaffId.FirstName} {staff.StaffId.LastName}
+                        </h4>
+                        <span className={`text-xs px-3 py-1 rounded-full font-medium
+                          ${staff.Type === "Present"
+                            ? "bg-green-100 text-green-700"
+                            : staff.Type === "Absent"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {staff.Type}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <div className="col-span-full flex items-center justify-center py-12 px-4">
+                  <p className="text-gray-500 text-center">No employees found</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tables Section */}
+          <div className="grid grid-cols-1 gap-6">
+            {/* Sales Table */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800">Sales Data</h3>
+              </div>
+              <div className="overflow-x-auto rounded-xl border border-gray-100">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SR#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waiter</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Mode</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {Sales.length > 0 ? Sales.map((row, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.Type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {row.Waiter ? `${row.Waiter.FirstName} ${row.Waiter.LastName}` : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.Customer?.CustomerName || 'N/A'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.Customer?.Contact || 'N/A'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.TotalAmount}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.BalanceAmount}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.PaymentMode}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                            ${row.PaymentStatus.toLowerCase() === "paid" ? "bg-green-100 text-green-800" :
+                              row.PaymentStatus.toLowerCase() === "unpaid" ? "bg-red-100 text-red-800" :
+                                "bg-yellow-100 text-yellow-800"}`}>
+                            {row.PaymentStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="9" className="px-6 py-4 text-center text-sm text-gray-500">No sales data found</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Expenses Table */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800">Expenses Data</h3>
+                <button
+                  onClick={() => router.push('/hotel/expence_tracking')}
+                  className="inline-flex items-center px-4 py-2 border-2 border-red-500 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-all"
+                >
+                  Add New +
+                </button>
+              </div>
+              <div className="overflow-x-auto rounded-xl border-2 border-gray-100">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">SR#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Category</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Bearer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Balance Amount</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Paid Amount</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Payment Mode</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Note</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {Expenses.length > 0 ? Expenses.map((row, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.ExpenseName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.PayableTo}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.AmountPayable || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.AmountPaid || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.PaymentMode}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                            ${row.PaymentStatus.toLowerCase() === "paid" ? "bg-green-100 text-green-800" :
+                              row.PaymentStatus.toLowerCase() === "unpaid" ? "bg-red-100 text-red-800" :
+                                "bg-yellow-100 text-yellow-800"}`}>
+                            {row.PaymentStatus}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.Note || 'N/A'}</td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="8" className="px-6 py-4 text-center text-sm text-gray-500">No expenses data found</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Purchases Table */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800">Purchases Data</h3>
+                <button
+                  onClick={() => router.push('/hotel/purchase_management')}
+                  className="inline-flex items-center px-4 py-2 border-2 border-red-500 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-all"
+                >
+                  Add New +
+                </button>
+              </div>
+              <div className="overflow-x-auto rounded-xl border-2 border-gray-100">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">SR#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Invoice No</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Supplier</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Total</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Balance</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Payment Mode</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {PurchaseTable.length > 0 ? PurchaseTable.map((row, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.InvoiceNo}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.SupplierId?.SupplierName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.AmountPaid || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹ {row.BalanceAmount || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.PaymentMode}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                            ${row.PaymentStatus.toLowerCase() === "paid" ? "bg-green-100 text-green-800" :
+                              row.PaymentStatus.toLowerCase() === "unpaid" ? "bg-red-100 text-red-800" :
+                                "bg-yellow-100 text-yellow-800"}`}>
+                            {row.PaymentStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">No purchases data found</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Stock Table */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-gray-800">Available Stock</h3>
+                <button
+                  onClick={() => router.push('/hotel/available_stock')}
+                  className="inline-flex items-center px-4 py-2 border-2 border-red-500 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-all"
+                >
+                  Add New +
+                </button>
+              </div>
+              <div className="overflow-x-auto rounded-xl border-2 border-gray-100">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">SR#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Category</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Stock Item</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Quantity</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Unit</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {Stock.length > 0 ? Stock.map((row, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.ItemId?.CategoryId?.CategoryName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.ItemId?.ItemName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.Quantity}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.ItemId?.Unit}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                            ${(row.Status === "Available" && Number(row.Quantity) > 20) ? 'bg-green-100 text-green-800' :
+                              (Number(row.Quantity) === 0) ? 'bg-red-100 text-red-800' :
+                                (Number(row.Quantity) < 20) ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-gray-100 text-gray-800'}`}>
+                            {row.Status}
+                          </span>
+                        </td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">No stock data found</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Custom Context Menu */}
+      {/* Context Menu */}
       {contextMenu && (
         <ul
-          className="fixed bg-white shadow-lg rounded-lg border border-gray-300 p-2"
+          className="fixed bg-white shadow-xl rounded-xl border border-gray-200 py-2 z-50"
           style={{ top: contextMenu.yPos, left: contextMenu.xPos }}
           onMouseLeave={() => setContextMenu(null)}
         >
-          <li className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleOptionClick("Present")}>
-            Present
+          <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm" onClick={() => handleOptionClick("Present")}>
+            Mark as Present
           </li>
-          <li className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleOptionClick("Absent")}>
-            Absent
+          <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm" onClick={() => handleOptionClick("Absent")}>
+            Mark as Absent
           </li>
-          <li className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleOptionClick("Half Day")}>
-            Half Day
+          <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm" onClick={() => handleOptionClick("Half Day")}>
+            Mark as Half Day
           </li>
         </ul>
       )}
-    </>
+
+      <ToastContainer position="top-right" />
+    </div>
   )
 }

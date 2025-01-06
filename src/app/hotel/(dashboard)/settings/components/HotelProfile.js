@@ -97,7 +97,7 @@ export default function HotelProfile() {
         <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 transition-transform transform hover:scale-105">
           {settings.logo && !imageError ? (
             <Image
-              src={settings.logo.includes('base64') ? settings.logo : `data:image/jpeg;base64,${settings.logo}`}
+              src={settings?.logo?.includes('base64') ? settings?.logo : `data:image/jpeg;base64,${settings?.logo}`}
               alt="Hotel Logo"
               width={128}
               height={128}

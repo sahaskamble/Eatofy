@@ -108,9 +108,8 @@ class MenusCrud extends BaseCrud {
   // Takeaway
   async readTakeawayMenus() {
     try {
-
       const result = await this.readMany(
-        { "SectionId.Type": "Takeaway" },
+        {},
         {
           populate: [
             {
@@ -120,12 +119,21 @@ class MenusCrud extends BaseCrud {
                   path: 'CategoryId'
                 }
               ]
+            },
+            {
+              path: 'SectionId',
+              match: { Type: "Takeaway" }
             }
           ]
         }
       );
 
-      return result;
+      const filteredResult = {
+        ...result,
+        output: result.output.filter(menu => menu.SectionId !== null)
+      };
+
+      return filteredResult;
 
     } catch (error) {
       return {
@@ -139,9 +147,8 @@ class MenusCrud extends BaseCrud {
   // Delivery
   async readDeliveryMenus() {
     try {
-
       const result = await this.readMany(
-        { "SectionId.Type": "Delivery" },
+        {},
         {
           populate: [
             {
@@ -151,13 +158,21 @@ class MenusCrud extends BaseCrud {
                   path: 'CategoryId'
                 }
               ]
+            },
+            {
+              path: 'SectionId',
+              match: { Type: "Delivery" }
             }
           ]
         }
       );
 
-      return result;
+      const filteredResult = {
+        ...result,
+        output: result.output.filter(menu => menu.SectionId !== null)
+      };
 
+      return filteredResult;
     } catch (error) {
       return {
         returncode: 500,
@@ -170,9 +185,8 @@ class MenusCrud extends BaseCrud {
   // Swiggy
   async readSwiggyMenus() {
     try {
-
       const result = await this.readMany(
-        { "SectionId.Type": "Swiggy" },
+        {},
         {
           populate: [
             {
@@ -182,13 +196,21 @@ class MenusCrud extends BaseCrud {
                   path: 'CategoryId'
                 }
               ]
+            },
+            {
+              path: 'SectionId',
+              match: { Type: "Swiggy" }
             }
           ]
         }
       );
 
-      return result;
+      const filteredResult = {
+        ...result,
+        output: result.output.filter(menu => menu.SectionId !== null)
+      };
 
+      return filteredResult;
     } catch (error) {
       return {
         returncode: 500,
@@ -201,9 +223,8 @@ class MenusCrud extends BaseCrud {
   // Zomto
   async readZomatoMenus() {
     try {
-
       const result = await this.readMany(
-        { "SectionId.Type": "Zomato" },
+        {},
         {
           populate: [
             {
@@ -213,13 +234,21 @@ class MenusCrud extends BaseCrud {
                   path: 'CategoryId'
                 }
               ]
+            },
+            {
+              path: 'SectionId',
+              match: { Type: "Zomato" }
             }
           ]
         }
       );
 
-      return result;
+      const filteredResult = {
+        ...result,
+        output: result.output.filter(menu => menu.SectionId !== null)
+      };
 
+      return filteredResult;
     } catch (error) {
       return {
         returncode: 500,
@@ -232,9 +261,8 @@ class MenusCrud extends BaseCrud {
   // QR Menus
   async readQRMenus() {
     try {
-
       const result = await this.readMany(
-        { "SectionId.Type": "QR-Orders" },
+        {},
         {
           populate: [
             {
@@ -244,13 +272,21 @@ class MenusCrud extends BaseCrud {
                   path: 'CategoryId'
                 }
               ]
+            },
+            {
+              path: 'SectionId',
+              match: { Type: "QR-Orders" }
             }
           ]
         }
       );
 
-      return result;
+      const filteredResult = {
+        ...result,
+        output: result.output.filter(menu => menu.SectionId !== null)
+      };
 
+      return filteredResult;
     } catch (error) {
       return {
         returncode: 500,

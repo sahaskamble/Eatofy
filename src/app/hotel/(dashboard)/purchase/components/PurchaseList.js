@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import EditPurchaseModal from './EditPurchaseModal';
 import { toast } from 'react-toastify';
 import { fetchSuppliers } from '../../supplier_management/api';
+import { FaEye } from 'react-icons/fa';
 
-export default function PurchaseList({ invoices, isLoading, onRefresh }) {
+export default function PurchaseList({ invoices, isLoading, onRefresh, onViewItem }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [suppliers, setSuppliers] = useState(null);
@@ -94,12 +95,18 @@ export default function PurchaseList({ invoices, isLoading, onRefresh }) {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {new Date(invoice.Date).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{suppliers.map((s) => (s._id === invoice.SupplierId ? s.SupplierName : 'N/A'))}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{suppliers.map((s) => (s._id === invoice.SupplierId ? s.SupplierName : invoice.SupplierId.SupplierName))}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{invoice.AmountPaid}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(invoice.PaymentStatus)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => onViewItem(invoice)}
+                      className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
+                    >
+                      <FaEye size={16} />
+                    </button>
                     {/*
                     <button
                       onClick={() => {
