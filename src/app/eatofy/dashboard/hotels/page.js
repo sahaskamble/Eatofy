@@ -6,6 +6,7 @@ import { FaPlus, FaEdit, FaTrash, FaTimes, FaCloudUploadAlt, FaEye } from 'react
 import { useState } from 'react';
 import Image from 'next/image';
 
+
 export default function HotelsPage() {
   const { hotels, loading, fetchHotelData } = useEatofyAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,18 +93,17 @@ export default function HotelsPage() {
         });
         setSelectedImage(null);
         
-        // Show success message
         alert('Hotel saved successfully');
       } else {
-        throw new Error('Failed to save hotel');
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to save hotel');
       }
     } catch (error) {
       console.error('Failed to save hotel:', error);
-      alert('Failed to save hotel');
-      // Refresh the hotels data
-      await fetchHotelData();
+      alert(error.message || 'Failed to save hotel');
     }
   };
+
 
   const handleDelete = async (hotelId) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
