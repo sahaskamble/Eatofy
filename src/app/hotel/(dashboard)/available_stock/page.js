@@ -410,7 +410,7 @@ export default function AvailableStock() {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-600">
-                        {`${item.Quantity}`}
+                        {`${item.Quantity} ${item.ItemId?.Unit}`}
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex justify-center">
@@ -421,12 +421,6 @@ export default function AvailableStock() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex justify-center">
-                          <button
-                            onClick={() => viewItem(item)}
-                            className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
-                          >
-                            <FaEye size={16} />
-                          </button>
                           <button
                             onClick={() => {
                               setFormData({

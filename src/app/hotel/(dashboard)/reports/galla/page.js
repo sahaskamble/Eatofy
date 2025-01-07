@@ -7,10 +7,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import React, { useEffect, useState } from 'react';
 import { DateFormatter } from '@/lib/utils';
 import { MdOutlineAccountBalanceWallet, MdOutlineBalance } from "react-icons/md";
-import { FaSortDown, FaSortUp } from "react-icons/fa6";
-import { GrMoney } from "react-icons/gr";
 import { PiHandWithdrawLight } from "react-icons/pi";
-import { HiOutlineReceiptRefund } from "react-icons/hi2";
 import { GiPayMoney, GiReceiveMoney } from "react-icons/gi";
 import { RiStockFill } from "react-icons/ri";
 import { FaRegFilePdf } from 'react-icons/fa';
@@ -38,9 +35,7 @@ export default function GallaReports() {
 	const [SalesAmount, setSalesAmount] = useState(0);
 	const [TotalExpenses, setTotalExpenses] = useState(0);
 	const [ExpensesAmount, setExpensesAmount] = useState(0);
-	const [DroppedCash, setDroppedCash] = useState(0);
 	const [CashWithdrawn, setCashWithdrawn] = useState(0);
-	const [Refunds, setRefunds] = useState(0);
 	const [Sales, setSales] = useState([]);
 	const [Expenses, setExpenses] = useState([]);
 
@@ -111,9 +106,7 @@ export default function GallaReports() {
 				setSalesAmount((drawer_data?.SalesAmount | 0) || 0);
 				setTotalExpenses((drawer_data?.TotalExpenses | 0) || 0);
 				setExpensesAmount((drawer_data?.ExpensesAmount | 0) || 0);
-				setDroppedCash((drawer_data?.DroppedCash | 0) || 0);
 				setCashWithdrawn((drawer_data?.CashWithdrawn | 0) || 0);
-				setRefunds((drawer_data?.Refunds | 0) || 0);
 				const profit_or_loss_amount = ((drawer_data?.SalesAmount | 0) || 0) - (((drawer_data?.ExpensesAmount | 0) || 0) + ((drawer_data?.DroppedCash | 0) || 0) + ((drawer_data?.CashWithdrawn | 0) || 0) + ((drawer_data?.Refunds | 0) || 0));
 
 				let profit_or_loss = ""
@@ -218,7 +211,7 @@ export default function GallaReports() {
 									value: ProfitOrLossAmount,
 									status: ProfitOrLoss,
 									icon: <RiStockFill size={24} />,
-									gradient: `from-${ProfitOrLoss.toLowerCase() === "profit" ? "green" : ProfitOrLoss.toLowerCase() === "loss" ? "red" : "yellow"}-500`
+									gradient: `${ProfitOrLoss === "Profit" ? "from-green-500" : ProfitOrLoss === "Loss" ? "from-red-500" : "from-yellow-500"}`
 								},
 								{
 									title: "Opening Balance",

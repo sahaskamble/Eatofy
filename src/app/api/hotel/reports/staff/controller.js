@@ -1,6 +1,7 @@
 import { sales_values_mapper, attendance_values_mapper } from "./utils";
 import billsCrud from "@/app/lib/crud/Bills";
 import staffAttendanceCrud from "@/app/lib/crud/StaffAttendances";
+import staffCrud from "@/app/lib/crud/Staffs";
 
 const datetime_formatter = (date) => {
 	// Get the day, month, and year
@@ -58,6 +59,7 @@ export async function fetch_staff_reports(data) {
 const Sales_Data = async (staff_id, from_date, to_date) => {
 
 	const data = await billsCrud.readBillByStaffId(staff_id);
+	console.log(data);
 	const sales_data = data.output.filter((staff) => {
 		staff.Datetime = new Date(staff.createdAt);
 		staff.Date = datetime_formatter(staff.Datetime);
@@ -141,7 +143,10 @@ const Performance_Calculator = async (staff_id, from_date, to_date) => {
 		performance_grade = "New Joinee"
 	}
 
+	const staff_data = await staffCrud.readOne({ _id: staff_id });
+
 	return {
+		StaffData: staff_data.output,
 		Performance: {
 			Grade: performance_grade,
 			Percent: performance_percent || 0

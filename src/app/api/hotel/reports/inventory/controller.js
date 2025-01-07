@@ -1,6 +1,5 @@
 import stockReportCrud from "@/app/lib/crud/StockReport";
 import { stock_values_mapper, values_mapper } from "./utils";
-import inventoryStockCrud from "@/app/lib/crud/InventoryStock";
 
 export const datetime_formatter = (date) => {
     // Get the day, month, and year
@@ -35,7 +34,11 @@ export async function fetch_inventory_reports(data, tokenData) {
         const to_date = new Date(to_date_datetime.setUTCHours(23, 59, 59, 999));
 
         const inventory_data = await Inventory_Data(hotel_id, from_date, to_date);
-        return inventory_data;
+        return {
+            returncode: 200,
+            message: "Fetched Inventory Report",
+            output: inventory_data
+        }
 
     } catch (error) {
         console.error(error)
@@ -48,18 +51,28 @@ export async function fetch_inventory_reports(data, tokenData) {
 }
 
 const Inventory_Data = async (hotel_id, from_date, to_date) => {
-    const data = await stockReportCrud.readMany({
+    const inventory_data = await stockReportCrud.readMany({
         HotelId: hotel_id,
         createdAt: {
             $gte: from_date,
             $lte: to_date
         }
+    }, {
+        populate: "ItemId"
     });
 
-    if (data.returncode !== 200) {
+    const metrics = stock_values_mapper(inventory_data.output);
+    const date_wise = values_mapper(inventory_data.output);
+
+
+    if (inventory_data.returncode !== 200) {
         throw new Error("Error fetching inventory data");
     }
 
-    return data
+    return {
+        Data: inventory_data.output,
+        Metrics: metrics,
+        Chart: date_wise
+    }
 
 }

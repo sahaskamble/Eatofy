@@ -2,15 +2,85 @@
 
 import { useEatofyAuth } from '../contexts/AuthContext';
 import EatofyProtectedRoute from '../components/ProtectedRoute';
+import { useEffect, useState } from 'react';
+import Chart from 'chart.js/auto';
 
 export default function DashboardPage() {
   const { user, dashboard } = useEatofyAuth();
+  const [chartData, setChartData] = useState(null);
+  let chartInstance = null;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('/api/eatofy/dashboard');
+      const data = await response.json();
+      if (data.returncode === 200) {
+        setChartData(data.output);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (chartData) {
+      createChart(chartData);
+    }
+  }, [chartData]);
+
+  const createChart = (data) => {
+    const ctx = document.getElementById('dashboardChart');
+
+    // Destroy existing chart instance if it exists
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'line', 
+      data: {
+        labels: ['Total Hotels', 'Subscribed Hotels'],
+        datasets: [{
+          label: 'Hotels',
+          data: [data.total_hotels, data.total_subscribed_hotels],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          fill: true,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Hotels',
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
+        },
+      },
+    });
+  };
 
   return (
     <EatofyProtectedRoute>
       <div className="bg-gray-200 h-auto rounded-xl">
         <div className="container mx-auto p-0 rounded-xl">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-red-100">
+            {/* Chart Section */}
+            <div className="mb-8">
+              {chartData && (
+                <canvas id="dashboardChart"></canvas>
+              )}
+            </div>
+
             <div className="flex items-center space-x-4 mb-8">
               <div className="h-12 w-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
                 <span className="text-xl text-white font-bold">

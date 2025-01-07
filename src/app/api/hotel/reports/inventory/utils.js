@@ -6,14 +6,12 @@ export function stock_values_mapper(data) {
         StockValue: 0
     };
 
-    data.forEach(record => {
+    data.map(record => {
         const quantity = record.Quantity || 0;
-        const price = record.Price || 0;
-        const itemName = record.ItemName || 'Unknown';
+        const itemName = record.ItemId.ItemName || 'Unknown';
 
         result.TotalStock += quantity;
-        result.StockValue += (quantity * price);
-        
+
         if (!result.ItemsCount[itemName]) {
             result.ItemsCount[itemName] = 0;
             result.TotalItems++;
@@ -24,7 +22,7 @@ export function stock_values_mapper(data) {
     return result;
 }
 
-export function values_mapper(data, key) {
+export function values_mapper(data) {
     const result = {
         Labels: [],
         Values: [],
@@ -36,24 +34,24 @@ export function values_mapper(data, key) {
         if (!result.Dates.includes(record.Date)) {
             result.Dates.push(record.Date);
         }
-        
-        const itemName = record[key];
+
+        const itemName = record['ItemId']['ItemName'];
         if (!result.Labels.includes(itemName)) {
             result.Labels.push(itemName);
         }
     });
 
     // Initialize the values array with zeros
-    result.Values = result.Labels.map(() => 
+    result.Values = result.Labels.map(() =>
         new Array(result.Dates.length).fill(0)
     );
 
     // Fill in the values
     data.forEach(record => {
-        const itemName = record[key];
+        const itemName = record['ItemId']['ItemName'];
         const dateIndex = result.Dates.indexOf(record.Date);
         const itemIndex = result.Labels.indexOf(itemName);
-        
+
         if (itemIndex !== -1 && dateIndex !== -1) {
             result.Values[itemIndex][dateIndex] += record.Quantity || 0;
         }

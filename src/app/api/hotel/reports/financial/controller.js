@@ -69,13 +69,13 @@ const Purchases_Data = async (hotel_id, from_date, to_date) => {
         return from_date <= hotel.Datetime && to_date >= hotel.Datetime;
     });
 
-    const metrics = sales_values_mapper(purchases_data, "HotelId");
+    const metrics = expenses_values_mapper(purchases_data, "HotelId");
     const total_purchases_amt = metrics.Amount[0];
     const total_purchases = metrics.Count[0];
 
     const payment_mode_byforgation = payment_mode_values_mapper(purchases_data);
 
-    const date_wise = sales_values_mapper(purchases_data, "Date");
+    const date_wise = expenses_values_mapper(purchases_data, "Date");
     let amount = 0;
     date_wise.Amount.map((purchase) => { amount += purchase });
 

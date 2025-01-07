@@ -146,7 +146,7 @@ class BillsCrud extends BaseCrud {
 
   async readBillByStaffId(staff_id) {
     try {
-      const result = await this.readOne(
+      const result = await this.readMany(
         { WaiterId: staff_id },
         {
           populate: [

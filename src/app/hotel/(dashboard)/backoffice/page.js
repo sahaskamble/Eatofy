@@ -5,7 +5,7 @@ export default function BackofficePage() {
   const sections = [
     { name: 'Inventory Management', href: '/hotel/backoffice/inventory', icon: <ClipboardDocumentListIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Menu Management', href: '/hotel/menu-management', icon: <ClipboardDocumentListIcon className="w-12 h-12 text-gray-500" /> },
-    { name: 'Staff Management', href: '/hotel/staff', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },
+    { name: 'Staff Management', href: '/hotel/staff-management', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Table & Section Management', href: '/hotel/manage', icon: <HomeIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Customer Relationship Management', href: '/hotel/customer', icon: <UsersIcon className="w-12 h-12 text-gray-500" /> },
     { name: 'Orders History', href: '/hotel/order-history', icon: <CalendarIcon className="w-12 h-12 text-gray-500" /> },

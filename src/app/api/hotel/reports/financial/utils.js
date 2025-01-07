@@ -14,7 +14,7 @@ export function payment_mode_values_mapper(data) {
                 count: 0
             };
         }
-        acc[mode].amount += item.AmountPaid || item.GrandTotal || 0;
+        acc[mode].amount += item.AmountPaid || item.Amount || 0;
         acc[mode].count += 1;
         return acc;
     }, {});
@@ -45,7 +45,7 @@ export function sales_values_mapper(data, key) {
                 count: 0
             };
         }
-        acc[keyValue].amount += item.GrandTotal || 0;
+        acc[keyValue].amount += item.Amount || 0;
         acc[keyValue].count += 1;
         return acc;
     }, {});

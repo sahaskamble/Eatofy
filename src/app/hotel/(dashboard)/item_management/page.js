@@ -125,27 +125,27 @@ export default function ItemManagement() {
 
   const handleEditItem = async (item_id, item_name) => {
     if (!item_id || !item_name) {
-        toast.error('Item ID and name are required.');
-        return;
+      toast.error('Item ID and name are required.');
+      return;
     }
 
     try {
-        const response = await fetch('/api/hotel/inventory/items/edit', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ item_id, item_name })
-        });
+      const response = await fetch('/api/hotel/inventory/items/edit', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id, item_name })
+      });
 
-        const data = await response.json();
-        if (data.returncode === 200) {
-            toast.success('Item edited successfully');
-            fetchItems(); // Refresh the item list
-        } else {
-            toast.error(data.message || 'Failed to edit item');
-        }
+      const data = await response.json();
+      if (data.returncode === 200) {
+        toast.success('Item edited successfully');
+        fetchItems(); // Refresh the item list
+      } else {
+        toast.error(data.message || 'Failed to edit item');
+      }
     } catch (error) {
-        console.error('Error editing item:', error);
-        toast.error('Failed to edit item');
+      console.error('Error editing item:', error);
+      toast.error('Failed to edit item');
     }
   };
 
@@ -173,11 +173,6 @@ export default function ItemManagement() {
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-  };
-
-  const viewItem = (item) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -469,12 +464,6 @@ export default function ItemManagement() {
                             className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
                           >
                             <FaTrash size={14} />
-                          </button>
-                          <button
-                            onClick={() => viewItem(item)}
-                            className="p-1.5 text-gray-400 hover:text-blue-500 rounded transition-colors"
-                          >
-                            <FaEye size={16} />
                           </button>
                         </div>
                       </td>
