@@ -115,4 +115,4 @@ purchasedInvoiceSchema.pre('deleteMany', async function(next) {
 });
 
 
-export default mongoose.models.PurchasedInvoice 
+export default mongoose.models.PurchasedInvoice || mongoose.model("PurchasedInvoice", purchasedInvoiceSchema); 

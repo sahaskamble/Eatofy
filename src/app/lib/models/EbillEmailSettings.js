@@ -38,4 +38,4 @@ export const ebillEmailSettingsSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.EbillEmailSettings 
+export default mongoose.models.EbillEmailSettings || mongoose.model("EbillEmailSettings", ebillEmailSettingsSchema);

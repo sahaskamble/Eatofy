@@ -32,4 +32,4 @@ export const ReservationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.Reservations 
+export default mongoose.models.Reservations || mongoose.model("Reservations", ReservationSchema);  

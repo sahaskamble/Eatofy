@@ -53,4 +53,4 @@ export const cashDrawerSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.CashDrawer 
+export default mongoose.models.CashDrawer || mongoose.model("CashDrawer", cashDrawerSchema); 

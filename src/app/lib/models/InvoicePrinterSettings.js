@@ -39,4 +39,4 @@ export const invoicePrinterSettingsSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.InvoicePrinterSettings 
+export default mongoose.models.InvoicePrinterSettings || mongoose.model("InvoicePrinterSettings", invoicePrinterSettingsSchema); 

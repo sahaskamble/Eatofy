@@ -21,6 +21,7 @@ import tablesCrud from '@/app/offline/crud/Tables';
 import menusCrud from '@/app/offline/crud/Menus';
 import menuCategoryCrud from '@/app/offline/crud/MenuCategory';
 import { useOffline } from '@/app/hotel/contexts/OfflineContext';
+import { fetchGstSettings, fetchVatSettings, fetchEatocoinsSettings } from './api';
 
 export default function TableOrderPage() {
   const params = useParams();
@@ -58,6 +59,14 @@ export default function TableOrderPage() {
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
   const { isOffline, toggleOfflineMode } = useOffline();
+  const [gst, setGst] = useState(0);
+  const [vat, setVat] = useState(0);
+  const [eatocoins, setEatocoins] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [menuTotal, setMenuTotal] = useState(0);
+  const [gstVisible, setGstVisible] = useState(false);
+  const [vatVisible, setVatVisible] = useState(false);
+  const [eatocoinsVisible, setEatocoinsVisible] = useState(false);
 
   const handlePrint = useReactToPrint({
     contentRef: printComponentRef,
@@ -484,6 +493,37 @@ export default function TableOrderPage() {
     };
   }, [isOffline, fetchData]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const gstData = await fetchGstSettings();
+      const vatData = await fetchVatSettings();
+      const eatocoinsData = await fetchEatocoinsSettings();
+
+      if (gstData.returncode === 200) {
+        setGst(gstData.output.gstValue);
+      }
+      if (vatData.returncode === 200) {
+        setVat(vatData.output.vatValue);
+      }
+      if (eatocoinsData.returncode === 200) {
+        setEatocoins(eatocoinsData.output.eatocoinsValue);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    const calculateTotals = () => {
+      const menuTotal = existingOrder?.reduce((acc, item) => acc + item.TotalAmount, 0) || 0;
+      const total = menuTotal + (menuTotal * gst / 100) + (menuTotal * vat / 100) - eatocoins;
+      setMenuTotal(menuTotal);
+      setTotalAmount(total);
+    };
+
+    calculateTotals();
+  }, [existingOrder, gst, vat, eatocoins]);
+
   const handleOrderItemDelete = async (orderId) => {
     try {
       const response = await fetch(`/api/hotel/bills/order/cancel`, {
@@ -695,7 +735,7 @@ export default function TableOrderPage() {
                     <button
                       className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
                     </button>
@@ -1285,25 +1325,34 @@ export default function TableOrderPage() {
           </div>
 
           {/* Items */}
-          <div>
-            {existingOrder?.map((item, index) => (
-              <div key={index}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{item?.MenuId?.DishId?.DishName?.substring(0, 20)}</span>
-                  <span>{item?.Quantity}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <span>₹{item?.TotalAmount}</span>
-                </div>
-                {item?.Note && (
-                  <div style={{ fontSize: '10px', fontStyle: 'italic' }}>
-                    Note: {item.Note}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
+          <table style={{ fontSize: '10px'}}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #ddd' }}>
+                <th style={{ padding: '8px' }}>Items</th>
+                <th style={{ padding: '8px' }}>QTY</th>
+                <th style={{ padding: '8px' }}>Price</th>
+                <th style={{ padding: '8px' }}>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {existingOrder?.map((item, index) => (
+                <tr key={index}>
+                  <td style={{ padding: '8px' }}>
+                    {item?.MenuId?.DishId?.DishName?.substring(0, 20)}
+                  </td>
+                  <td style={{ padding: '8px' }}>
+                    {item?.Quantity}
+                  </td>
+                  <td style={{ padding: '8px' }}>
+                    ₹{item?.Price}
+                  </td>
+                  <td style={{ padding: '8px' }}>
+                    ₹{item?.TotalAmount}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <div style={{ borderBottom: '1px dashed black', margin: '5px 0' }} />
 
           {/* Total */}
@@ -1312,11 +1361,31 @@ export default function TableOrderPage() {
             <span>₹{existingOrder?.reduce((sum, item) => sum + (item.TotalAmount || 0), 0)}</span>
           </div>
 
+          {/* GST */}
+          {gstVisible && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+              <span>GST ({gst}%):</span>
+              <span>₹{(menuTotal * gst / 100).toFixed(2)}</span>
+            </div>
+          )}
+          {/* VAT */}
+          {vatVisible && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+              <span>VAT ({vat}%):</span>
+              <span>₹{(menuTotal * vat / 100).toFixed(2)}</span>
+            </div>
+          )}
+          {/* Eatocoins */}
+          {eatocoinsVisible && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+              <span>Eatocoins:</span>
+              <span>₹{eatocoins}</span>
+            </div>
+          )}
+
           {/* Payment Details */}
           <div style={{ marginTop: '10px' }}>
             <div>Payment Method: {paymentDetails.paymentMethod.toUpperCase()}</div>
-            <div>Amount Paid: ₹{paymentDetails.amount}</div>
-            {paymentDetails.note && <div>Note: {paymentDetails.note}</div>}
           </div>
 
           <div style={{ borderBottom: '1px dashed black', margin: '10px 0' }} />

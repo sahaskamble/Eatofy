@@ -1,6 +1,5 @@
 import MenuCategory from "../models/MenuCategory";
 import { BaseCrud } from "./BaseCrud";
-import dishesCrud from "./Dishes";
 
 class MenuCategoryCrud extends BaseCrud {
   constructor() {

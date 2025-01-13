@@ -343,10 +343,9 @@ class MenusCrud extends BaseCrud {
     }
   }
 
-  async deleteMenuById(menu_id) {
+  async deleteMenusById(menu_id) {
     try {
       const menu = await this.readOne({ _id: menu_id });
-
       if (menu.returncode === 200) {
 
         // Finally delete the menu
@@ -402,11 +401,14 @@ class MenusCrud extends BaseCrud {
 
   async updateMenuPrice(menu_id, price) {
     try {
+      console.log(menu_id, "Menu Id")
+      console.log(price, "Menu Price")
       const result = await this.update(
         { _id: menu_id },
         { Price: price },
         { new: true }
       );
+      console.log(result, "The result of editing the menu item")
       return result;
     } catch (error) {
       return {

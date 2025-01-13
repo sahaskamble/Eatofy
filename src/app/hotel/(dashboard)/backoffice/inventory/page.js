@@ -11,7 +11,7 @@ export default function BackofficePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-12 text-gradient">INVENTORY</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sections.map((section) => (

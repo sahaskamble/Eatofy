@@ -104,4 +104,4 @@ supplierSchema.pre('deleteMany', async function(next) {
     next(error);
   }
 });
-export default mongoose.models.Suppliers 
+export default mongoose.models.Suppliers || mongoose.model("Suppliers", supplierSchema); 

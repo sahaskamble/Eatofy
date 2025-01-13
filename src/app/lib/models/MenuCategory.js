@@ -70,4 +70,4 @@ menuCategorySchema.pre('deleteMany', async function(next) {
 });
 
 
-export default mongoose.models.MenuCategory 
+export default mongoose.models.MenuCategory || mongoose.model("MenuCategory", menuCategorySchema); 

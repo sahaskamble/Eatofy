@@ -40,4 +40,4 @@ export const StockReportSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.StockReport 
+export default mongoose.models.StockReport || mongoose.model("StockReport", StockReportSchema); 

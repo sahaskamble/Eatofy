@@ -34,4 +34,4 @@ export const SubscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.Subscriptions 
+export default mongoose.models.Subscriptions || mongoose.model("Subscriptions", SubscriptionSchema);  

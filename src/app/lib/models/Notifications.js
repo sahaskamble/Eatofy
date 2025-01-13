@@ -28,4 +28,4 @@ export const notificationSchema = new mongoose.Schema(
 // Unique constraint on HotelId and Description
 notificationSchema.index({ HotelId: 1, Description: 1 }, { unique: true });
 
-export default mongoose.models.Notifications 
+export default mongoose.models.Notifications || mongoose.model("Notifications", notificationSchema); 

@@ -87,4 +87,4 @@ purchasedStockSchema.pre('deleteMany', async function(next) {
 // Unique constraint on InvoiceId and ItemId
 purchasedStockSchema.index({ InvoiceId: 1, ItemId: 1 }, { unique: true });
 
-export default mongoose.models.PurchasedStock 
+export default mongoose.models.PurchasedStock || mongoose.model("PurchasedStock", purchasedStockSchema); 

@@ -70,4 +70,4 @@ export const HotelSubscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.HotelSubscription 
+export default mongoose.models.HotelSubscription || mongoose.model("HotelSubscription", HotelSubscriptionSchema);

@@ -36,4 +36,4 @@ export const inventoryStockSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.InventoryStock 
+export default mongoose.models.InventoryStock || mongoose.model("InventoryStock", inventoryStockSchema); 
