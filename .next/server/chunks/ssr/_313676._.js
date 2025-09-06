@@ -42,7 +42,6 @@ function OrderHistory() {
             const data = await response.json();
             if (data.returncode === 200) {
                 __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$react$2d$toastify$2e$esm$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].success('Order deleted successfully');
-                // Refresh the orders list
                 fetchOrders();
             } else {
                 __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$react$2d$toastify$2e$esm$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["toast"].error(data.message || 'Failed to delete order');
@@ -57,6 +56,7 @@ function OrderHistory() {
         try {
             const response = await fetch('/api/hotel/bills/fetch');
             const data = await response.json();
+            console.log("Bills Data", data);
             setOrders(data.output);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -67,7 +67,6 @@ function OrderHistory() {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         fetchOrders();
     }, []);
-    console.log(orders);
     if (loading) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "flex items-center justify-center h-screen",
@@ -75,12 +74,12 @@ function OrderHistory() {
                 className: "animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                lineNumber: 64,
+                lineNumber: 63,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-            lineNumber: 63,
+            lineNumber: 62,
             columnNumber: 7
         }, this);
     }
@@ -96,17 +95,17 @@ function OrderHistory() {
                         children: "ORDER HISTORY"
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                        lineNumber: 73,
+                        lineNumber: 72,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                    lineNumber: 72,
+                    lineNumber: 71,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                lineNumber: 71,
+                lineNumber: 70,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -122,12 +121,12 @@ function OrderHistory() {
                                     "aria-hidden": "true"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                    lineNumber: 80,
+                                    lineNumber: 81,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                lineNumber: 79,
+                                lineNumber: 80,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -139,13 +138,13 @@ function OrderHistory() {
                                 onChange: (e)=>setSearchQuery(e.target.value)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                lineNumber: 82,
+                                lineNumber: 83,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                        lineNumber: 78,
+                        lineNumber: 79,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -157,7 +156,7 @@ function OrderHistory() {
                                 children: "All"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                lineNumber: 92,
+                                lineNumber: 93,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -172,13 +171,13 @@ function OrderHistory() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                        lineNumber: 91,
+                        lineNumber: 92,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                lineNumber: 77,
+                lineNumber: 78,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -202,7 +201,7 @@ function OrderHistory() {
                                                     children: "SR#"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 122,
+                                                    lineNumber: 121,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -211,7 +210,7 @@ function OrderHistory() {
                                                     children: "Table"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 123,
+                                                    lineNumber: 122,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -220,7 +219,7 @@ function OrderHistory() {
                                                     children: "Waiter"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 124,
+                                                    lineNumber: 123,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -229,7 +228,7 @@ function OrderHistory() {
                                                     children: "Customer"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 125,
+                                                    lineNumber: 124,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -238,7 +237,7 @@ function OrderHistory() {
                                                     children: "Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 126,
+                                                    lineNumber: 125,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -247,7 +246,7 @@ function OrderHistory() {
                                                     children: "Balance"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 127,
+                                                    lineNumber: 126,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -256,7 +255,7 @@ function OrderHistory() {
                                                     children: "Total"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 128,
+                                                    lineNumber: 127,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -265,7 +264,7 @@ function OrderHistory() {
                                                     children: "Amount"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 129,
+                                                    lineNumber: 128,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -274,7 +273,7 @@ function OrderHistory() {
                                                     children: "Payment Status"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 130,
+                                                    lineNumber: 129,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -285,23 +284,23 @@ function OrderHistory() {
                                                         children: "Actions"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 132,
+                                                        lineNumber: 131,
                                                         columnNumber: 23
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                    lineNumber: 131,
+                                                    lineNumber: 130,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                            lineNumber: 121,
+                                            lineNumber: 120,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                        lineNumber: 120,
+                                        lineNumber: 119,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -314,7 +313,7 @@ function OrderHistory() {
                                                         children: index + 1
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 139,
+                                                        lineNumber: 138,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -322,7 +321,7 @@ function OrderHistory() {
                                                         children: order?.TableId?.TableName || 'N/A'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 142,
+                                                        lineNumber: 141,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -330,7 +329,7 @@ function OrderHistory() {
                                                         children: order?.WaiterId?.FirstName || "N/A"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 145,
+                                                        lineNumber: 144,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -338,7 +337,7 @@ function OrderHistory() {
                                                         children: order?.CustomerId?.CustomerName || "N/A"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 148,
+                                                        lineNumber: 147,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -346,7 +345,7 @@ function OrderHistory() {
                                                         children: order?.Type || "N/A"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 151,
+                                                        lineNumber: 150,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -354,7 +353,7 @@ function OrderHistory() {
                                                         children: typeof order?.BalanceAmount === 'number' ? `Rs. ${order.BalanceAmount}` : 'Rs. -'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 154,
+                                                        lineNumber: 153,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -362,7 +361,7 @@ function OrderHistory() {
                                                         children: typeof order?.TotalAmount === 'number' ? `Rs. ${order.TotalAmount}` : 'Rs. 0'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 157,
+                                                        lineNumber: 156,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -370,22 +369,43 @@ function OrderHistory() {
                                                         children: typeof order?.Amount === 'number' ? `Rs. ${order.Amount}` : 'Rs. 0'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 160,
+                                                        lineNumber: 159,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                         className: "whitespace-nowrap px-3 py-4 text-gray-500",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: `inline-flex rounded-full px-3 py-1 font-semibold leading-5 ${order?.Status === 'Open' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800'}`,
-                                                            children: order?.Status || "N/A"
+                                                        children: order?.PaymentStatus === "Paid" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-green-300 text-green-800 bg-opacity-80",
+                                                            children: order?.PaymentStatus
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                            lineNumber: 164,
-                                                            columnNumber: 25
+                                                            lineNumber: 165,
+                                                            columnNumber: 29
+                                                        }, this) : order?.PaymentStatus === "Part-paid" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-yellow-300 text-yellow-800",
+                                                            children: order?.PaymentStatus
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
+                                                            lineNumber: 171,
+                                                            columnNumber: 29
+                                                        }, this) : order?.PaymentStatus === "Unpaid" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-red-300 text-red-800",
+                                                            children: order?.PaymentStatus
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
+                                                            lineNumber: 177,
+                                                            columnNumber: 29
+                                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-gray-300 text-gray-800",
+                                                            children: order?.PaymentStatus
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
+                                                            lineNumber: 183,
+                                                            columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 163,
+                                                        lineNumber: 162,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -408,7 +428,7 @@ function OrderHistory() {
                                                                             d: "M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                            lineNumber: 177,
+                                                                            lineNumber: 197,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
@@ -417,18 +437,18 @@ function OrderHistory() {
                                                                             d: "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                            lineNumber: 178,
+                                                                            lineNumber: 198,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                    lineNumber: 176,
+                                                                    lineNumber: 196,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                lineNumber: 172,
+                                                                lineNumber: 192,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -447,17 +467,17 @@ function OrderHistory() {
                                                                         d: "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                        lineNumber: 186,
+                                                                        lineNumber: 206,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                    lineNumber: 185,
+                                                                    lineNumber: 205,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                lineNumber: 181,
+                                                                lineNumber: 201,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -477,66 +497,66 @@ function OrderHistory() {
                                                                         d: "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                        lineNumber: 195,
+                                                                        lineNumber: 215,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                    lineNumber: 194,
+                                                                    lineNumber: 214,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                                lineNumber: 189,
+                                                                lineNumber: 209,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                        lineNumber: 171,
+                                                        lineNumber: 191,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, index, true, {
                                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                                lineNumber: 138,
+                                                lineNumber: 137,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                        lineNumber: 136,
+                                        lineNumber: 135,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                                lineNumber: 119,
+                                lineNumber: 118,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                            lineNumber: 118,
+                            lineNumber: 117,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                        lineNumber: 117,
+                        lineNumber: 116,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                    lineNumber: 116,
+                    lineNumber: 115,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-                lineNumber: 115,
+                lineNumber: 114,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/(dashboard)/order-history/page.js",
-        lineNumber: 70,
+        lineNumber: 69,
         columnNumber: 5
     }, this);
 }

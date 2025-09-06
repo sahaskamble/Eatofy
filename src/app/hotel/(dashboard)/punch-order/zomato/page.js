@@ -15,10 +15,6 @@ import { useReactToPrint } from 'react-to-print';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@headlessui/react';
-import billsCrud from '@/app/offline/crud/Bills';
-import menusCrud from '@/app/offline/crud/Menus';
-import menuCategoryCrud from '@/app/offline/crud/MenuCategory';
-import { useOffline } from '@/app/hotel/contexts/OfflineContext';
 
 export default function TableOrderPage() {
   const router = useRouter();
@@ -54,7 +50,6 @@ export default function TableOrderPage() {
   const searchInputRef = useRef(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [reasonInput, setReasonInput] = useState('');
-  const { isOffline, toggleOfflineMode } = useOffline();
 
   const handlePrint = useReactToPrint({
     contentRef: printComponentRef,
@@ -135,7 +130,6 @@ export default function TableOrderPage() {
     }
     try {
       let data;
-      if (isOffline) {
         const customer_name = customerDetails.name
         data = await billsCrud.createBill({
           customer_name: customer_name || null,
@@ -195,7 +189,6 @@ export default function TableOrderPage() {
     if (existingBill) {
       try {
         let data;
-        if (isOffline) {
           const ordersInfo = cart.map(item => ({
             menu_id: item._id,
             quantity: item.quantity,
@@ -242,7 +235,6 @@ export default function TableOrderPage() {
     const disamt = (paymentDetails.amount * paymentDetails.discountPercentage) / 100;
     try {
       let data;
-      if (isOffline) {
         data = await billsCrud.BillPayment({
           bill_id: latestBillId,
           payment_mode: paymentDetails.paymentMethod,
@@ -354,7 +346,6 @@ export default function TableOrderPage() {
       let menusData = null;
       let categoryData = null;
 
-      if (isOffline) {
         // Fetch menus
         menusData = await menusCrud.readZomatoMenus();
         // Fetch categories
@@ -384,11 +375,9 @@ export default function TableOrderPage() {
       toast.error('Failed to load data');
       setLoading(false);
     }
-  }, [isOffline]);
 
   useEffect(() => {
     fetchData();
-  }, [isOffline]);
 
   const handleOrderItemDelete = async (orderId) => {
     try {
@@ -483,19 +472,13 @@ export default function TableOrderPage() {
         <div className="p-6">
           <div className="flex items-center mb-4">
             <Switch
-              checked={isOffline}
-              onChange={toggleOfflineMode}
-              className={`${isOffline ? 'bg-blue-600' : 'bg-gray-200'
                 } relative inline-flex items-center h-6 rounded-full w-11`}
             >
-              <span className="sr-only">Toggle Offline/Online Mode</span>
               <span
-                className={`${isOffline ? 'translate-x-6' : 'translate-x-1'
                   } inline-block w-4 h-4 transform bg-white rounded-full transition`}
               />
             </Switch>
             <span className="ml-3 text-sm font-medium text-gray-900">
-              {isOffline ? 'Offline' : 'Online'}
             </span>
           </div>
 

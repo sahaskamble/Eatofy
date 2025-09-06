@@ -1,26 +1,18 @@
 {
   "app": {
-    "[project]/src/app/hotel/(dashboard)/restore/page": [
+    "[project]/src/app/eatofy/dashboard/hotels/page": [
       "static/media/GeistVF-s.p.7fe29570.woff",
       "static/media/GeistMonoVF-s.p.a9159d35.woff"
     ],
-    "[project]/src/app/hotel/(dashboard)/punch-order/page": [
+    "[project]/src/app/hotel/(dashboard)/menu-management/page": [
       "static/media/GeistVF-s.p.7fe29570.woff",
       "static/media/GeistMonoVF-s.p.a9159d35.woff"
     ],
-    "[project]/src/app/hotel/(dashboard)/punch-order/[tableId]/page": [
+    "[project]/src/app/eatofy/(auth)/login/page": [
       "static/media/GeistVF-s.p.7fe29570.woff",
       "static/media/GeistMonoVF-s.p.a9159d35.woff"
     ],
-    "[project]/src/app/hotel/(dashboard)/order-history/page": [
-      "static/media/GeistVF-s.p.7fe29570.woff",
-      "static/media/GeistMonoVF-s.p.a9159d35.woff"
-    ],
-    "[project]/src/app/_not-found/page": [
-      "static/media/GeistVF-s.p.7fe29570.woff",
-      "static/media/GeistMonoVF-s.p.a9159d35.woff"
-    ],
-    "[project]/src/app/hotel/(dashboard)/backup/page": [
+    "[project]/src/app/hotel/(auth)/login/page": [
       "static/media/GeistVF-s.p.7fe29570.woff",
       "static/media/GeistMonoVF-s.p.a9159d35.woff"
     ]

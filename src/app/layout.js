@@ -1,6 +1,5 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import { OfflineProvider } from './hotel/contexts/OfflineContext';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const geistSans = localFont({
@@ -24,9 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased Body`}>
-        <OfflineProvider>
-          {children}
-        </OfflineProvider>
+        {children}
       </body>
     </html>
   );

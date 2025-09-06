@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import MenuCategories from './components/MenuCategories';
 import MenuItems from './components/MenuItems';
+import DishManagement from './components/DishManagement';
 
 export default function MenuManagementPage() {
 
@@ -63,6 +64,7 @@ export default function MenuManagementPage() {
           {activeTab === 'MenuDishes' && (
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Menu Dishes</h2>
+              <DishManagement />
             </div>
           )}
 

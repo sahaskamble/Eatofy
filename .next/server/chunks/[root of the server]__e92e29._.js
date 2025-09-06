@@ -1035,7 +1035,7 @@ const HotelSubscriptionSchema = new __TURBOPACK__imported__module__$5b$externals
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.HotelSubscription;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.HotelSubscription || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("HotelSubscription", HotelSubscriptionSchema);
 }}),
 "[project]/src/app/lib/crud/HotelSubscription.js [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";

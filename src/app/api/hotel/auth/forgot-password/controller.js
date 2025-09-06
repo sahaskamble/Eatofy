@@ -6,10 +6,10 @@ export const generateResetToken = async (data) => {
   try {
     const email = data['email'] || null;
 
-    if (email === null || password === null) {
+    if (email === null) {
       return {
         returncode: 400,
-        message: "Missing required parameters",
+        message: "Email is required",
         output: []
       };
     }
@@ -36,7 +36,7 @@ export const generateResetToken = async (data) => {
 
     // Send email with reset link
     await sendEmail({
-      to: staff.Email,
+      to: staff.output.Email,
       subject: 'Reset Your Password',
       html: `
         <h1>Password Reset Request</h1>

@@ -11,7 +11,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Restaurant Settings</h1>
 
       <div className="w-full">
@@ -19,8 +19,8 @@ export default function SettingsPage() {
           <button
             onClick={() => setActiveTab('profile')}
             className={`py-2 px-4 rounded-md transition-all ${activeTab === 'profile'
-                ? 'bg-white shadow-sm'
-                : 'hover:bg-gray-200'
+              ? 'bg-white shadow-sm'
+              : 'hover:bg-gray-200'
               }`}
           >
             Hotel Profile
@@ -28,8 +28,8 @@ export default function SettingsPage() {
           <button
             onClick={() => setActiveTab('gst')}
             className={`py-2 px-4 rounded-md transition-all ${activeTab === 'gst'
-                ? 'bg-white shadow-sm'
-                : 'hover:bg-gray-200'
+              ? 'bg-white shadow-sm'
+              : 'hover:bg-gray-200'
               }`}
           >
             GST Settings
@@ -37,8 +37,8 @@ export default function SettingsPage() {
           <button
             onClick={() => setActiveTab('vat')}
             className={`py-2 px-4 rounded-md transition-all ${activeTab === 'vat'
-                ? 'bg-white shadow-sm'
-                : 'hover:bg-gray-200'
+              ? 'bg-white shadow-sm'
+              : 'hover:bg-gray-200'
               }`}
           >
             VAT Settings
@@ -46,8 +46,8 @@ export default function SettingsPage() {
           <button
             onClick={() => setActiveTab('bill-kot')}
             className={`py-2 px-4 rounded-md transition-all ${activeTab === 'bill-kot'
-                ? 'bg-white shadow-sm'
-                : 'hover:bg-gray-200'
+              ? 'bg-white shadow-sm'
+              : 'hover:bg-gray-200'
               }`}
           >
             Bill & KOT
@@ -55,8 +55,8 @@ export default function SettingsPage() {
           <button
             onClick={() => setActiveTab('loyalty')}
             className={`py-2 px-4 rounded-md transition-all ${activeTab === 'loyalty'
-                ? 'bg-white shadow-sm'
-                : 'hover:bg-gray-200'
+              ? 'bg-white shadow-sm'
+              : 'hover:bg-gray-200'
               }`}
           >
             Loyalty Program

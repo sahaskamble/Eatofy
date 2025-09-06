@@ -4,11 +4,12 @@ import { useEatofyAuth } from '../../contexts/AuthContext';
 import EatofyProtectedRoute from '../../components/ProtectedRoute';
 import { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaSearch } from 'react-icons/fa';
-import { fetchSubscriptions, addSubscription, updateSubscription, deactivateSubscription, addHotelSubscription, editSubscriptionPayment, removeSubscription } from './api';
+import { fetchSubscriptions, addSubscription, updateSubscription, deactivateSubscription, addHotelSubscription, editSubscriptionPayment, removeSubscription, fetchHotels } from './api';
 
 export default function SubscriptionsPage() {
   const { user } = useEatofyAuth();
   const [subscriptions, setSubscriptions] = useState([]);
+  const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -18,7 +19,6 @@ export default function SubscriptionsPage() {
     subscription_name: '',
     validity: '',
     price: '',
-    hotel_id: '',
     subscription_id: '',
     is_valid: '',
     start_date: '',
@@ -40,11 +40,13 @@ export default function SubscriptionsPage() {
     credit_card: '',
   });
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState('');
+  const [selectedHotelId, setSelectedHotelId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch subscriptions on component mount
   useEffect(() => {
     loadSubscriptions();
+    loadHotels();
   }, []);
 
   const loadSubscriptions = async () => {
@@ -58,6 +60,20 @@ export default function SubscriptionsPage() {
       setLoading(false);
     }
   };
+
+  const loadHotels = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchHotels();
+      setHotels(data.output || []);
+    } catch (error) {
+      console.error('Error loading hotels:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log('Hotels Fetched', hotels);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,16 +107,16 @@ export default function SubscriptionsPage() {
     e.preventDefault();
     try {
       await addHotelSubscription({
-        hotel_id: formData.hotel_id,
+        hotel_id: selectedHotelId,
         subscription_id: selectedSubscriptionId,
-        is_valid: hotelFormData.is_valid,
+        is_valid: true,
         start_date: hotelFormData.start_date,
         end_date: hotelFormData.end_date,
         payment_status: hotelFormData.payment_status,
         payment_mode: hotelFormData.payment_mode,
-        cash: hotelFormData.cash,
-        upi: hotelFormData.upi,
-        credit_card: hotelFormData.credit_card,
+        cash: parseInt(hotelFormData.cash),
+        upi: parseInt(hotelFormData.upi),
+        credit_card: parseInt(hotelFormData.credit_card),
       });
       await loadSubscriptions();
       setIsAddToHotelModalOpen(false);
@@ -291,6 +307,20 @@ export default function SubscriptionsPage() {
               </button>
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Subscription to Hotel</h2>
               <form onSubmit={handleAddSubscriptionToHotel} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Hotel ID</label>
+                  <select
+                    value={selectedHotelId}
+                    onChange={(e) => setSelectedHotelId(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                    required
+                  >
+                    <option value="" disabled>Select a hotel</option>
+                    {hotels.map((h) => (
+                      <option key={h._id} value={h._id}>{h.HotelName}</option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Subscription ID</label>
                   <select

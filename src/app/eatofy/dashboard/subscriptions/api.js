@@ -9,14 +9,35 @@ export const fetchSubscriptions = async () => {
 				'Content-Type': 'application/json',
 			},
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to fetch subscriptions');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error fetching subscriptions:', error);
+		throw error;
+	}
+};
+
+// Fetch all hotels
+export const fetchHotels = async () => {
+	try {
+		const response = await fetch('/api/eatofy/hotel/fetch', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch hotels');
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching hotels:', error);
 		throw error;
 	}
 };
@@ -31,11 +52,11 @@ export const addSubscription = async (subscriptionData) => {
 			},
 			body: JSON.stringify(subscriptionData),
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to add subscription');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error adding subscription:', error);
@@ -56,11 +77,11 @@ export const updateSubscription = async (subscriptionId, updateData) => {
 				...updateData
 			}),
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to update subscription');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error updating subscription:', error);
@@ -80,11 +101,11 @@ export const removeSubscription = async (subscriptionId) => {
 				subscription_id: subscriptionId,
 			}),
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to remove subscription');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error removing subscription:', error);
@@ -102,11 +123,11 @@ export const addHotelSubscription = async (subscriptionData) => {
 			},
 			body: JSON.stringify(subscriptionData),
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to add hotel subscription');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error adding hotel subscription:', error);
@@ -124,11 +145,11 @@ export const editSubscriptionPayment = async (paymentData) => {
 			},
 			body: JSON.stringify(paymentData),
 		});
-		
+
 		if (!response.ok) {
 			throw new Error('Failed to edit subscription payment');
 		}
-		
+
 		return await response.json();
 	} catch (error) {
 		console.error('Error editing subscription payment:', error);

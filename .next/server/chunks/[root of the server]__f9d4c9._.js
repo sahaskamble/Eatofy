@@ -445,7 +445,7 @@ const cashDrawerSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$_
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.CashDrawer;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.CashDrawer || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("CashDrawer", cashDrawerSchema);
 }}),
 "[project]/src/app/lib/utils/StringValidator.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -527,7 +527,7 @@ const ReservationSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Reservations;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Reservations || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Reservations", ReservationSchema);
 }}),
 "[project]/src/app/lib/models/Customers.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -984,7 +984,7 @@ const ebillEmailSettingsSchema = new __TURBOPACK__imported__module__$5b$external
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.EbillEmailSettings;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.EbillEmailSettings || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("EbillEmailSettings", ebillEmailSettingsSchema);
 }}),
 "[project]/src/app/lib/utils/FloatValidator.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -1090,7 +1090,7 @@ const expensesSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$__$
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Expenses;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Expenses || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Expenses", expensesSchema);
 }}),
 "[project]/src/app/lib/models/GstSettings.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -1258,7 +1258,7 @@ const HotelSubscriptionSchema = new __TURBOPACK__imported__module__$5b$externals
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.HotelSubscription;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.HotelSubscription || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("HotelSubscription", HotelSubscriptionSchema);
 }}),
 "[project]/src/app/lib/models/Hotels.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -1532,9 +1532,7 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__ = __turbopack_import__("[externals]/ [external] (mongoose, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$FloatValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/FloatValidator.js [instrumentation-edge] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/StringValidator.js [instrumentation-edge] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$SpecialStringsValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/SpecialStringsValidator.js [instrumentation-edge] (ecmascript)");
-;
 ;
 ;
 ;
@@ -1557,14 +1555,6 @@ const inventoryStockSchema = new __TURBOPACK__imported__module__$5b$externals$5d
         },
         message: "Quantity must be a non-negative number."
     },
-    Unit: {
-        type: String,
-        required: true,
-        validate: {
-            validator: (value)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__["default"])(value)
-        },
-        message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
-    },
     Status: {
         type: String,
         default: "Available",
@@ -1576,7 +1566,7 @@ const inventoryStockSchema = new __TURBOPACK__imported__module__$5b$externals$5d
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.InventoryStock;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.InventoryStock || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("InventoryStock", inventoryStockSchema);
 }}),
 "[project]/src/app/lib/models/InvoicePrinterSettings.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -1625,7 +1615,7 @@ const invoicePrinterSettingsSchema = new __TURBOPACK__imported__module__$5b$exte
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.InvoicePrinterSettings;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.InvoicePrinterSettings || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("InvoicePrinterSettings", invoicePrinterSettingsSchema);
 }}),
 "[project]/src/app/lib/models/ItemCategories.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -1648,14 +1638,6 @@ const itemCategorySchema = new __TURBOPACK__imported__module__$5b$externals$5d2f
             validator: (value)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__["default"])(value)
         },
         message: "Category Name should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
-    },
-    Unit: {
-        type: String,
-        required: true,
-        validate: {
-            validator: (value)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__["default"])(value)
-        },
-        message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
     },
     HotelId: {
         type: __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].Schema.Types.ObjectId,
@@ -1762,6 +1744,14 @@ const itemSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$e
         type: __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].Schema.Types.ObjectId,
         ref: "Hotels",
         required: true
+    },
+    Unit: {
+        type: String,
+        required: true,
+        validate: {
+            validator: (value)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__["default"])(value)
+        },
+        message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
     },
     CategoryId: {
         type: __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].Schema.Types.ObjectId,
@@ -2054,7 +2044,7 @@ menuCategorySchema.pre('deleteMany', async function(next) {
         next(error);
     }
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.MenuCategory;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.MenuCategory || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("MenuCategory", menuCategorySchema);
 }}),
 "[project]/src/app/lib/models/Menus.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -2186,7 +2176,7 @@ notificationSchema.index({
 }, {
     unique: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Notifications;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Notifications || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Notifications", notificationSchema);
 }}),
 "[project]/src/app/lib/models/Orders.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -2445,7 +2435,7 @@ purchasedInvoiceSchema.pre('deleteMany', async function(next) {
         next(error);
     }
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.PurchasedInvoice;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.PurchasedInvoice || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("PurchasedInvoice", purchasedInvoiceSchema);
 }}),
 "[project]/src/app/lib/models/PurchasedStock.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -2551,7 +2541,7 @@ purchasedStockSchema.index({
 }, {
     unique: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.PurchasedStock;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.PurchasedStock || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("PurchasedStock", purchasedStockSchema);
 }}),
 "[project]/src/app/lib/models/Sections.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -2953,9 +2943,7 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__ = __turbopack_import__("[externals]/ [external] (mongoose, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$SpecialStringsValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/SpecialStringsValidator.js [instrumentation-edge] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/StringValidator.js [instrumentation-edge] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$FloatValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/src/app/lib/utils/FloatValidator.js [instrumentation-edge] (ecmascript)");
-;
 ;
 ;
 ;
@@ -2978,14 +2966,6 @@ const StockReportSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$
         },
         message: "Quantity must be a non-negative number."
     },
-    Unit: {
-        type: String,
-        required: true,
-        validate: {
-            validator: (value)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$lib$2f$utils$2f$StringValidator$2e$js__$5b$instrumentation$2d$edge$5d$__$28$ecmascript$29$__["default"])(value)
-        },
-        message: "Unit should not contain invalid characters like /, \\, \", ;, ', +, `, or ^"
-    },
     Status: {
         type: String,
         default: "Available",
@@ -3001,7 +2981,7 @@ const StockReportSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.StockReport;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.StockReport || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("StockReport", StockReportSchema);
 }}),
 "[project]/src/app/lib/utils/IntegerValidator.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -3061,7 +3041,7 @@ const SubscriptionSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Subscriptions;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Subscriptions || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Subscriptions", SubscriptionSchema);
 }}),
 "[project]/src/app/lib/models/Suppliers.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -3177,7 +3157,7 @@ supplierSchema.pre('deleteMany', async function(next) {
         next(error);
     }
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Suppliers;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Suppliers || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Suppliers", supplierSchema);
 }}),
 "[project]/src/app/lib/models/Tables.js [instrumentation-edge] (ecmascript)": ((__turbopack_context__) => {
 "use strict";

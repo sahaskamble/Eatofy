@@ -33,23 +33,6 @@ const navigation = [
   { name: 'Back Office', href: '/hotel/backoffice', icon: <ClipboardDocumentListIcon className="w-6 h-6" /> },
   { name: 'Staff', href: '/hotel/staff', icon: <UsersIcon className="w-6 h-6" /> },
   { name: 'Settings', href: '/hotel/settings', icon: <Cog6ToothIcon className="w-6 h-6" /> },
-  {
-    name: 'Data Syncing',
-    href: '/hotel/settings',
-    icon: <CloudIcon className="w-6 h-6" />,
-    subItems: [
-      {
-        name: 'Backup',
-        href: '/hotel/backup',
-        icon: <CloudArrowDownIcon className="w-5 h-5" />
-      },
-      {
-        name: 'Restore',
-        href: '/hotel/restore',
-        icon: <CloudArrowUpIcon className="w-6 h-6" />
-      },
-    ]
-  },
 ];
 
 export default function Navbar() {

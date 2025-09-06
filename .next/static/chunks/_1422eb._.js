@@ -32,10 +32,9 @@ function HotelAuthProvider({ children }) {
     const fetchWaiterId = ()=>{
         try {
             const waiterId = localStorage.getItem('waiter_id');
-            console.log(waiterId);
             return waiterId;
         } catch (error) {
-            console.error('Auth check failed Waiter ID not found:', error);
+            console.log('Auth check failed Waiter ID not found:', error);
         } finally{
             setLoading(false);
         }
@@ -50,8 +49,16 @@ function HotelAuthProvider({ children }) {
                 setUser(null);
             }
         } catch (error) {
-            console.error('Auth check failed:', error);
-            setUser(null);
+            try {
+                const userLoggedIn = JSON.parse(localStorage.getItem('UserLoggedIn'));
+                const userJson = JSON.parse(localStorage.getItem('User'));
+                console.log("User Data", userJson);
+                if (userLoggedIn) {
+                    setUser(userJson);
+                }
+            } catch (error) {
+                setUser(null);
+            }
         } finally{
             setLoading(false);
         }
@@ -69,7 +76,9 @@ function HotelAuthProvider({ children }) {
             if (data.returncode === 200 && data.output.length > 0) {
                 setUser(data.output[0]);
                 setWaiter_id(data.output[0].staff_info._id);
-                console.log(data.output[0].staff_info._id);
+                localStorage.setItem('UserLoggedIn', JSON.stringify(true));
+                localStorage.setItem('User', JSON.stringify(data.output[0]));
+                localStorage.setItem('hotel_id', data.output[0]?.hotelId);
                 localStorage.setItem('waiter_id', data.output[0].staff_info._id);
                 await checkAuth();
                 router.push('/hotel/dashboard');
@@ -95,6 +104,10 @@ function HotelAuthProvider({ children }) {
                 method: 'POST'
             });
             setUser(null);
+            localStorage.removeItem('waiter_id');
+            localStorage.removeItem('hotel_id');
+            localStorage.removeItem('UserLoggedIn');
+            localStorage.removeItem('User');
             router.push('/hotel/login');
         } catch (error) {
             console.error('Logout error:', error);
@@ -164,7 +177,7 @@ function HotelAuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/app/hotel/contexts/AuthContext.js",
-        lineNumber: 136,
+        lineNumber: 150,
         columnNumber: 5
     }, this);
 }

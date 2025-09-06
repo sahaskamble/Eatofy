@@ -17,24 +17,14 @@ export const resetPassword = async (data) => {
       };
     }
 
-    // Find staff by id
-    const staff = await staffCrud.fetchStaffByEmail(email);
-    if (staff.returncode !== 200) {
-      return {
-        returncode: 404,
-        message: 'Staff not found',
-        output: []
-      };
-    }
-
     // Hash new password
     const { hashedPassword, salt } = await hashPassword(newPassword);
 
     // Update password in database
-    const result = staffCrud.updatePassword({
+    const result = await staffCrud.updatePassword({
       hashedPassword,
       salt,
-      staff_id: staff.output._id
+      staff_id: decoded.id
     });
 
     return result;

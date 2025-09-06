@@ -25,7 +25,6 @@ var _s = __turbopack_refresh__.signature();
 ;
 ;
 ;
-;
 function PunchOrderPage() {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
@@ -34,32 +33,10 @@ function PunchOrderPage() {
     const [tables, setTables] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [sections, setSections] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [selectedSection, setSelectedSection] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [selectedTable, setSelectedTable] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "PunchOrderPage.useEffect": ()=>{
-            const fetchData = {
-                "PunchOrderPage.useEffect.fetchData": async ()=>{
-                    try {
-                        const sectionsResponse = await fetch('/api/hotel/sections/fetch');
-                        const sectionsData = await sectionsResponse.json();
-                        if (sectionsData.returncode === 200) {
-                            setSections(sectionsData.output);
-                        }
-                        const tablesResponse = await fetch('/api/hotel/tables/fetch');
-                        const tablesData = await tablesResponse.json();
-                        if (tablesData.returncode === 200) {
-                            setTables(tablesData.output);
-                        }
-                        setLoading(false);
-                    } catch (error) {
-                        console.error('Error fetching data:', error);
-                        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$react$2d$toastify$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error('Failed to load restaurant data');
-                        setLoading(false);
-                    }
-                }
-            }["PunchOrderPage.useEffect.fetchData"];
             fetchData();
         }
     }["PunchOrderPage.useEffect"], []);
@@ -73,15 +50,30 @@ function PunchOrderPage() {
     }["PunchOrderPage.useEffect"], [
         loading
     ]);
+    const fetchData = async ()=>{
+        try {
+            const sectionsResponse = await fetch('/api/hotel/sections/fetch');
+            const sectionsData = await sectionsResponse.json();
+            const tablesResponse = await fetch('/api/hotel/tables/fetch');
+            const tablesData = await tablesResponse.json();
+            if (sectionsData.returncode === 200) {
+                setSections(sectionsData.output);
+            }
+            if (tablesData.returncode === 200) {
+                setTables(tablesData.output);
+            }
+            setLoading(false);
+        } catch (error) {
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$react$2d$toastify$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error('Failed to load Restaurant Tables');
+            setLoading(false);
+        }
+    };
     const handleTableClick = async (table)=>{
         router.push(`/hotel/punch-order/${table._id}`);
     };
-    const getTableStatus = (tableId)=>{
-        return 'available';
-    };
-    const filteredTables = tables.filter((table)=>{
-        const matchesSearch = table.TableName?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesSection = !selectedSection || table.SectionId?._id === selectedSection;
+    const filteredTables = tables?.filter((table)=>{
+        const matchesSearch = table?.TableName?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSection = !selectedSection || table?.SectionId?._id === selectedSection;
         return matchesSearch && matchesSection;
     });
     if (loading) {
@@ -91,18 +83,34 @@ function PunchOrderPage() {
                 className: "h-8 w-8 text-red-500 animate-spin"
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                lineNumber: 79,
+                lineNumber: 72,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-            lineNumber: 78,
+            lineNumber: 71,
             columnNumber: 7
         }, this);
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "p-6",
         children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex gap-4 items-center mb-4",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                    className: "px-3 py-2 bg-red-500 text-white rounded-md",
+                    onClick: ()=>router.push('/hotel/punch-order/takeaway'),
+                    children: "Takeaway"
+                }, void 0, false, {
+                    fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
+                    lineNumber: 80,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
+                lineNumber: 79,
+                columnNumber: 7
+            }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "mb-6",
                 children: [
@@ -111,7 +119,7 @@ function PunchOrderPage() {
                         children: "Tables Overview"
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                        lineNumber: 87,
+                        lineNumber: 89,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -130,21 +138,21 @@ function PunchOrderPage() {
                                         children: "All Sections"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                        lineNumber: 95,
+                                        lineNumber: 97,
                                         columnNumber: 13
                                     }, this),
                                     sections.map((section)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: section._id,
-                                            children: section.SectionName
-                                        }, section._id, false, {
+                                            value: section?._id,
+                                            children: section?.SectionName
+                                        }, section?._id, false, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                            lineNumber: 97,
+                                            lineNumber: 99,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                lineNumber: 89,
+                                lineNumber: 91,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -161,37 +169,37 @@ function PunchOrderPage() {
                                             className: "w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                            lineNumber: 104,
+                                            lineNumber: 106,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$MagnifyingGlassIcon$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MagnifyingGlassIcon$3e$__["MagnifyingGlassIcon"], {
                                             className: "h-5 w-5 text-gray-400 absolute left-3 top-3"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                            lineNumber: 112,
+                                            lineNumber: 114,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                    lineNumber: 103,
+                                    lineNumber: 105,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                lineNumber: 102,
+                                lineNumber: 104,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                        lineNumber: 88,
+                        lineNumber: 90,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                lineNumber: 86,
+                lineNumber: 88,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -212,7 +220,7 @@ function PunchOrderPage() {
                                     children: table.TableName
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                    lineNumber: 132,
+                                    lineNumber: 134,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -222,7 +230,7 @@ function PunchOrderPage() {
                                             className: "h-5 w-5 mr-2"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                            lineNumber: 136,
+                                            lineNumber: 138,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -232,13 +240,13 @@ function PunchOrderPage() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                            lineNumber: 137,
+                                            lineNumber: 139,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                    lineNumber: 135,
+                                    lineNumber: 137,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -252,46 +260,46 @@ function PunchOrderPage() {
                                         children: status === 'Booked' ? 'Occupied' : status === 'Bill Pending' ? 'Bill Pending' : 'Available'
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                        lineNumber: 140,
+                                        lineNumber: 142,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                                    lineNumber: 139,
+                                    lineNumber: 141,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                            lineNumber: 131,
+                            lineNumber: 133,
                             columnNumber: 15
                         }, this)
                     }, table._id, false, {
                         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                        lineNumber: 122,
+                        lineNumber: 124,
                         columnNumber: 13
                     }, this);
                 })
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                lineNumber: 118,
+                lineNumber: 120,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$toastify$2f$dist$2f$react$2d$toastify$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ToastContainer"], {
                 position: "bottom-right"
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-                lineNumber: 160,
+                lineNumber: 162,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/(dashboard)/punch-order/page.js",
-        lineNumber: 85,
+        lineNumber: 78,
         columnNumber: 5
     }, this);
 }
-_s(PunchOrderPage, "BIqG4AMUeiS93QbPnkKeDo9vGxI=", false, function() {
+_s(PunchOrderPage, "ekRTJBFphNT/g2lA2hmIqSI0MxQ=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$hotel$2f$contexts$2f$AuthContext$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useHotelAuth"]

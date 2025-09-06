@@ -14,7 +14,6 @@ export default function DashboardLayout({ children }) {
       router.push('/eatofy/login');
     }
   }, [user, loading, router]);
-  console.log(user);
 
   if (loading) {
     return (
@@ -31,7 +30,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="flex text-black">
       <Sidebar />
-      <main className="flex-1 p-8 bg-gray-50 min-h-screen ml-20">
+      <main className="flex-1 p-4 bg-gray-50 min-h-screen ml-20">
         {children}
       </main>
     </div>

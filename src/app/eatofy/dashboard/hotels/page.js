@@ -5,6 +5,7 @@ import EatofyProtectedRoute from '../../components/ProtectedRoute';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 
 export default function HotelsPage() {
@@ -30,6 +31,7 @@ export default function HotelsPage() {
     department_name: '',
     designation: ''
   });
+  const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -56,12 +58,12 @@ export default function HotelsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {      
+    try {
       const submitData = new FormData();
       Object.keys(formData).forEach(key => {
         submitData.append(key, formData[key]);
       });
-      
+
       const res = await fetch('/api/eatofy/hotel/add', {
         method: 'POST',
         body: submitData
@@ -70,7 +72,7 @@ export default function HotelsPage() {
       if (res.ok) {
         // Refresh the hotels data
         await fetchHotelData();
-        
+
         // Reset form and close modal
         setIsModalOpen(false);
         setFormData({
@@ -92,7 +94,7 @@ export default function HotelsPage() {
           designation: ''
         });
         setSelectedImage(null);
-        
+
         alert('Hotel saved successfully');
       } else {
         const errorData = await res.json();
@@ -103,7 +105,6 @@ export default function HotelsPage() {
       alert(error.message || 'Failed to save hotel');
     }
   };
-
 
   const handleDelete = async (hotelId) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
@@ -130,8 +131,6 @@ export default function HotelsPage() {
     }
   };
 
-  console.log(hotels);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -142,12 +141,12 @@ export default function HotelsPage() {
 
   return (
     <EatofyProtectedRoute>
-      <div className="bg-gray-200 h-auto rounded-xl">
-        <div className="container mx-auto p-0 rounded-xl">
+      <div className="bg-gray-200 p-4 rounded-xl">
+        <div className="mx-auto p-0 rounded-xl">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-red-100">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-gray-900">Hotels</h1>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200"
               >
@@ -161,7 +160,7 @@ export default function HotelsPage() {
                 <div className="bg-white rounded-lg p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-900">Add New Hotel</h2>
-                    <button 
+                    <button
                       onClick={() => setIsModalOpen(false)}
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -498,9 +497,9 @@ export default function HotelsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0">
-                            <Image 
-                              className="h-10 w-10 rounded-full object-cover" 
-                              src={`data:image/*;base64,${hotel?.Logo}` || ''} 
+                            <Image
+                              className="h-10 w-10 rounded-full object-cover"
+                              src={`data:image/*;base64,${hotel?.Logo}` || ''}
                               alt={hotel?.HotelName}
                               width={100}
                               height={100}
@@ -519,7 +518,8 @@ export default function HotelsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-2">
-                          <button 
+                          <button
+                            onClick={() => router.push(`/eatofy/dashboard/hotels/view/${hotel._id}`)}
                             className="p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition-all duration-200 group relative"
                           >
                             <FaEye size={18} />
@@ -527,7 +527,8 @@ export default function HotelsPage() {
                               View Details
                             </span>
                           </button>
-                          <button 
+                          <button
+                            onClick={() => router.push(`/eatofy/dashboard/hotels/edit/${hotel._id}`)}
                             className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 group relative"
                           >
                             <FaEdit size={18} />
@@ -535,7 +536,7 @@ export default function HotelsPage() {
                               Edit Hotel
                             </span>
                           </button>
-                          <button 
+                          <button
                             className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all duration-200 group relative"
                             onClick={() => handleDelete(hotel._id)}
                           >

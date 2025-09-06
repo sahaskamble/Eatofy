@@ -828,7 +828,7 @@ class TablesCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$
         try {
             const updateData = {
                 TableName: data.table_name,
-                Capacity: data.capacity
+                PersonsOccupiable: data.persons_occupiable
             };
             const result = await this.update({
                 _id: data.table_id

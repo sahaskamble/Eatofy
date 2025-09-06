@@ -151,6 +151,7 @@ class EatofyStaffCrud extends BaseCrud {
   async readStaff() {
     try {
       return this.readMany(
+        {}, // filters (empty to get all)
         {
           sort: { FirstName: 1 },
           select: '-Password', // Exclude password

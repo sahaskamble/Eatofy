@@ -59,12 +59,12 @@ function DashboardLayout({ children }) {
                 className: "animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 33,
+                lineNumber: 32,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-            lineNumber: 32,
+            lineNumber: 31,
             columnNumber: 7
         }, this);
     }
@@ -78,28 +78,28 @@ function DashboardLayout({ children }) {
                 navigation: navigation
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 44,
+                lineNumber: 43,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
                 className: "flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 ml-16",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "container mx-auto px-2 py-2",
+                    className: "mx-auto my-1 px-2 py-2",
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                    lineNumber: 46,
+                    lineNumber: 45,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 45,
+                lineNumber: 44,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-        lineNumber: 43,
+        lineNumber: 42,
         columnNumber: 5
     }, this);
 }

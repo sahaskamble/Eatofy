@@ -9,9 +9,14 @@ __turbopack_esm__({
     "default": (()=>__TURBOPACK__default__export__)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$idb$2f$build$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/idb/build/index.js [app-ssr] (ecmascript)");
+(()=>{
+    const e = new Error("Cannot find module 'idb'");
+    e.code = 'MODULE_NOT_FOUND';
+    throw e;
+})();
 ;
 const DB_NAME = 'Eatofy';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = {
     Bills: 'Bills',
     Customers: 'Customers',
@@ -27,7 +32,7 @@ const STORES = {
 };
 class DatabaseService {
     constructor(){
-        this.dbPromise = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$idb$2f$build$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["openDB"])(DB_NAME, DB_VERSION, {
+        this.dbPromise = openDB(DB_NAME, DB_VERSION, {
             upgrade (db) {
                 Object.values(STORES).forEach((storeName)=>{
                     if (!db.objectStoreNames.contains(storeName)) {
@@ -361,11 +366,17 @@ class DatabaseService {
                     data: unsyncedRecords
                 })
             });
-            if (response.ok) {
-                const result = await response.json();
-                // Mark records as synced in IndexedDB
-                await this.markAsSynced(storeName, result.syncedIds);
-                console.log(`Successfully synced ${storeName} to server.`);
+            const data = await response.json();
+            if (data.returncode === 200) {
+                const data = await this.getByFilter(storeName, "HotelId", null);
+                console.log(data);
+                if (data.output.length !== 0) {
+                    data.output.forEach(async (bill)=>{
+                        const deleted = await this.delete(storeName, bill._id);
+                        console.log("Deleted", deleted);
+                        console.log(`Successfully synced ${storeName} to server.`);
+                    });
+                }
             }
         } catch (error) {
             if (retries > 0) {
@@ -394,16 +405,11 @@ class DatabaseService {
         return store.index('synced').getAll(0);
     }
     // Mark records as synced in IndexedDB.
-    async markAsSynced(storeName, syncedIds) {
+    async markAsSynced(storeName) {
         const store = await this.getStore(storeName, 'readwrite');
-        const tx = store.transaction;
-        for (const id of syncedIds){
-            const record = await store.get(id);
-            if (record) {
-                await store.delete(record);
-            }
-        }
-        await tx.done;
+        const deletePromise = store.delete(); // Create a delete promise
+        console.log(deletePromise);
+        console.log(`Deleted records from ${storeName}`);
     }
     // Applies server-side updates to a specific store in IndexedDB.
     async applyServerUpdates(storeName, data) {
@@ -1178,6 +1184,17 @@ class BillsCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
         });
         return adding_orders;
     }
+    async getHotelBills(hotel_id) {
+        try {
+            return await this.read("HotelId", hotel_id);
+        } catch (error) {
+            return {
+                returncode: 500,
+                message: error.message,
+                output: []
+            };
+        }
+    }
     async dineInRead(table_id) {
         try {
             const data = await this.read("TableId", table_id);
@@ -1231,7 +1248,7 @@ class BillsCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
             let cgst_amount = 0;
             let sgst_amount = 0;
             const gstSettings = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$offline$2f$crud$2f$GSTSettings$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].readSettings();
-            if (gstSettings.output[0]?.Visibility) {
+            if (gstSettings?.output[0]?.Visibility) {
                 gst_amount = menu_total * gstSettings.output[0].GSTPercent / 100;
                 console.log(gst_amount);
                 cgst_amount = gst_amount / 2 | 0;
@@ -1243,7 +1260,7 @@ class BillsCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
             let vat_rate = 0;
             let vat_amount = 0;
             const vatSettings = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$offline$2f$crud$2f$VATSettings$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].readSettings();
-            if (vatSettings.output[0]?.Visibility) {
+            if (vatSettings?.output[0]?.Visibility) {
                 vat_rate = vatSettings.output[0].VATPercent;
                 vat_amount = menu_total * vat_rate / 100;
             }
@@ -1263,7 +1280,7 @@ class BillsCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
             let eatocoins_rate = 0;
             let credit_eatocoins = 0;
             const eatocoinsSettings = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$offline$2f$crud$2f$EatoCoinsSettings$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].readSettings();
-            if (eatocoinsSettings.output[0]?.Visibility) {
+            if (eatocoinsSettings?.output[0]?.Visibility) {
                 eatocoins_rate = eatocoinsSettings.output[0].RedeemLimitPercent || 0;
                 let redeem_limit_amt = eatocoinsSettings.output[0].RedeemLimitAmount || 0;
                 let credit_limit_amt = eatocoinsSettings.output[0].CreditLimitAmt || 0;

@@ -10,10 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useHotelAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Switch } from '@headlessui/react';
-import sectionsCrud from '@/app/offline/crud/Sections';
-import tablesCrud from '@/app/offline/crud/Tables';
-import { useOffline } from '@/app/hotel/contexts/OfflineContext';
+
+
 
 export default function PunchOrderPage() {
   const router = useRouter();
@@ -24,11 +22,11 @@ export default function PunchOrderPage() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { isOffline, toggleOfflineMode } = useOffline();
+
 
   useEffect(() => {
     fetchData();
-  }, [isOffline]);
+  }, []);
 
   useEffect(() => {
     // Focus search input when loading is complete
@@ -39,16 +37,10 @@ export default function PunchOrderPage() {
 
   const fetchData = async () => {
     try {
-      let sectionsData = [], tablesData = [];
-      if (!isOffline) {
-        const sectionsResponse = await fetch('/api/hotel/sections/fetch');
-        sectionsData = await sectionsResponse.json();
-        const tablesResponse = await fetch('/api/hotel/tables/fetch');
-        tablesData = await tablesResponse.json();
-      } else {
-        sectionsData = await sectionsCrud.readAllSections();
-        tablesData = await tablesCrud.readTables();
-      }
+      const sectionsResponse = await fetch('/api/hotel/sections/fetch');
+      const sectionsData = await sectionsResponse.json();
+      const tablesResponse = await fetch('/api/hotel/tables/fetch');
+      const tablesData = await tablesResponse.json();
 
       if (sectionsData.returncode === 200) {
         setSections(sectionsData.output);
@@ -56,7 +48,6 @@ export default function PunchOrderPage() {
       if (tablesData.returncode === 200) {
         setTables(tablesData.output);
       }
-
 
       setLoading(false);
     } catch (error) {
@@ -85,23 +76,11 @@ export default function PunchOrderPage() {
 
   return (
     <div className="p-6">
-      <div className="flex items-center mb-4">
-        <Switch
-          checked={isOffline}
-          onChange={toggleOfflineMode}
-          className={`${isOffline ? 'bg-blue-600' : 'bg-gray-200'
-            } relative inline-flex items-center h-6 rounded-full w-11`}
+      <div className="flex gap-4 items-center mb-4">
+        <button
+          className="px-3 py-2 bg-red-500 text-white rounded-md"
+          onClick={() => router.push('/hotel/punch-order/takeaway')}
         >
-          <span className="sr-only">Toggle Offline/Online Mode</span>
-          <span
-            className={`${isOffline ? 'translate-x-6' : 'translate-x-1'
-              } inline-block w-4 h-4 transform bg-white rounded-full transition`}
-          />
-        </Switch>
-        <span className="ml-3 text-sm font-medium text-gray-900">
-          {isOffline ? 'Offline' : 'Online'}
-        </span>
-        <button onClick={() => router.push('/hotel/punch-order/takeaway')}>
           Takeaway
         </button>
       </div>

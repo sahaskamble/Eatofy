@@ -17,11 +17,9 @@ export default function DashboardPage() {
 
   return (
     <EatofyProtectedRoute>
-      <div className="bg-gray-200 h-auto rounded-xl">
-        <div className="container mx-auto p-0 rounded-xl">
+      <div className="bg-gray-200 p-4 rounded-xl">
+        <div className="mx-auto p-0 rounded-xl">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-red-100">
-
-
             <div className="flex items-center space-x-4 mb-8">
               <div className="h-12 w-12 rounded-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
                 <span className="text-xl text-white font-bold">
@@ -58,7 +56,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions */}
-            {/* <div className="bg-red-100 rounded-xl p-6 border border-red-100">
+            <div className="bg-red-100 rounded-xl p-6 border border-red-100">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button className="group relative bg-white p-4 rounded-lg shadow-sm border border-red-100 hover:shadow-md hover:border-red-200 transition-all duration-200">
@@ -81,7 +79,7 @@ export default function DashboardPage() {
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200"></div>
                 </button>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

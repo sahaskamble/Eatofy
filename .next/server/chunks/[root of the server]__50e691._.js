@@ -686,9 +686,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     // Takeaway
     async readTakeawayMenus() {
         try {
-            const result = await this.readMany({
-                "SectionId.Type": "Takeaway"
-            }, {
+            const result = await this.readMany({}, {
                 populate: [
                     {
                         path: 'DishId',
@@ -697,10 +695,20 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
                                 path: 'CategoryId'
                             }
                         ]
+                    },
+                    {
+                        path: 'SectionId',
+                        match: {
+                            Type: "Takeaway"
+                        }
                     }
                 ]
             });
-            return result;
+            const filteredResult = {
+                ...result,
+                output: result.output.filter((menu)=>menu.SectionId !== null)
+            };
+            return filteredResult;
         } catch (error) {
             return {
                 returncode: 500,
@@ -712,9 +720,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     // Delivery
     async readDeliveryMenus() {
         try {
-            const result = await this.readMany({
-                "SectionId.Type": "Delivery"
-            }, {
+            const result = await this.readMany({}, {
                 populate: [
                     {
                         path: 'DishId',
@@ -723,10 +729,20 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
                                 path: 'CategoryId'
                             }
                         ]
+                    },
+                    {
+                        path: 'SectionId',
+                        match: {
+                            Type: "Delivery"
+                        }
                     }
                 ]
             });
-            return result;
+            const filteredResult = {
+                ...result,
+                output: result.output.filter((menu)=>menu.SectionId !== null)
+            };
+            return filteredResult;
         } catch (error) {
             return {
                 returncode: 500,
@@ -738,9 +754,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     // Swiggy
     async readSwiggyMenus() {
         try {
-            const result = await this.readMany({
-                "SectionId.Type": "Swiggy"
-            }, {
+            const result = await this.readMany({}, {
                 populate: [
                     {
                         path: 'DishId',
@@ -749,10 +763,20 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
                                 path: 'CategoryId'
                             }
                         ]
+                    },
+                    {
+                        path: 'SectionId',
+                        match: {
+                            Type: "Swiggy"
+                        }
                     }
                 ]
             });
-            return result;
+            const filteredResult = {
+                ...result,
+                output: result.output.filter((menu)=>menu.SectionId !== null)
+            };
+            return filteredResult;
         } catch (error) {
             return {
                 returncode: 500,
@@ -764,9 +788,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     // Zomto
     async readZomatoMenus() {
         try {
-            const result = await this.readMany({
-                "SectionId.Type": "Zomato"
-            }, {
+            const result = await this.readMany({}, {
                 populate: [
                     {
                         path: 'DishId',
@@ -775,10 +797,20 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
                                 path: 'CategoryId'
                             }
                         ]
+                    },
+                    {
+                        path: 'SectionId',
+                        match: {
+                            Type: "Zomato"
+                        }
                     }
                 ]
             });
-            return result;
+            const filteredResult = {
+                ...result,
+                output: result.output.filter((menu)=>menu.SectionId !== null)
+            };
+            return filteredResult;
         } catch (error) {
             return {
                 returncode: 500,
@@ -790,9 +822,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     // QR Menus
     async readQRMenus() {
         try {
-            const result = await this.readMany({
-                "SectionId.Type": "QR-Orders"
-            }, {
+            const result = await this.readMany({}, {
                 populate: [
                     {
                         path: 'DishId',
@@ -801,10 +831,20 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
                                 path: 'CategoryId'
                             }
                         ]
+                    },
+                    {
+                        path: 'SectionId',
+                        match: {
+                            Type: "QR-Orders"
+                        }
                     }
                 ]
             });
-            return result;
+            const filteredResult = {
+                ...result,
+                output: result.output.filter((menu)=>menu.SectionId !== null)
+            };
+            return filteredResult;
         } catch (error) {
             return {
                 returncode: 500,
@@ -854,7 +894,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
             };
         }
     }
-    async deleteMenuById(menu_id) {
+    async deleteMenusById(menu_id) {
         try {
             const menu = await this.readOne({
                 _id: menu_id
@@ -914,6 +954,8 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
     }
     async updateMenuPrice(menu_id, price) {
         try {
+            console.log(menu_id, "Menu Id");
+            console.log(price, "Menu Price");
             const result = await this.update({
                 _id: menu_id
             }, {
@@ -921,6 +963,7 @@ class MenusCrud extends __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
             }, {
                 new: true
             });
+            console.log(result, "The result of editing the menu item");
             return result;
         } catch (error) {
             return {

@@ -325,7 +325,7 @@ const ReservationSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$
 }, {
     timestamps: true
 });
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Reservations;
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Reservations || __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Reservations", ReservationSchema);
 }}),
 "[project]/src/app/lib/models/Customers.js [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";

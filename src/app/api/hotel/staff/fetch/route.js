@@ -5,8 +5,11 @@ import { verifyToken } from '@/app/lib/utils/jwt';
 export async function GET(request) {
 	try {
 
-		// Get token from cookie
-		const token = request.cookies.get('hotel_auth_token')?.value;
+		// Get token from cookie - check both eatofy and hotel tokens
+		const eatofyToken = request.cookies.get('auth_token')?.value;
+		const hotelToken = request.cookies.get('hotel_auth_token')?.value;
+		const token = eatofyToken || hotelToken;
+
 		if (!token) {
 			return NextResponse.json({
 				returncode: 401,

@@ -13,18 +13,17 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$hotel$2f$conte
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/link.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$HomeIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__HomeIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/HomeIcon.js [app-ssr] (ecmascript) <export default as HomeIcon>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$PresentationChartLineIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__PresentationChartLineIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/PresentationChartLineIcon.js [app-ssr] (ecmascript) <export default as PresentationChartLineIcon>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$pi$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/react-icons/pi/index.mjs [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$ClockIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ClockIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/ClockIcon.js [app-ssr] (ecmascript) <export default as ClockIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$DocumentTextIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__DocumentTextIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/DocumentTextIcon.js [app-ssr] (ecmascript) <export default as DocumentTextIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CalendarIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CalendarIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/CalendarIcon.js [app-ssr] (ecmascript) <export default as CalendarIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$ClipboardDocumentListIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ClipboardDocumentListIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/ClipboardDocumentListIcon.js [app-ssr] (ecmascript) <export default as ClipboardDocumentListIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$UsersIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__UsersIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/UsersIcon.js [app-ssr] (ecmascript) <export default as UsersIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$Cog6ToothIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Cog6ToothIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/Cog6ToothIcon.js [app-ssr] (ecmascript) <export default as Cog6ToothIcon>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$WrenchScrewdriverIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__WrenchScrewdriverIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/WrenchScrewdriverIcon.js [app-ssr] (ecmascript) <export default as WrenchScrewdriverIcon>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/CloudIcon.js [app-ssr] (ecmascript) <export default as CloudIcon>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudArrowDownIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudArrowDownIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/CloudArrowDownIcon.js [app-ssr] (ecmascript) <export default as CloudArrowDownIcon>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudArrowUpIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudArrowUpIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/CloudArrowUpIcon.js [app-ssr] (ecmascript) <export default as CloudArrowUpIcon>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$ArrowRightOnRectangleIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRightOnRectangleIcon$3e$__ = __turbopack_import__("[project]/node_modules/@heroicons/react/24/outline/esm/ArrowRightOnRectangleIcon.js [app-ssr] (ecmascript) <export default as ArrowRightOnRectangleIcon>");
 'use client';
+;
 ;
 ;
 ;
@@ -38,8 +37,30 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 22,
+            lineNumber: 23,
             columnNumber: 56
+        }, this)
+    },
+    {
+        name: 'Reports',
+        href: '/hotel/reports',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$PresentationChartLineIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__PresentationChartLineIcon$3e$__["PresentationChartLineIcon"], {
+            className: "w-6 h-6"
+        }, void 0, false, {
+            fileName: "[project]/src/app/hotel/components/Navbar.js",
+            lineNumber: 27,
+            columnNumber: 11
+        }, this)
+    },
+    {
+        name: 'Day Closing',
+        href: '/hotel/day_closing',
+        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$icons$2f$pi$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["PiCashRegister"], {
+            className: "w-6 h-6"
+        }, void 0, false, {
+            fileName: "[project]/src/app/hotel/components/Navbar.js",
+            lineNumber: 29,
+            columnNumber: 60
         }, this)
     },
     {
@@ -49,7 +70,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 23,
+            lineNumber: 30,
             columnNumber: 60
         }, this)
     },
@@ -60,7 +81,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 24,
+            lineNumber: 31,
             columnNumber: 64
         }, this)
     },
@@ -71,7 +92,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 25,
+            lineNumber: 32,
             columnNumber: 62
         }, this)
     },
@@ -82,7 +103,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 26,
+            lineNumber: 33,
             columnNumber: 59
         }, this)
     },
@@ -93,7 +114,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 27,
+            lineNumber: 34,
             columnNumber: 48
         }, this)
     },
@@ -104,68 +125,9 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 31,
-            columnNumber: 11
-        }, this),
-        subItems: [
-            {
-                name: 'Manage',
-                href: '/hotel/manage',
-                icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$WrenchScrewdriverIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__WrenchScrewdriverIcon$3e$__["WrenchScrewdriverIcon"], {
-                    className: "w-5 h-5"
-                }, void 0, false, {
-                    fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 36,
-                    columnNumber: 15
-                }, this)
-            },
-            {
-                name: 'Menu Management',
-                href: '/hotel/menu-management',
-                icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$ClipboardDocumentListIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ClipboardDocumentListIcon$3e$__["ClipboardDocumentListIcon"], {
-                    className: "w-6 h-6"
-                }, void 0, false, {
-                    fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 41,
-                    columnNumber: 15
-                }, this)
-            }
-        ]
-    },
-    {
-        name: 'Data Syncing',
-        href: '/hotel/settings',
-        icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudIcon$3e$__["CloudIcon"], {
-            className: "w-6 h-6"
-        }, void 0, false, {
-            fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 48,
-            columnNumber: 11
-        }, this),
-        subItems: [
-            {
-                name: 'Backup',
-                href: '/hotel/backup',
-                icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudArrowDownIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudArrowDownIcon$3e$__["CloudArrowDownIcon"], {
-                    className: "w-5 h-5"
-                }, void 0, false, {
-                    fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 53,
-                    columnNumber: 15
-                }, this)
-            },
-            {
-                name: 'Restore',
-                href: '/hotel/restore',
-                icon: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$heroicons$2f$react$2f$24$2f$outline$2f$esm$2f$CloudArrowUpIcon$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CloudArrowUpIcon$3e$__["CloudArrowUpIcon"], {
-                    className: "w-6 h-6"
-                }, void 0, false, {
-                    fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 58,
-                    columnNumber: 15
-                }, this)
-            }
-        ]
+            lineNumber: 35,
+            columnNumber: 54
+        }, this)
     }
 ];
 function Navbar() {
@@ -185,7 +147,7 @@ function Navbar() {
                         children: user[0]?.hotelName?.slice(0, 2) || 'H'
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                        lineNumber: 75,
+                        lineNumber: 49,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -193,13 +155,13 @@ function Navbar() {
                         children: user[0]?.hotelName
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                        lineNumber: 78,
+                        lineNumber: 52,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                lineNumber: 74,
+                lineNumber: 48,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -219,7 +181,7 @@ function Navbar() {
                                                     children: item.icon
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 93,
+                                                    lineNumber: 67,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -227,7 +189,7 @@ function Navbar() {
                                                     children: item.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 94,
+                                                    lineNumber: 68,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -235,13 +197,13 @@ function Navbar() {
                                                     children: "▼"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 97,
+                                                    lineNumber: 71,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 89,
+                                            lineNumber: 63,
                                             columnNumber: 19
                                         }, this),
                                         expandedItem === index && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -257,7 +219,7 @@ function Navbar() {
                                                                 children: subItem.icon
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                                lineNumber: 110,
+                                                                lineNumber: 84,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -265,29 +227,29 @@ function Navbar() {
                                                                 children: subItem.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                                lineNumber: 111,
+                                                                lineNumber: 85,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                        lineNumber: 105,
+                                                        lineNumber: 79,
                                                         columnNumber: 27
                                                     }, this)
                                                 }, subItem.name, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 104,
+                                                    lineNumber: 78,
                                                     columnNumber: 25
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 102,
+                                            lineNumber: 76,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                    lineNumber: 88,
+                                    lineNumber: 62,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                     href: item.href,
@@ -298,7 +260,7 @@ function Navbar() {
                                             children: item.icon
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 125,
+                                            lineNumber: 99,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -306,18 +268,18 @@ function Navbar() {
                                             children: item.name
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 126,
+                                            lineNumber: 100,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                    lineNumber: 121,
+                                    lineNumber: 95,
                                     columnNumber: 17
                                 }, this)
                             }, item.name, false, {
                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                lineNumber: 86,
+                                lineNumber: 60,
                                 columnNumber: 13
                             }, this)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -331,12 +293,12 @@ function Navbar() {
                                             className: "w-6 h-6"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 139,
+                                            lineNumber: 113,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                        lineNumber: 138,
+                                        lineNumber: 112,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -344,35 +306,35 @@ function Navbar() {
                                         children: "Sign out"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                        lineNumber: 141,
+                                        lineNumber: 115,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                lineNumber: 134,
+                                lineNumber: 108,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                            lineNumber: 133,
+                            lineNumber: 107,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 84,
+                    lineNumber: 58,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                lineNumber: 83,
+                lineNumber: 57,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/components/Navbar.js",
-        lineNumber: 73,
+        lineNumber: 47,
         columnNumber: 5
     }, this);
 }
@@ -436,12 +398,12 @@ function DashboardLayout({ children }) {
                 className: "animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 33,
+                lineNumber: 32,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-            lineNumber: 32,
+            lineNumber: 31,
             columnNumber: 7
         }, this);
     }
@@ -455,28 +417,28 @@ function DashboardLayout({ children }) {
                 navigation: navigation
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 44,
+                lineNumber: 43,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
                 className: "flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 ml-16",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "container mx-auto px-2 py-2",
+                    className: "mx-auto my-1 px-2 py-2",
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                    lineNumber: 46,
+                    lineNumber: 45,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-                lineNumber: 45,
+                lineNumber: 44,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/(dashboard)/layout.js",
-        lineNumber: 43,
+        lineNumber: 42,
         columnNumber: 5
     }, this);
 }
