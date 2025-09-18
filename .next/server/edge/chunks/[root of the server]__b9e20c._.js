@@ -10,7 +10,7 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$mongoose$2f$dist$2f$browser$2e$umd$2e$js__$5b$instrumentation$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/mongoose/dist/browser.umd.js [instrumentation] (ecmascript)");
 ;
-const MONGODB_URI = process.env.MONGO_URI || 'mongodb://admin:admin@localhost:27017/admin?authSource=admin';
+const MONGODB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/admin?authSource=admin';
 if ("TURBOPACK compile-time falsy", 0) {
     "TURBOPACK unreachable";
 }

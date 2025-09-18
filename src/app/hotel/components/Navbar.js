@@ -15,6 +15,7 @@ import {
   CloudArrowDownIcon,
   CloudArrowUpIcon,
   PresentationChartLineIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { PiCashRegister } from "react-icons/pi";
 import { useState } from 'react';

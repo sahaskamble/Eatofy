@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { fetchExpenses, addExpense, editExpense, removeExpense } from './api';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
@@ -34,6 +35,7 @@ const ExpensePage = () => {
     try {
       const data = await fetchExpenses();
       if (data.returncode === 200) {
+        console.log("Expences", data.output);
         setExpenses(data.output);
       } else {
         toast.error(data.message || 'Failed to load expenses');
@@ -194,7 +196,7 @@ const ExpensePage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 pt-6">
+    <div className="mx-auto p-4 pt-6">
       <div className="flex justify-between mb-4">
         <h1 className="text-3xl font-bold">Expenses</h1>
         <button onClick={() => setIsOpenAddPopup(true)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Add Expense</button>
@@ -218,11 +220,15 @@ const ExpensePage = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {expenses.map(expense => (
                     <tr key={expense._id}>
-                      <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">{expense.expense_name}</td>
-                      <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">₹{expense.amount_paid}</td>
+                      <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">{expense.ExpenseName}</td>
+                      <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">₹{expense.AmountPaid}</td>
                       <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
-                        <button onClick={() => handleEdit(expense)} className="text-blue-500 mr-2">Edit</button>
-                        <button onClick={() => handleDelete(expense._id)} className="text-red-500">Delete</button>
+                        <button onClick={() => handleEdit(expense)} className="text-blue-500 mr-2">
+                          <FaEdit size={14} />
+                        </button>
+                        <button onClick={() => handleDelete(expense._id)} className="text-red-500 ml-2">
+                          <FaTrash size={14} />
+                        </button>
                       </td>
                     </tr>
                   ))}

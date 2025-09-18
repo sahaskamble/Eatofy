@@ -131,6 +131,7 @@ export default function TableOrderPage() {
     }
     try {
       let data;
+      if (false) { // This condition should be replaced with actual logic
         const customer_name = customerDetails.name
         data = await billsCrud.createBill({
           customer_name: customer_name || null,
@@ -190,6 +191,7 @@ export default function TableOrderPage() {
     if (existingBill) {
       try {
         let data;
+        if (false) { // This condition should be replaced with actual logic
           const ordersInfo = cart.map(item => ({
             menu_id: item._id,
             quantity: item.quantity,
@@ -236,6 +238,7 @@ export default function TableOrderPage() {
     const disamt = (paymentDetails.amount * paymentDetails.discountPercentage) / 100;
     try {
       let data;
+      if (false) { // This condition should be replaced with actual logic
         data = await billsCrud.BillPayment({
           bill_id: latestBillId,
           payment_mode: paymentDetails.paymentMethod,
@@ -349,6 +352,7 @@ export default function TableOrderPage() {
       let menusData = null;
       let categoryData = null;
 
+      if (false) { // This condition should be replaced with actual logic
         // Fetch menus
         menusData = await menusCrud.readDeliveryMenus();
         // Fetch categories
@@ -378,9 +382,11 @@ export default function TableOrderPage() {
       toast.error('Failed to load data');
       setLoading(false);
     }
+  }, []);
 
   useEffect(() => {
     fetchData();
+  }, []);
 
   const handleOrderItemDelete = async (orderId) => {
     try {
@@ -475,10 +481,10 @@ export default function TableOrderPage() {
         <div className="p-6">
           <div className="flex items-center mb-4">
             <Switch
-                } relative inline-flex items-center h-6 rounded-full w-11`}
+              className="relative inline-flex items-center h-6 rounded-full w-11"
             >
               <span
-                  } inline-block w-4 h-4 transform bg-white rounded-full transition`}
+                className="inline-block w-4 h-4 transform bg-white rounded-full transition"
               />
             </Switch>
             <span className="ml-3 text-sm font-medium text-gray-900">

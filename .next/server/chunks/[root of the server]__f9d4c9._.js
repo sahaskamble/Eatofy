@@ -18,7 +18,7 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f$__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__ = __turbopack_import__("[externals]/ [external] (mongoose, cjs)");
 ;
-const MONGODB_URI = process.env.MONGO_URI || 'mongodb://admin:admin@localhost:27017/admin?authSource=admin';
+const MONGODB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/admin?authSource=admin';
 if ("TURBOPACK compile-time falsy", 0) {
     "TURBOPACK unreachable";
 }

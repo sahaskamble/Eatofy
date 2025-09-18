@@ -38,7 +38,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 23,
+            lineNumber: 24,
             columnNumber: 56
         }, this)
     },
@@ -49,7 +49,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 27,
+            lineNumber: 28,
             columnNumber: 11
         }, this)
     },
@@ -60,7 +60,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 29,
+            lineNumber: 30,
             columnNumber: 60
         }, this)
     },
@@ -71,7 +71,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 30,
+            lineNumber: 31,
             columnNumber: 60
         }, this)
     },
@@ -82,7 +82,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 31,
+            lineNumber: 32,
             columnNumber: 64
         }, this)
     },
@@ -93,7 +93,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 32,
+            lineNumber: 33,
             columnNumber: 62
         }, this)
     },
@@ -104,7 +104,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 33,
+            lineNumber: 34,
             columnNumber: 59
         }, this)
     },
@@ -115,7 +115,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 34,
+            lineNumber: 35,
             columnNumber: 48
         }, this)
     },
@@ -126,7 +126,7 @@ const navigation = [
             className: "w-6 h-6"
         }, void 0, false, {
             fileName: "[project]/src/app/hotel/components/Navbar.js",
-            lineNumber: 35,
+            lineNumber: 36,
             columnNumber: 54
         }, this)
     }
@@ -149,7 +149,7 @@ function Navbar() {
                         children: user[0]?.hotelName?.slice(0, 2) || 'H'
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                        lineNumber: 49,
+                        lineNumber: 50,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -157,13 +157,13 @@ function Navbar() {
                         children: user[0]?.hotelName
                     }, void 0, false, {
                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                        lineNumber: 52,
+                        lineNumber: 53,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                lineNumber: 48,
+                lineNumber: 49,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -183,7 +183,7 @@ function Navbar() {
                                                     children: item.icon
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 67,
+                                                    lineNumber: 68,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -191,7 +191,7 @@ function Navbar() {
                                                     children: item.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 68,
+                                                    lineNumber: 69,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -199,13 +199,13 @@ function Navbar() {
                                                     children: "▼"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 71,
+                                                    lineNumber: 72,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 63,
+                                            lineNumber: 64,
                                             columnNumber: 19
                                         }, this),
                                         expandedItem === index && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -221,7 +221,7 @@ function Navbar() {
                                                                 children: subItem.icon
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                                lineNumber: 84,
+                                                                lineNumber: 85,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -229,29 +229,29 @@ function Navbar() {
                                                                 children: subItem.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                                lineNumber: 85,
+                                                                lineNumber: 86,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                        lineNumber: 79,
+                                                        lineNumber: 80,
                                                         columnNumber: 27
                                                     }, this)
                                                 }, subItem.name, false, {
                                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                                    lineNumber: 78,
+                                                    lineNumber: 79,
                                                     columnNumber: 25
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 76,
+                                            lineNumber: 77,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                    lineNumber: 62,
+                                    lineNumber: 63,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: item.href,
@@ -262,7 +262,7 @@ function Navbar() {
                                             children: item.icon
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 99,
+                                            lineNumber: 100,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -270,18 +270,18 @@ function Navbar() {
                                             children: item.name
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 100,
+                                            lineNumber: 101,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                    lineNumber: 95,
+                                    lineNumber: 96,
                                     columnNumber: 17
                                 }, this)
                             }, item.name, false, {
                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                lineNumber: 60,
+                                lineNumber: 61,
                                 columnNumber: 13
                             }, this)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -295,12 +295,12 @@ function Navbar() {
                                             className: "w-6 h-6"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                            lineNumber: 113,
+                                            lineNumber: 114,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                        lineNumber: 112,
+                                        lineNumber: 113,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -308,35 +308,35 @@ function Navbar() {
                                         children: "Sign out"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                        lineNumber: 115,
+                                        lineNumber: 116,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                                lineNumber: 108,
+                                lineNumber: 109,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/hotel/components/Navbar.js",
-                            lineNumber: 107,
+                            lineNumber: 108,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/hotel/components/Navbar.js",
-                    lineNumber: 58,
+                    lineNumber: 59,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/hotel/components/Navbar.js",
-                lineNumber: 57,
+                lineNumber: 58,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/hotel/components/Navbar.js",
-        lineNumber: 47,
+        lineNumber: 48,
         columnNumber: 5
     }, this);
 }

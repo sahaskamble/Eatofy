@@ -14,6 +14,7 @@ export default function ItemManagement() {
   const [categoryName, setCategoryName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [unit, setUnit] = useState('piece');
+  const [customUnit, setCustomUnit] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editItemName, setEditItemName] = useState('');
   const [editUnit, setEditUnit] = useState('');
@@ -54,7 +55,7 @@ export default function ItemManagement() {
   const handleAddItem = async (e) => {
     e.preventDefault();
     try {
-      const unitValue = !isNaN(unit) ? unit.toString() : unit;
+      const unitValue = unit === 'custom' ? customUnit : unit;
 
       const itemData = {
         category_name: categoryName,
@@ -157,6 +158,7 @@ export default function ItemManagement() {
     setCategoryName('');
     setItemName('');
     setUnit('piece');
+    setCustomUnit('');
   };
 
   const handleCloseItemForm = () => {
@@ -265,12 +267,8 @@ export default function ItemManagement() {
                     {unit === 'custom' && (
                       <input
                         type="text"
-                        value={typeof unit === 'string' ? unit : ''}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          // Allow both numbers and strings
-                          setUnit(value);
-                        }}
+                        value={customUnit}
+                        onChange={(e) => setCustomUnit(e.target.value)}
                         placeholder="Enter custom unit"
                         className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-red-500 focus:border-transparent transition-all"
                       />
