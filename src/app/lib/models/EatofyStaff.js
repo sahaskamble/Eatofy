@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import StringValidators from "../utils/StringValidator";
-import bcrypt from "bcryptjs";
+
+const getBcrypt = () => {
+  return require('bcryptjs');
+};
 
 const RoleEnums = ["Administration", "Management", "Sales"]
 
@@ -60,6 +63,7 @@ export const EatofyStaffSchema = new mongoose.Schema(
 // Instance methods
 EatofyStaffSchema.methods = {
   authenticate: async function(plainText) {
+    const bcrypt = getBcrypt();
     return await bcrypt.compare(plainText, this.Password);
   }
 };
@@ -68,6 +72,7 @@ EatofyStaffSchema.methods = {
 EatofyStaffSchema.pre('save', async function(next) {
   try {
     if (this.isModified('Password')) {
+      const bcrypt = getBcrypt();
       const salt = await bcrypt.genSalt(10);
       this.Password = await bcrypt.hash(this.Password, salt);
     }

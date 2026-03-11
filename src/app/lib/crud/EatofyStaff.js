@@ -1,6 +1,9 @@
 import { BaseCrud } from "./BaseCrud";
 import EatofyStaff from "../models/EatofyStaff";
-import bcrypt from 'bcryptjs';
+
+const getBcrypt = () => {
+  return require('bcryptjs');
+};
 
 class EatofyStaffCrud extends BaseCrud {
   constructor() {
@@ -48,6 +51,7 @@ class EatofyStaffCrud extends BaseCrud {
       }
 
       // Use bcrypt.compare to properly compare passwords
+      const bcrypt = getBcrypt();
       const isValidPassword = await bcrypt.compare(password, staff.Password);
 
       if (!isValidPassword) {
@@ -88,6 +92,7 @@ class EatofyStaffCrud extends BaseCrud {
         };
       }
 
+      const bcrypt = getBcrypt();
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
 
@@ -201,6 +206,7 @@ class EatofyStaffCrud extends BaseCrud {
     try {
       // Hash password if it's being updated
       if (updateData.Password) {
+        const bcrypt = getBcrypt();
         updateData.Password = await bcrypt.hash(updateData.Password, 10);
       }
 
@@ -235,6 +241,7 @@ class EatofyStaffCrud extends BaseCrud {
       }
 
       // Check password
+      const bcrypt = getBcrypt();
       const isValidPassword = await bcrypt.compare(password, staff.Password);
       if (!isValidPassword) {
         return {

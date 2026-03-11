@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 import StringValidators from "../utils/StringValidator";
+
+const getBcrypt = () => {
+  return require('bcryptjs');
+};
 
 export const staffSchema = new mongoose.Schema(
   {
@@ -107,6 +110,7 @@ staffSchema.index({ Email: 1, HotelId: 1 }, { unique: true });
 // Instance methods
 staffSchema.methods = {
   authenticate: async function(plainText) {
+    const bcrypt = getBcrypt();
     return await bcrypt.compare(plainText, this.Password);
   }
 };
@@ -114,8 +118,8 @@ staffSchema.methods = {
 // Pre-save hook to hash password
 staffSchema.pre('save', async function(next) {
   try {
-
     if (this.isModified('Password')) {
+      const bcrypt = getBcrypt();
       const salt = await bcrypt.genSalt(10);
       this.Password = await bcrypt.hash(this.Password, salt);
       this.SaltPassword = salt

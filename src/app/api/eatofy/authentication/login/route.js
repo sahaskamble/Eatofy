@@ -1,7 +1,6 @@
 import { login_eatofy_user } from './controller';
 import { NextResponse } from 'next/server';
 import { createToken } from '@/app/lib/utils/jwt';
-import { cookies } from 'next/headers';
 
 export async function POST(request) {
   try {
