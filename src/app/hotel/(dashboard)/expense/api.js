@@ -34,3 +34,4 @@ export const removeExpense = async (id) => {
   });
   return await response.json();
 };
+

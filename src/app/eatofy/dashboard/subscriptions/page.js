@@ -3,496 +3,380 @@
 import { useEatofyAuth } from '../../contexts/AuthContext';
 import EatofyProtectedRoute from '../../components/ProtectedRoute';
 import { useState, useEffect } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaSearch } from 'react-icons/fa';
-import { fetchSubscriptions, addSubscription, updateSubscription, deactivateSubscription, addHotelSubscription, editSubscriptionPayment, removeSubscription, fetchHotels } from './api';
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaBox, FaTag, FaClock, FaRupeeSign } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
+// ─── API helpers ─────────────────────────────────────────────────────────────
+
+async function apiFetch(url, options = {}) {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  return res.json();
+}
+
+// ─── Plan Modal (create + edit) ───────────────────────────────────────────────
+
+function PlanModal({ plan, onClose, onSuccess }) {
+  const isEdit = !!plan;
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    subscription_name: plan?.SubscriptionName ?? '',
+    validity: plan?.Validity ?? '',
+    price: plan?.Price ?? '',
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.subscription_name.trim() || !form.validity || !form.price) {
+      toast.error('All fields are required');
+      return;
+    }
+    setLoading(true);
+    try {
+      const payload = isEdit
+        ? { subscription_id: plan._id, ...form, validity: parseInt(form.validity), price: parseInt(form.price) }
+        : { ...form, validity: parseInt(form.validity), price: parseInt(form.price) };
+
+      const data = await apiFetch(
+        isEdit ? '/api/eatofy/subscription/edit' : '/api/eatofy/subscription/add',
+        { method: isEdit ? 'PUT' : 'POST', body: JSON.stringify(payload) }
+      );
+
+      if (data.returncode === 200) {
+        toast.success(isEdit ? 'Plan updated' : 'Plan created');
+        onSuccess();
+        onClose();
+      } else {
+        toast.error(data.message || 'Something went wrong');
+      }
+    } catch {
+      toast.error('Request failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-gray-900">{isEdit ? 'Edit Plan' : 'Create Plan'}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <FaTimes className="text-gray-400" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Plan Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={form.subscription_name}
+              onChange={e => setForm(f => ({ ...f, subscription_name: e.target.value }))}
+              placeholder="e.g. Basic, Pro, Enterprise"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Validity (days) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={form.validity}
+                onChange={e => setForm(f => ({ ...f, validity: e.target.value }))}
+                placeholder="30"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Price (₹) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={form.price}
+                onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
+                placeholder="999"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Preview */}
+          {form.subscription_name && form.validity && form.price && (
+            <div className="bg-red-50 border border-red-100 rounded-xl p-3 flex items-center justify-between text-sm">
+              <span className="font-semibold text-red-700">{form.subscription_name}</span>
+              <span className="text-gray-500">{form.validity} days</span>
+              <span className="font-bold text-gray-800">₹{parseInt(form.price).toLocaleString('en-IN')}</span>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-1">
+            <button type="button" onClick={onClose} disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+              Cancel
+            </button>
+            <button type="submit" disabled={loading}
+              className="px-5 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2">
+              {loading
+                ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{isEdit ? 'Saving...' : 'Creating...'}</>
+                : isEdit ? 'Save Changes' : 'Create Plan'
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─── Delete Confirm Modal ─────────────────────────────────────────────────────
+
+function DeleteModal({ plan, onClose, onSuccess }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      const data = await apiFetch('/api/eatofy/subscription/remove', {
+        method: 'DELETE',
+        body: JSON.stringify({ subscription_id: plan._id }),
+      });
+      if (data.returncode === 200) {
+        toast.success('Plan deleted');
+        onSuccess();
+        onClose();
+      } else {
+        toast.error(data.message || 'Failed to delete');
+      }
+    } catch {
+      toast.error('Request failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
+          <FaTrash className="text-red-500" />
+        </div>
+        <h2 className="text-lg font-bold text-gray-900 text-center">Delete Plan?</h2>
+        <p className="text-sm text-gray-400 text-center mt-1">
+          "<span className="font-medium text-gray-600">{plan.SubscriptionName}</span>" will be permanently removed.
+        </p>
+        <div className="flex gap-3 mt-6">
+          <button onClick={onClose} disabled={loading}
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={loading}
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            {loading
+              ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : 'Delete'
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Plan Card ────────────────────────────────────────────────────────────────
+
+function PlanCard({ plan, onEdit, onDelete }) {
+  const pricePerDay = plan.Validity > 0
+    ? (plan.Price / plan.Validity).toFixed(1)
+    : '—';
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4">
+      {/* Top */}
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+            <FaBox className="text-red-500" size={16} />
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900">{plan.SubscriptionName}</h3>
+            <p className="text-xs text-gray-400 mt-0.5">₹{pricePerDay}/day</p>
+          </div>
+        </div>
+        <div className="flex gap-1">
+          <button onClick={() => onEdit(plan)}
+            className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Edit plan">
+            <FaEdit size={13} />
+          </button>
+          <button onClick={() => onDelete(plan)}
+            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            title="Delete plan">
+            <FaTrash size={13} />
+          </button>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-gray-100" />
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+            <FaClock className="text-amber-500" size={11} />
+          </div>
+          <div>
+            <p className="text-xs text-gray-400">Validity</p>
+            <p className="text-sm font-bold text-gray-800">{plan.Validity} days</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <FaRupeeSign className="text-emerald-500" size={11} />
+          </div>
+          <div>
+            <p className="text-xs text-gray-400">Price</p>
+            <p className="text-sm font-bold text-gray-800">₹{parseInt(plan.Price).toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SubscriptionsPage() {
   const { user } = useEatofyAuth();
   const [subscriptions, setSubscriptions] = useState([]);
-  const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isAddToHotelModalOpen, setIsAddToHotelModalOpen] = useState(false);
-  const [editingSubscription, setEditingSubscription] = useState(null);
-  const [formData, setFormData] = useState({
-    subscription_name: '',
-    validity: '',
-    price: '',
-    subscription_id: '',
-    is_valid: '',
-    start_date: '',
-    end_date: '',
-    payment_status: '',
-    payment_mode: '',
-    cash: '',
-    upi: '',
-    credit_card: '',
-  });
-  const [hotelFormData, setHotelFormData] = useState({
-    is_valid: '',
-    start_date: '',
-    end_date: '',
-    payment_status: '',
-    payment_mode: '',
-    cash: '',
-    upi: '',
-    credit_card: '',
-  });
-  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState('');
-  const [selectedHotelId, setSelectedHotelId] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Fetch subscriptions on component mount
-  useEffect(() => {
-    loadSubscriptions();
-    loadHotels();
-  }, []);
+  const [planModal, setPlanModal] = useState(null); // null | 'create' | plan object (edit)
+  const [deleteModal, setDeleteModal] = useState(null); // null | plan object
 
   const loadSubscriptions = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await fetchSubscriptions();
+      const data = await apiFetch('/api/eatofy/subscription/fetch');
       setSubscriptions(data.output || []);
-    } catch (error) {
-      console.error('Error loading subscriptions:', error);
+    } catch {
+      toast.error('Failed to load plans');
     } finally {
       setLoading(false);
     }
   };
 
-  const loadHotels = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchHotels();
-      setHotels(data.output || []);
-    } catch (error) {
-      console.error('Error loading hotels:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => { loadSubscriptions(); }, []);
 
-  console.log('Hotels Fetched', hotels);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleAddSubscription = async (e) => {
-    e.preventDefault();
-    try {
-      await addSubscription({
-        subscription_name: formData.subscription_name,
-        validity: formData.validity,
-        price: formData.price,
-      });
-      await loadSubscriptions();
-      setIsAddModalOpen(false);
-      setFormData({
-        subscription_name: '',
-        validity: '',
-        price: '',
-      });
-    } catch (error) {
-      console.error('Error adding subscription:', error);
-    }
-  };
-
-  const handleAddSubscriptionToHotel = async (e) => {
-    e.preventDefault();
-    try {
-      await addHotelSubscription({
-        hotel_id: selectedHotelId,
-        subscription_id: selectedSubscriptionId,
-        is_valid: true,
-        start_date: hotelFormData.start_date,
-        end_date: hotelFormData.end_date,
-        payment_status: hotelFormData.payment_status,
-        payment_mode: hotelFormData.payment_mode,
-        cash: parseInt(hotelFormData.cash),
-        upi: parseInt(hotelFormData.upi),
-        credit_card: parseInt(hotelFormData.credit_card),
-      });
-      await loadSubscriptions();
-      setIsAddToHotelModalOpen(false);
-      setHotelFormData({
-        is_valid: '',
-        start_date: '',
-        end_date: '',
-        payment_status: '',
-        payment_mode: '',
-        cash: '',
-        upi: '',
-        credit_card: '',
-      });
-    } catch (error) {
-      console.error('Error adding subscription to hotel:', error);
-    }
-  };
-
-  const handleEditSubscriptionPayment = async (e) => {
-    e.preventDefault();
-    try {
-      await editSubscriptionPayment({
-        hotel_subscription_id: editingSubscription._id,
-        payment_status: formData.payment_status,
-        payment_mode: formData.payment_mode,
-        cash: formData.cash,
-        upi: formData.upi,
-        credit_card: formData.credit_card,
-      });
-      await loadSubscriptions();
-      setIsEditModalOpen(false);
-      setEditingSubscription(null);
-      setFormData({
-        payment_status: '',
-        payment_mode: '',
-        cash: '',
-        upi: '',
-        credit_card: '',
-      });
-    } catch (error) {
-      console.error('Error editing subscription payment:', error);
-    }
-  };
-
-  const handleRemoveSubscription = async (subscriptionId) => {
-    try {
-      await removeSubscription(subscriptionId);
-      await loadSubscriptions();
-    } catch (error) {
-      console.error('Error removing subscription:', error);
-    }
-  };
-
-  const convertToDays = (validity) => {
-    const monthDays = 30; // assuming 30 days per month
-    const validityNumber = parseInt(validity);
-    return validityNumber * monthDays;
-  };
+  const totalRevenuePotential = subscriptions.reduce((s, p) => s + (parseInt(p.Price) || 0), 0);
 
   return (
     <EatofyProtectedRoute>
-      <div className="p-8 bg-white rounded-lg shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">My Subscriptions</h3>
+      <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Subscription Plans</h1>
+            <p className="text-sm text-gray-400 mt-0.5">Create and manage the plans you offer to hotels</p>
+          </div>
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            onClick={() => setPlanModal('create')}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm shadow-red-200"
           >
-            Add Subscription
+            <FaPlus size={11} /> New Plan
           </button>
         </div>
-        <div className="space-y-4">
-          {subscriptions.map((sub, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors shadow-md">
-              <div className="flex items-center">
-                <div className="ml-4">
-                  <h4 className="font-semibold text-gray-800">{sub.SubscriptionName}</h4>
-                  <p className="text-sm text-gray-600">Validity: {sub.Validity} days</p>
-                </div>
-              </div>
-              <div className="flex space-x-4">
-                {/* <button
-                  onClick={() => {
-                    setEditingSubscription(sub);
-                    setIsEditModalOpen(true);
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-                >
-                  Edit Payment
-                </button> */}
-                <button
-                  onClick={() => {
-                    setSelectedSubscriptionId(sub._id);
-                    setIsAddToHotelModalOpen(true);
-                  }}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-                >
-                  Add to Hotel
-                </button>
-                <button
-                  onClick={() => handleRemoveSubscription(sub._id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Add Subscription Modal */}
-        {isAddModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md relative">
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes size={20} />
-              </button>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Subscription</h2>
-              <form onSubmit={handleAddSubscription} className="space-y-6">
+        {/* Summary row */}
+        {!loading && subscriptions.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {[
+              { label: 'Total Plans', value: subscriptions.length, icon: <FaBox />, color: 'bg-red-50 text-red-500' },
+              { label: 'Avg. Validity', value: `${Math.round(subscriptions.reduce((s, p) => s + parseInt(p.Validity || 0), 0) / subscriptions.length)} days`, icon: <FaClock />, color: 'bg-amber-50 text-amber-500' },
+              { label: 'Price Range', value: `₹${Math.min(...subscriptions.map(p => parseInt(p.Price || 0))).toLocaleString('en-IN')} – ₹${Math.max(...subscriptions.map(p => parseInt(p.Price || 0))).toLocaleString('en-IN')}`, icon: <FaRupeeSign />, color: 'bg-emerald-50 text-emerald-500' },
+            ].map(({ label, value, icon, color }) => (
+              <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl ${color} flex items-center justify-center text-sm flex-shrink-0`}>{icon}</div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subscription Name</label>
-                  <input
-                    type="text"
-                    name="subscription_name"
-                    value={formData.subscription_name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter subscription name"
-                    required
-                  />
+                  <p className="text-xs text-gray-400 font-medium">{label}</p>
+                  <p className="text-sm font-bold text-gray-800">{value}</p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Validity</label>
-                  <input
-                    type="number"
-                    name="validity"
-                    value={formData.validity}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter validity in days"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter price"
-                    required
-                  />
-                </div>
-                <div className="flex space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddModalOpen(false)}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
-                  >
-                    Add Subscription
-                  </button>
-                </div>
-              </form>
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Add Subscription to Hotel Modal */}
-        {isAddToHotelModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md relative max-h-[80vh] overflow-y-auto shadow-lg">
-              <button
-                onClick={() => setIsAddToHotelModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes size={20} />
-              </button>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Subscription to Hotel</h2>
-              <form onSubmit={handleAddSubscriptionToHotel} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Hotel ID</label>
-                  <select
-                    value={selectedHotelId}
-                    onChange={(e) => setSelectedHotelId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    required
-                  >
-                    <option value="" disabled>Select a hotel</option>
-                    {hotels.map((h) => (
-                      <option key={h._id} value={h._id}>{h.HotelName}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subscription ID</label>
-                  <select
-                    value={selectedSubscriptionId}
-                    onChange={(e) => setSelectedSubscriptionId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    required
-                  >
-                    <option value="" disabled>Select a subscription</option>
-                    {subscriptions.map((sub) => (
-                      <option key={sub._id} value={sub._id}>{sub.SubscriptionName}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Is Valid</label>
-                  <input
-                    type="text"
-                    name="is_valid"
-                    value={hotelFormData.is_valid}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, is_valid: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter validity"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={hotelFormData.start_date}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, start_date: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                  <input
-                    type="date"
-                    name="end_date"
-                    value={hotelFormData.end_date}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, end_date: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-                  <input
-                    type="text"
-                    name="payment_status"
-                    value={hotelFormData.payment_status}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, payment_status: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter payment status"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Payment Mode</label>
-                  <input
-                    type="text"
-                    name="payment_mode"
-                    value={hotelFormData.payment_mode}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, payment_mode: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter payment mode"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cash</label>
-                  <input
-                    type="number"
-                    name="cash"
-                    value={hotelFormData.cash}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, cash: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter cash"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">UPI</label>
-                  <input
-                    type="text"
-                    name="upi"
-                    value={hotelFormData.upi}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, upi: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter UPI"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Credit Card</label>
-                  <input
-                    type="text"
-                    name="credit_card"
-                    value={hotelFormData.credit_card}
-                    onChange={(e) => setHotelFormData({ ...hotelFormData, credit_card: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter credit card"
-                    required
-                  />
-                </div>
-                <div className="flex space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddToHotelModalOpen(false)}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
-                  >
-                    Add Subscription
-                  </button>
-                </div>
-              </form>
-            </div>
+        {/* Plans grid */}
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500" />
           </div>
-        )}
+        ) : subscriptions.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-dashed border-gray-200 flex flex-col items-center justify-center py-20 text-gray-400">
+            <FaBox size={36} className="mb-3 opacity-30" />
+            <p className="font-semibold text-gray-500">No subscription plans yet</p>
+            <p className="text-sm mt-1 mb-5">Create your first plan to get started</p>
+            <button
+              onClick={() => setPlanModal('create')}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              <FaPlus size={11} /> Create First Plan
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {subscriptions.map(plan => (
+              <PlanCard
+                key={plan._id}
+                plan={plan}
+                onEdit={p => setPlanModal(p)}
+                onDelete={p => setDeleteModal(p)}
+              />
+            ))}
 
-        {/* Edit Payment Modal */}
-        {isEditModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md relative">
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              >
-                <FaTimes size={20} />
-              </button>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Edit Subscription Payment</h2>
-              <form onSubmit={handleEditSubscriptionPayment} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-                  <input
-                    type="text"
-                    name="payment_status"
-                    value={formData.payment_status}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Enter payment status"
-                    required
-                  />
-                </div>
-                <div className="flex space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
-                  >
-                    Edit Subscription Payment
-                  </button>
-                </div>
-              </form>
-            </div>
+            {/* Add new plan card */}
+            <button
+              onClick={() => setPlanModal('create')}
+              className="bg-white rounded-2xl border-2 border-dashed border-gray-200 hover:border-red-300 hover:bg-red-50/30 flex flex-col items-center justify-center gap-2 p-5 text-gray-400 hover:text-red-400 transition-all min-h-[160px]"
+            >
+              <div className="w-10 h-10 rounded-xl border-2 border-dashed border-current flex items-center justify-center">
+                <FaPlus size={14} />
+              </div>
+              <span className="text-sm font-medium">Add New Plan</span>
+            </button>
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {planModal && (
+        <PlanModal
+          plan={planModal === 'create' ? null : planModal}
+          onClose={() => setPlanModal(null)}
+          onSuccess={loadSubscriptions}
+        />
+      )}
+      {deleteModal && (
+        <DeleteModal
+          plan={deleteModal}
+          onClose={() => setDeleteModal(null)}
+          onSuccess={loadSubscriptions}
+        />
+      )}
     </EatofyProtectedRoute>
   );
 }

@@ -112,7 +112,7 @@ export default function DayClosing() {
   // Fetch Values 
   const fetchData = async () => {
     if (date == "") {
-      alert("Please Select Filter");
+      toast.error("Please select a date filter");
     }
 
     try {
@@ -174,7 +174,7 @@ export default function DayClosing() {
       if (response.ok) {
         const result = await response.json();
         if (result.returncode === 200 && Array.isArray(result.output)) {
-          setStaffList(data?.output?.Attendances);
+          setStaffList(result.output);
         } else {
           console.error("Unexpected response format:", result);
         }
@@ -194,7 +194,7 @@ export default function DayClosing() {
       });
       const data = await response.json();
       if (data.returncode != 200) {
-        alert("Failed to add Inventory Stock")
+        toast.error("Failed to add Inventory Stock")
       }
     } catch (e) {
       console.error(e);
@@ -732,3 +732,6 @@ export default function DayClosing() {
     </div>
   )
 }
+
+
+

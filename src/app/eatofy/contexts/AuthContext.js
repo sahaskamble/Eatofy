@@ -106,7 +106,8 @@ export function EatofyAuthProvider({ children }) {
     login,
     logout,
     checkAuth,
-    fetchHotelData
+    fetchHotelData,
+    fetchDashboardData,
   };
 
   return (

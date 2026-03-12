@@ -1,11 +1,8 @@
-import { BaseCrud } from "./BaseCrud";
 import EatofyStaff from "../models/EatofyStaff";
+import { BaseCrud } from "./BaseCrud";
+import { getBcrypt } from "./EatofyStaff";
 
-const getBcrypt = () => {
-  return require('bcryptjs');
-};
-
-class EatofyStaffCrud extends BaseCrud {
+export class EatofyStaffCrud extends BaseCrud {
   constructor() {
     super(EatofyStaff);
   }
@@ -321,5 +318,3 @@ class EatofyStaffCrud extends BaseCrud {
   }
 }
 
-const eatofyStaffCrud = new EatofyStaffCrud();
-export default eatofyStaffCrud;

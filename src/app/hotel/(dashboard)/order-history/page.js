@@ -1,229 +1,376 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { useHotelAuth } from '../../contexts/AuthContext';
+import { FaEye, FaEdit, FaTrash, FaTimes, FaSearch, FaSave } from 'react-icons/fa';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
+// ─── helpers ──────────────────────────────────────────────────────────────────
+const paymentBadge = (status) => {
+  const map = {
+    Paid: 'bg-green-100 text-green-800',
+    'Part-Paid': 'bg-yellow-100 text-yellow-800',
+    'Part-paid': 'bg-yellow-100 text-yellow-800',
+    Unpaid: 'bg-red-100 text-red-800',
+  };
+  return map[status] ?? 'bg-gray-100 text-gray-700';
+};
 
+const fmt = (n) => typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '₹0';
 
-export default function OrderHistory() {
-  const { loading } = useHotelAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [orders, setOrders] = useState([]);
+// ─── View Modal ───────────────────────────────────────────────────────────────
+function ViewModal({ order, onClose }) {
+  if (!order) return null;
+  const rows = [
+    ['Order Type', order.Type ?? '—'],
+    ['Table', order.TableId?.TableName ?? '—'],
+    ['Waiter', order.WaiterId?.FirstName ?? '—'],
+    ['Customer', order.CustomerId?.CustomerName ?? '—'],
+    ['Menu Total', fmt(order.MenuTotal)],
+    ['Discount', fmt(order.DiscountPrice)],
+    ['Delivery', fmt(order.DeliveryChargesAmount)],
+    ['GST (CGST)', fmt(order.CGSTAmount)],
+    ['GST (SGST)', fmt(order.SGSTAmount)],
+    ['Total Amount', fmt(order.TotalAmount)],
+    ['Amount Paid', fmt(order.Amount)],
+    ['Balance', fmt(order.BalanceAmount)],
+    ['Payment Mode', order.PaymentMode ?? '—'],
+    ['Payment Status', order.PaymentStatus ?? '—'],
+    ['Bill Status', order.Status ?? '—'],
+  ];
 
-  // Delete order handler
-  const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to delete this order?')) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Order Details</h2>
+            <p className="text-xs text-gray-400 mt-0.5 font-mono">{order._id}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
+            <FaTimes className="text-gray-400" />
+          </button>
+        </div>
+        <div className="p-6 divide-y divide-gray-50 max-h-[60vh] overflow-y-auto">
+          {rows.map(([label, value]) => (
+            <div key={label} className="flex justify-between py-2 text-sm">
+              <span className="text-gray-400 font-medium">{label}</span>
+              <span className="text-gray-800 font-semibold text-right">{value}</span>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100">
+          <button onClick={onClose}
+            className="w-full px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Edit Payment Modal ───────────────────────────────────────────────────────
+function EditPaymentModal({ order, onClose, onSuccess }) {
+  const [form, setForm] = useState({
+    payment_status: order?.PaymentStatus ?? '',
+    payment_mode: order?.PaymentMode ?? '',
+    balance_amount: order?.BalanceAmount ?? 0,
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!form.payment_status || !form.payment_mode) {
+      toast.error('Please fill all required fields');
       return;
     }
-
+    setSaving(true);
     try {
-      const response = await fetch(`/api/hotel/bills/remove`, {
+      const res = await fetch('/api/hotel/bills/edit/payment', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bill_id: order._id,
+          payment_status: form.payment_status,
+          payment_mode: form.payment_mode,
+          balance_amount: Number(form.balance_amount),
+        }),
+      });
+      const data = await res.json();
+      if (data.returncode === 200) {
+        toast.success('Order updated');
+        onSuccess();
+        onClose();
+      } else {
+        toast.error(data.message || 'Failed to update order');
+      }
+    } catch {
+      toast.error('Failed to update order');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-gray-900">Edit Payment</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
+            <FaTimes className="text-gray-400" />
+          </button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Payment Status <span className="text-red-500">*</span></label>
+            <select value={form.payment_status} onChange={e => setForm(f => ({ ...f, payment_status: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm">
+              <option value="">Select status</option>
+              <option value="Paid">Paid</option>
+              <option value="Unpaid">Unpaid</option>
+              <option value="Part-Paid">Part-Paid</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Payment Mode <span className="text-red-500">*</span></label>
+            <select value={form.payment_mode} onChange={e => setForm(f => ({ ...f, payment_mode: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm">
+              <option value="">Select mode</option>
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Credit-Card">Credit Card</option>
+              <option value="Part">Part</option>
+              <option value="Due">Due</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Balance Amount (₹)</label>
+            <input type="number" min="0" value={form.balance_amount}
+              onChange={e => setForm(f => ({ ...f, balance_amount: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm" />
+          </div>
+        </div>
+        <div className="flex gap-3 px-6 py-4 border-t border-gray-100">
+          <button onClick={onClose} disabled={saving}
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+            Cancel
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FaSave size={12} />}
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Delete Modal ─────────────────────────────────────────────────────────────
+function DeleteModal({ onClose, onConfirm, loading }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+            <FaTrash className="text-red-500" size={13} />
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900">Delete Order</h3>
+            <p className="text-sm text-gray-400">This action cannot be undone</p>
+          </div>
+        </div>
+        <div className="flex gap-3 mt-4">
+          <button onClick={onClose} disabled={loading}
+            className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm} disabled={loading}
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function OrderHistory() {
+  const { loading: authLoading } = useHotelAuth();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [viewOrder, setViewOrder] = useState(null);
+  const [editOrder, setEditOrder] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/hotel/bills/fetch');
+      const data = await res.json();
+      setOrders(data.output ?? []);
+    } catch {
+      toast.error('Failed to fetch orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
+
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    try {
+      const res = await fetch('/api/hotel/bills/remove', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bill_id: orderId }),
+        body: JSON.stringify({ bill_id: deleteTarget._id }),
       });
-      const data = await response.json();
-
+      const data = await res.json();
       if (data.returncode === 200) {
-        toast.success('Order deleted successfully');
+        toast.success('Order deleted');
         fetchOrders();
+        setDeleteTarget(null);
       } else {
         toast.error(data.message || 'Failed to delete order');
       }
-    } catch (error) {
-      console.error('Error deleting order:', error);
+    } catch {
       toast.error('Failed to delete order');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
-  // fetch data
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch('/api/hotel/bills/fetch');
-      const data = await response.json();
-      console.log("Bills Data", data);
-      setOrders(data.output);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      toast.error('Failed to fetch orders');
-      return [];
+  // ── filtering ──────────────────────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    let list = orders;
+    if (filter === 'qr') list = list.filter(o => o.Type === 'QR-Orders');
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(o =>
+        o.TableId?.TableName?.toLowerCase().includes(q) ||
+        o.WaiterId?.FirstName?.toLowerCase().includes(q) ||
+        o.CustomerId?.CustomerName?.toLowerCase().includes(q) ||
+        o.PaymentStatus?.toLowerCase().includes(q) ||
+        o.Type?.toLowerCase().includes(q)
+      );
     }
-  };
+    return list;
+  }, [orders, filter, searchQuery]);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-      </div>
-    );
-  }
+  if (authLoading) return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
+    </div>
+  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
-      <div className="sm:flex sm:items-center">
+
+      {/* Header */}
+      <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">ORDER HISTORY</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Order History</h1>
+          <p className="text-sm text-gray-500 mt-1">{orders.length} total orders</p>
         </div>
       </div>
 
-
-
-      <div className="mt-8 flex flex-col sm:flex-row gap-4">
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-grow">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
           </div>
           <input
             type="text"
-            name="search"
-            className="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6"
-            placeholder="Search Table, Waiter, Payment Status or Customer..."
+            className="block w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white"
+            placeholder="Search table, waiter, customer, payment status…"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${filter === 'all'
-              ? 'bg-red-600 text-white'
-              : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-              }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter('qr')}
-            className={`rounded-md px-4 py-2 text-sm font-semibold shadow-sm ${filter === 'qr'
-              ? 'bg-red-600 text-white'
-              : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
-              }`}
-          >
-            QR Orders
-          </button>
+          {[['all', 'All'], ['qr', 'QR Orders']].map(([key, label]) => (
+            <button key={key} onClick={() => setFilter(key)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${filter === key ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}>
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-red-600">
-                  <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">SR#</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Table</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Waiter</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Customer</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Type</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Balance</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Total</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Amount</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">Payment Status</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {orders?.map((order, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-6">
-                        {index + 1}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {order?.TableId?.TableName || 'N/A'}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {order?.WaiterId?.FirstName || "N/A"}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {order?.CustomerId?.CustomerName || "N/A"}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {order?.Type || "N/A"}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {typeof order?.BalanceAmount === 'number' ? `Rs. ${order.BalanceAmount}` : 'Rs. -'}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {typeof order?.TotalAmount === 'number' ? `Rs. ${order.TotalAmount}` : 'Rs. 0'}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {typeof order?.Amount === 'number' ? `Rs. ${order.Amount}` : 'Rs. 0'}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-500">
-                        {
-                          order?.PaymentStatus === "Paid" ? (
-                            <span
-                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-green-300 text-green-800 bg-opacity-80"
-                            >
-                              {order?.PaymentStatus}
-                            </span>
-                          ) : order?.PaymentStatus === "Part-paid" ? (
-                            <span
-                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-yellow-300 text-yellow-800"
-                            >
-                              {order?.PaymentStatus}
-                            </span>
-                          ) : order?.PaymentStatus === "Unpaid" ? (
-                            <span
-                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-red-300 text-red-800"
-                            >
-                              {order?.PaymentStatus}
-                            </span>
-                          ) : (
-                            <span
-                              className="inline-flex rounded-lg px-3 py-1 font-semibold leading-5 bg-opacity-80 bg-gray-300 text-gray-800"
-                            >
-                              {order?.PaymentStatus}
-                            </span>
-                          )
-                        }
-                      </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right font-medium sm:pr-6">
-                        <button
-                          className="text-red-600 hover:text-red-900 mr-2"
-                          title="View Order"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                          </svg>
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-900 mr-2"
-                          title="Edit Order"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                          </svg>
-                        </button>
-                        <button
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete Order"
-                          onClick={() => handleDeleteOrder(order._id)}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
+      {/* Table */}
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600" />
+        </div>
+      ) : (
+        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-red-600">
+                <tr>
+                  {['#', 'Table', 'Waiter', 'Customer', 'Type', 'Balance', 'Total', 'Amount', 'Status', 'Actions'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">{h}</th>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 bg-white">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="py-16 text-center text-sm text-gray-400">
+                      <FaSearch className="mx-auto mb-2 opacity-30" size={24} />
+                      No orders found
+                    </td>
+                  </tr>
+                ) : filtered.map((order, i) => (
+                  <tr key={order._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 text-sm text-gray-400 font-medium">{i + 1}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{order.TableId?.TableName ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{order.WaiterId?.FirstName ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{order.CustomerId?.CustomerName ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{order.Type ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{fmt(order.BalanceAmount)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{fmt(order.TotalAmount)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{fmt(order.Amount)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${paymentBadge(order.PaymentStatus)}`}>
+                        {order.PaymentStatus ?? '—'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => setViewOrder(order)}
+                          className="p-1.5 bg-orange-50 text-orange-500 hover:bg-orange-100 rounded-lg transition-colors" title="View">
+                          <FaEye size={13} />
+                        </button>
+                        <button onClick={() => setEditOrder(order)}
+                          className="p-1.5 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-colors" title="Edit Payment">
+                          <FaEdit size={13} />
+                        </button>
+                        <button onClick={() => setDeleteTarget(order)}
+                          className="p-1.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                          <FaTrash size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
+      )}
+
+      {viewOrder && <ViewModal order={viewOrder} onClose={() => setViewOrder(null)} />}
+      {editOrder && <EditPaymentModal order={editOrder} onClose={() => setEditOrder(null)} onSuccess={fetchOrders} />}
+      {deleteTarget && <DeleteModal loading={deleteLoading} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />}
     </div>
   );
 }

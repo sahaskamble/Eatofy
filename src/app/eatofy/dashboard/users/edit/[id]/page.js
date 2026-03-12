@@ -4,261 +4,166 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft, FaSave } from 'react-icons/fa';
 import EatofyProtectedRoute from '@/app/eatofy/components/ProtectedRoute';
+import { toast } from 'react-toastify';
+
+const ROLES = ['Administration', 'Management', 'Backoffice'];
 
 export default function EditUserInfo() {
 	const params = useParams();
 	const router = useRouter();
-	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState(null);
-	const [formData, setFormData] = useState({
-		firstName: '',
-		lastName: '',
-		email: '',
-		role: '',
-		password: ''
+	const [form, setForm] = useState({
+		firstName: '', lastName: '', email: '', role: '', password: ''
 	});
 
-	const eatofyRoles = ['Administration', 'Management', 'Backoffice'];
+	useEffect(() => { fetchUser(); }, [params.id]);
 
-	useEffect(() => {
-		fetchUserDetails();
-	}, [params.id]);
-
-	const fetchUserDetails = async () => {
+	const fetchUser = async () => {
 		try {
-			const response = await fetch('/api/eatofy/staff/fetch/id', {
+			const res = await fetch('/api/eatofy/staff/fetch/id', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ staff_id: params.id }),
 			});
-
-			const data = await response.json();
-
+			const data = await res.json();
 			if (data.returncode === 200) {
-				const userData = data.output;
-				setUser(userData);
-				setFormData({
-					firstName: userData.FirstName || '',
-					lastName: userData.LastName || '',
-					email: userData.Email || '',
-					role: userData.Role || '',
-					password: ''
-				});
+				const u = data.output;
+				setForm({ firstName: u.FirstName || '', lastName: u.LastName || '', email: u.Email || '', role: u.Role || '', password: '' });
 			} else {
-				setError(data.message || 'Failed to fetch user details');
+				setError(data.message || 'Failed to load user');
 			}
-		} catch (error) {
-			console.error('Error fetching user details:', error);
-			setError('Failed to fetch user details');
+		} catch {
+			setError('Failed to load user');
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleInputChange = (e) => {
-		const { name, value } = e.target;
-		setFormData(prev => ({
-			...prev,
-			[name]: value
-		}));
-	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setSaving(true);
-
 		try {
-			const submitData = {
+			const body = {
 				staff_id: params.id,
-				firstName: formData.firstName,
-				lastName: formData.lastName,
-				email: formData.email,
-				role: formData.role
+				firstName: form.firstName,
+				lastName: form.lastName,
+				email: form.email,
+				role: form.role,
 			};
+			if (form.password) body.password = form.password;
 
-			if (formData.password) {
-				submitData.password = formData.password;
-			}
-
-			const response = await fetch('/api/eatofy/staff/edit', {
+			const res = await fetch('/api/eatofy/staff/edit', {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(submitData),
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
 			});
-
-			const data = await response.json();
-
+			const data = await res.json();
 			if (data.returncode === 200) {
-				alert('User updated successfully');
+				toast.success('User updated successfully');
 				router.push(`/eatofy/dashboard/users/view/${params.id}`);
 			} else {
-				alert(data.message || 'Failed to update user');
+				toast.error(data.message || 'Failed to update user');
 			}
-		} catch (error) {
-			console.error('Failed to update user:', error);
-			alert('Failed to update user');
+		} catch {
+			toast.error('Failed to update user');
 		} finally {
 			setSaving(false);
 		}
 	};
 
-	if (loading) {
-		return (
-			<EatofyProtectedRoute>
-				<div className="flex justify-center items-center h-screen">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-				</div>
-			</EatofyProtectedRoute>
-		);
-	}
+	if (loading) return (
+		<EatofyProtectedRoute>
+			<div className="flex justify-center items-center h-screen">
+				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500" />
+			</div>
+		</EatofyProtectedRoute>
+	);
 
-	if (error) {
-		return (
-			<EatofyProtectedRoute>
-				<div className="bg-gray-200 p-4 rounded-xl">
-					<div className="bg-white rounded-xl shadow-lg p-6">
-						<div className="text-center">
-							<div className="text-red-500 text-xl mb-4">Error</div>
-							<p className="text-gray-600 mb-4">{error}</p>
-							<button
-								onClick={() => router.back()}
-								className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-							>
-								Go Back
-							</button>
-						</div>
-					</div>
+	if (error) return (
+		<EatofyProtectedRoute>
+			<div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+				<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center max-w-sm w-full">
+					<p className="text-red-500 font-semibold mb-2">Error</p>
+					<p className="text-gray-500 text-sm mb-4">{error}</p>
+					<button onClick={() => router.back()}
+						className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600">
+						Go Back
+					</button>
 				</div>
-			</EatofyProtectedRoute>
-		);
-	}
+			</div>
+		</EatofyProtectedRoute>
+	);
 
 	return (
 		<EatofyProtectedRoute>
-			<div className="bg-gray-200 p-4 rounded-xl">
-				<div className="bg-white rounded-xl shadow-lg p-6">
-					<div className="flex items-center justify-between mb-6">
-						<div className="flex items-center gap-4">
-							<button
-								onClick={() => router.back()}
-								className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-							>
-								<FaArrowLeft className="text-gray-600" />
-							</button>
+			<div className="min-h-screen bg-gray-50 p-6">
+				<div className="max-w-full mx-auto space-y-6">
+
+					{/* Header */}
+					<div className="flex items-center gap-4">
+						<button onClick={() => router.back()}
+							className="p-2 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors">
+							<FaArrowLeft className="text-gray-500" />
+						</button>
+						<div>
 							<h1 className="text-2xl font-bold text-gray-900">Edit User</h1>
+							<p className="text-sm text-gray-400 mt-0.5">Update account details</p>
 						</div>
 					</div>
 
-					<form onSubmit={handleSubmit} className="space-y-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									First Name *
-								</label>
-								<input
-									type="text"
-									name="firstName"
-									value={formData.firstName}
-									onChange={handleInputChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
-									required
-								/>
+					{/* Form Card */}
+					<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+						<form onSubmit={handleSubmit} className="space-y-5">
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								{[['firstName', 'First Name', 'text'], ['lastName', 'Last Name', 'text']].map(([key, label, type]) => (
+									<div key={key}>
+										<label className="block text-sm font-semibold text-gray-700 mb-1">{label} <span className="text-red-500">*</span></label>
+										<input type={type} value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} required
+											className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm" />
+									</div>
+								))}
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Last Name *
-								</label>
-								<input
-									type="text"
-									name="lastName"
-									value={formData.lastName}
-									onChange={handleInputChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
-									required
-								/>
+								<label className="block text-sm font-semibold text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+								<input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required
+									className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm" />
 							</div>
 
 							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Email *
-								</label>
-								<input
-									type="email"
-									name="email"
-									value={formData.email}
-									onChange={handleInputChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
-									required
-								/>
-							</div>
-
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Role *
-								</label>
-								<select
-									name="role"
-									value={formData.role}
-									onChange={handleInputChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
-									required
-								>
-									<option value="">Select Role</option>
-									{eatofyRoles.map(role => (
-										<option key={role} value={role}>{role}</option>
-									))}
+								<label className="block text-sm font-semibold text-gray-700 mb-1">Role <span className="text-red-500">*</span></label>
+								<select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} required
+									className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm">
+									<option value="">Select role</option>
+									{ROLES.map(r => <option key={r} value={r}>{r}</option>)}
 								</select>
 							</div>
 
-							<div className="md:col-span-2">
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									New Password (leave blank to keep current)
+							<div>
+								<label className="block text-sm font-semibold text-gray-700 mb-1">New Password
+									<span className="ml-1 text-xs text-gray-400 font-normal">(leave blank to keep current)</span>
 								</label>
-								<input
-									type="password"
-									name="password"
-									value={formData.password}
-									onChange={handleInputChange}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
-									placeholder="Enter new password or leave blank"
-								/>
+								<input type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+									placeholder="Enter new password"
+									className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 text-sm" />
 							</div>
-						</div>
 
-						<div className="flex justify-end gap-4 pt-6 border-t">
-							<button
-								type="button"
-								onClick={() => router.back()}
-								className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-							>
-								Cancel
-							</button>
-							<button
-								type="submit"
-								disabled={saving}
-								className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-							>
-								{saving ? (
-									<>
-										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-										Saving...
-									</>
-								) : (
-									<>
-										<FaSave />
-										Save Changes
-									</>
-								)}
-							</button>
-						</div>
-					</form>
+							<div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
+								<button type="button" onClick={() => router.back()} disabled={saving}
+									className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+									Cancel
+								</button>
+								<button type="submit" disabled={saving}
+									className="px-5 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2">
+									{saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FaSave size={13} />}
+									Save Changes
+								</button>
+							</div>
+						</form>
+					</div>
+
 				</div>
 			</div>
 		</EatofyProtectedRoute>

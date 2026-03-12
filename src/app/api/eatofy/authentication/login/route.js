@@ -6,7 +6,7 @@ export async function POST(request) {
   try {
     const data = await request.json();
     const result = await login_eatofy_user(data);
-    
+
     if (result.returncode === 200 && result.output.length > 0) {
       // Create JWT token
       const userData = result.output[0];
@@ -20,7 +20,7 @@ export async function POST(request) {
 
       // Create response with token in cookie
       const response = NextResponse.json(result);
-      
+
       // Set httpOnly cookie with token
       response.cookies.set({
         name: 'auth_token',
