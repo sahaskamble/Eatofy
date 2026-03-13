@@ -4,8 +4,8 @@ export const fetchGstSettings = async () => {
   try {
     const response = await fetch('/api/hotel/settings/gst/fetch');
     const data = await response.json();
-    console.log(data)
-    return await response.json();
+    console.log(data);
+    return data;
   } catch (error) {
     console.error('Error fetching GST settings:', error);
     return { returncode: 500, message: error.message };

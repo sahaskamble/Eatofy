@@ -182,7 +182,7 @@ export default function TableOrderPage() {
             menu_data: cart.map(item => ({
               menu_id: item._id,
               quantity: item.quantity,
-              total_amount: item.Price,
+              total_amount: item.Price * item.quantity,
               note: item.note || '',
             }))
           }),
@@ -253,7 +253,7 @@ export default function TableOrderPage() {
             response_data: cart.map(item => ({
               menu_id: item._id,
               quantity: item.quantity,
-              total_amount: item.Price,
+              total_amount: item.Price * item.quantity,
               note: item.note || '',
             }))
           };
@@ -1313,7 +1313,7 @@ export default function TableOrderPage() {
           </div>
 
           {/* Items */}
-          <table style={{ fontSize: '10px'}}>
+          <table style={{ fontSize: '10px' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #ddd' }}>
                 <th style={{ padding: '8px' }}>Items</th>
@@ -1332,7 +1332,7 @@ export default function TableOrderPage() {
                     {item?.Quantity}
                   </td>
                   <td style={{ padding: '8px' }}>
-                    ₹{item?.Price}
+                    ₹{(item?.TotalAmount / item?.Quantity).toFixed(2)}
                   </td>
                   <td style={{ padding: '8px' }}>
                     ₹{item?.TotalAmount}
